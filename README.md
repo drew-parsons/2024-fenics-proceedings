@@ -33,8 +33,8 @@ $ <add graphics>
 
 ## Graphics requirements
 
+* Place graphics under chapters/chp1/graphics
 * Use vector graphics whenever possible
-* Make sure to include a DOI (whenever available) in each entry
 
 ## Bibliography requirements
 
