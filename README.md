@@ -61,7 +61,7 @@ $ <add graphics>
 ```
 ### Submitting your contribution
 
-To submit your contribution, send the generated book.pdf via email to Jørgen S. Dokken (dokken@simula.no).
+To submit your contribution, rename book.pdf to book_<lastnamefirstauthor>.pdf, and send the .pdf via email to Jørgen S. Dokken (dokken@simula.no).
 
 ### Chapter guidelines
 * Each chapter must be no less than 6 and no more than 10 pages, including references
