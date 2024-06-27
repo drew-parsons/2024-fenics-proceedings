@@ -7,20 +7,6 @@ The proceedings of the FEniCS 2024 Conference (FEniCS 2024) will be published as
 ## Aims and scope
 The aim of the volume is to give a glimpse of the current state-of-the-art in terms of development and applications of the FEniCS Project (FEniCS) software. Both theoretical and more application-oriented high-quality contributions are welcome. Each book chapter is expected to be accompanied by a FEniCS-based implementation or by a contribution to one or more of the FEniCS software components. 
 
-## Editors
-* Jørgen S. Dokken, Simula Research Laboratory, Norway
-* Henrik Finsberg, Simula Research Laboratory, Norway
-* Jack S. Hale, University of Luxembourg, Luxembourg
-* Marie E. Rognes, Simula Research Laboratory, Norway
-* Matthew W. Scroggs, University College London, UK 
-
-Each contribution will be assigned to one or more editors. Each editor
-will be responsible for the recruitment of reviewers and handling of
-the review process of their assigned manuscripts.
-
-## Review
-All submissions will be subject to an initial editorial review, and if considered of sufficient quality and within the scope of the volume, peer-reviewed by two reviewers (single-blind) who can recommend; acceptance, revision or rejection. The final decision on acceptance or rejection will be made by the editors.
-
 ## Timeline
 
 * Sep 30 2024: Deadline for initial submissions, PDF by email to the editors. Submissions subjected to editorial review, and eligible contributions sent for peer-review.
@@ -90,3 +76,17 @@ All chapters are expected to be accompanied by code released under an
 open source initiative approved license and uploaded to e.g. GitHub or
 GitLab alongside an upload to archival quality repository with a DOI
 assigned e.g. Zenodo or figshare.
+
+## Editors
+* Jørgen S. Dokken, Simula Research Laboratory, Norway
+* Henrik Finsberg, Simula Research Laboratory, Norway
+* Jack S. Hale, University of Luxembourg, Luxembourg
+* Marie E. Rognes, Simula Research Laboratory, Norway
+* Matthew W. Scroggs, University College London, UK 
+
+Each contribution will be assigned to one or more editors. Each editor
+will be responsible for the recruitment of reviewers and handling of
+the review process of their assigned manuscripts.
+
+## Review
+All submissions will be subject to an initial editorial review, and if considered of sufficient quality and within the scope of the volume, peer-reviewed by two reviewers (single-blind) who can recommend; acceptance, revision or rejection. The final decision on acceptance or rejection will be made by the editors.
