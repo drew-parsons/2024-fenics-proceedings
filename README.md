@@ -21,9 +21,16 @@ the review process of their assigned manuscripts.
 ## Review
 All submissions will be subject to an initial editorial review, and if considered of sufficient quality and within the scope of the volume, peer-reviewed by two reviewers (single-blind) who can recommend; acceptance, revision or rejection. The final decision on acceptance or rejection will be made by the editors.
 
+## Timeline
+
+* Sep 30 2024: Deadline for initial submissions, PDF by email to the editors. Submissions subjected to editorial review, and eligible contributions sent for peer-review.
+* Dec 10 2024: Peer-reviews received and revised manuscripts invited.
+* Jan 20 2025: Deadline for revised submission.
+* Feb 2025: Final editorial review and submission to the Simula SpringerBrief Editorial team.
+
+This timeline is subject to change.
 
 ## Author instructions
-
 
 ### Preparing your chapter
 
@@ -35,14 +42,15 @@ One-click option to create your own repository:
 
   https://github.com/new?template_name=2024-fenics-proceedings&template_owner=meg-simula
 
-To compile the book, run
+To compile and view the book, run
 
 ```
 $ cd book
 $ make
+$ <view> book.pdf
 ```
 
-Edit the sample chapter (chapters/chp1/...)
+To prepare your contribution, edit the sample chapter (chapters/chp1/...)
 
 ```
 $ cd chapters/chp1
@@ -56,10 +64,10 @@ $ <add graphics>
 To submit your contribution, send the generated book.pdf via email to Jørgen S. Dokken (dokken@simula.no).
 
 ### Chapter guidelines
-* Each chapter should be no less than 6 and no more than 10 pages, including references
-* Chapters should present original research
-* Each chapter should include acknowledgments, including funding, as relevant.
-* Each chapter should include an introductory abstract
+* Each chapter must be no less than 6 and no more than 10 pages, including references
+* Each chapter must present original research
+* Each chapter must include acknowledgments, including funding, as relevant.
+* Each chapter must include an introductory abstract
 
 Note that the Simula SpringerBriefs on Computing principles apply in
 terms of open access (Creative Commons Attribution 4.0 International
