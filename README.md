@@ -1,4 +1,4 @@
-# The 2024 FEniCS Proceedings
+# The FEniCS 2024 Proceedings
 
 ## About the proceedings 
 
