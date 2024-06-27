@@ -1,5 +1,4 @@
-# 2024-fenics-proceedings
-The 2024 FEniCS Proceedings 
+# The 2024 FEniCS Proceedings
 
 To compile the book, run
 
@@ -26,7 +25,18 @@ $ mkdir graphics/
 $ <add graphics>
 ```
 
-Bibliography requirements
+## Chapter guidelines
+* Each chapter should be no less than 6 and no more than 10 pages, including references
+* Chapters should present original research
+* Each chapter should include acknowledgments, including funding, as relevant.
+* Each chapter should include an introductory abstract
+
+## Graphics requirements
+
+* Use vector graphics whenever possible
+* Make sure to include a DOI (whenever available) in each entry
+
+## Bibliography requirements
 
 * Use BibTeX for the bibliography
 * Make sure to include a DOI (whenever available) in each entry
