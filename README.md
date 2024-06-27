@@ -1,6 +1,6 @@
 # The 2024 FEniCS Proceedings
 
-## About the Proceedings 
+## About the proceedings 
 
 The proceedings of the FEniCS 2024 Conference (FEniCS 2024) will be published as a peer-reviewed edited volume by Springer Verlag in the open access book series Simula SpringerBriefs on Computing. This series aims to provide a concise introduction to select research topics for students or researchers entering new fields.  
 
@@ -24,13 +24,6 @@ All submissions will be subject to an initial editorial review, and if considere
 
 ## Author instructions
 
-To compile the book, run
-
-```
-$ cd book
-$ make
-```
-
 To prepare your chapter, please create your own repository from the template (this repository):
 
   https://github.com/meg-simula/2024-fenics-proceedings
@@ -38,6 +31,13 @@ To prepare your chapter, please create your own repository from the template (th
 One-click option to create your own repository: 
 
   https://github.com/new?template_name=2024-fenics-proceedings&template_owner=meg-simula
+
+To compile the book, run
+
+```
+$ cd book
+$ make
+```
 
 Edit the sample chapter (chapters/chp1/...)
 
