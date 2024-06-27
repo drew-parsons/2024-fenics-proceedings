@@ -24,6 +24,9 @@ All submissions will be subject to an initial editorial review, and if considere
 
 ## Author instructions
 
+
+### Preparing your chapter
+
 To prepare your chapter, please create your own repository from the template (this repository):
 
   https://github.com/meg-simula/2024-fenics-proceedings
@@ -48,7 +51,7 @@ $ <edit> bibliography.bib
 $ mkdir graphics/
 $ <add graphics>
 ```
-### How to submit your contribution
+### Submitting your contribution
 
 To submit your contribution, send the generated book.pdf via email to Jørgen S. Dokken (dokken@simula.no).
 
