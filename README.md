@@ -1,11 +1,11 @@
-# The 2024 FEniCS Proceedings
+# The FEniCS 2024 Proceedings
 
 ## About the proceedings 
 
 The proceedings of the FEniCS 2024 Conference (FEniCS 2024) will be published as a peer-reviewed edited volume by Springer Verlag in the open access book series Simula SpringerBriefs on Computing. This series aims to provide a concise introduction to select research topics for students or researchers entering new fields.  
 
 ## Aims and scope
-The aim of the volume will be to give a glimpse of the current state-of-the-art in terms of development and applications of the FEniCS Project (FEniCS) software. Both theoretical and more application-oriented high-quality contributions are welcome. Each book chapter is expected to be accompanied by a FEniCS-based implementation or by a contribution to one or more of the FEniCS software components. 
+The aim of the volume is to give a glimpse of the current state-of-the-art in terms of development and applications of the FEniCS Project (FEniCS) software. Both theoretical and more application-oriented high-quality contributions are welcome. Each book chapter is expected to be accompanied by a FEniCS-based implementation or by a contribution to one or more of the FEniCS software components. 
 
 ## Editors
 * Jørgen S. Dokken, Simula Research Laboratory, Norway

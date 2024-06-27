@@ -21,3 +21,8 @@ pdf: $(BOOK)
 	$(PDFLATEX) $(BOOK)
 	$(PDFLATEX) $(BOOK)
 
+clean:
+	rm -f $(BOOK.pdf) $(BOOK.aux) $(BOOK.idx) $(BOOK:%.tex=%.log) $(BOOK:%.tex=%.out) $(BOOK:%.tex=%.toc) $(BOOK:%.tex=%.ilg) $(BOOK:%.tex=%.ind) $(BOOK:%.tex=%.synctex.gz)
+	for chapterdir in $(CHAPTERDIR)/* ; do \
+		rm -f $${chapterdir}/main.aux $${chapterdir}/main.log $${chapterdir}/main.out $${chapterdir}/main.toc $${chapterdir}/main.ilg $${chapterdir}/main.ind $${chapterdir}/main.synctex.gz ; \
+	done
