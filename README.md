@@ -8,7 +8,7 @@ The proceedings of the FEniCS 2024 Conference (FEniCS 2024) will be published as
 The aim of the volume will be to give a glimpse of the current state-of-the-art in terms of development and applications of the FEniCS Project (FEniCS) software. Both theoretical and more application-oriented high-quality contributions are welcome. Each book chapter is expected to be accompanied by a FEniCS-based implementation or by a contribution to one or more of the FEniCS software components. 
 
 ## Editors
-* Jørgen Dokken, Simula Research Laboratory, Norway
+* Jørgen S. Dokken, Simula Research Laboratory, Norway
 * Henrik Finsberg, Simula Research Laboratory, Norway
 * Jack S. Hale, University of Luxembourg, Luxembourg
 * Marie E. Rognes, Simula Research Laboratory, Norway
@@ -48,6 +48,9 @@ $ <edit> bibliography.bib
 $ mkdir graphics/
 $ <add graphics>
 ```
+### How to submit your contribution
+
+To submit your contribution, send the generated book.pdf via email to Jørgen S. Dokken (dokken@simula.no).
 
 ### Chapter guidelines
 * Each chapter should be no less than 6 and no more than 10 pages, including references
