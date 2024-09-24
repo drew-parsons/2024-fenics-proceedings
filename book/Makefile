@@ -1,4 +1,4 @@
-BOOK = book.tex
+BOOK = book_Parsons.tex
 BOOK.pdf = $(BOOK:%.tex=%.pdf)
 BOOK.idx = $(BOOK:%.tex=%.idx)
 BOOK.aux = $(BOOK:%.tex=%.aux)
