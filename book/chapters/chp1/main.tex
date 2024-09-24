@@ -79,7 +79,7 @@ finite element methods (using FEniCSx\cite{baratta2023dolfinx}): log-scaling of
 ion concentration functions, and throttling of boundary
 conditions. For context we also present a summary of the physics and
 weak formulation defining the Poisson-Boltzmann model, including
-finite ion size effects. For simplicity we omit redox phenomemon
+finite ion size effects. For simplicity we omit redox phenomenon
 (electrolysis of water would occur in real systems at high electrode
 potentials).
 
@@ -156,8 +156,8 @@ It might be noted that in the classical Poisson-Boltzmann model, the
 ion concentrations $c_i$ are determined completely by the
 electrostatic potential with the Boltzmann equation in closed form, so
 only the Poisson equation needs solving directly. However, the
-physical problem with the classical model is evident in electochemical
-sytems with electrode potential 1 V. A one volt potential is
+physical problem with the classical model is evident in electrochemical
+systems with electrode potential 1 V. A one volt potential is
 equivalent to a thermal energy of $40 kT)$, for which the conventional
 Boltzmann factor for a counterion is
 $\exp(40)\approx 2.3 \times 10^{17}$.  That is, the surface counterion
@@ -183,8 +183,11 @@ and weak formulation
     0 = \int_{V} (\mu_i^{ex}-\mu_{i\infty}^{ex}) b_i
     \label{weak_CS}
 \end{equation}
-for all $b_i$, which adds to \eqnref{weak_Boltzmann}, the weak formulation for the Boltzmann equation, together generating the strong formulation of  \eqnref{general_Boltzmann}, the modified Boltzmann equation.
-Here we have introduced from the excess chemical potential per ion for the Carnahan-Starling model,
+for all $b_i$, which adds to \eqnref{weak_Boltzmann}, the weak
+formulation for the Boltzmann equation, together generating the strong
+formulation of \eqnref{general_Boltzmann}, the modified Boltzmann
+equation.  Here we have introduced from the excess chemical potential
+per ion for the Carnahan-Starling model,
 \begin{equation}
     \mu_{i}^{ex} = kT \frac{\phi(8-9\phi+3\phi^2)}{(1-\phi)^3}
     \label{chem_pot_CS}
@@ -208,7 +211,7 @@ expression determining ion concentrations, which must therefore be
 explicitly numerically solved alongside potential $\psi$. In this
 paper we address strategies for managing the strong nonlinearity in
 the system introduced by this term alongside large values of the
-potential. Note that $c_i$ must also be solved explcitly in the case
+potential. Note that $c_i$ must also be solved explicitly in the case
 of time-dependent nonequilibrium Poisson-Nernst-Planck systems where
 ion concentrations are not in equilibrium and determined by a
 continuity equation rather than a Boltzmann equation.
@@ -319,7 +322,7 @@ solved. But under the nonlinear conditions (with electrode potential
 $>0.2$ V) where the Carnahan-Starling steric force is required, the
 zero initial guess leads quickly to a diverging solution with infinite
 residual. And yet a stable solution is accessible at lower values of
-the boundary condition. We knudge the solver to a stable solution by
+the boundary condition. We nudge the solver to a stable solution by
 applying a throttling algorithm: reduce the boundary condition to a
 small value for which a solution can be obtained, then incrementally
 increase the boundary value back towards the target value, using the
@@ -373,7 +376,7 @@ ion size.
 \includegraphics[width=0.4\linewidth]{steric_potential_10V.png}
 (b)
 \includegraphics[width=0.4\linewidth]{steric_10V_counterion.png}
-\caption{\label{fig_results_throttling}Solutions to the modifed
+\caption{\label{fig_results_throttling}Solutions to the modified
   Poisson-Boltzmann model of a 1M NaCl electrolyte solution with
   Carnahan-Starling steric forces, shown as profiles along $x$, the
   perpendicular distance from a 5V electrode surface (a) Electrostatic
