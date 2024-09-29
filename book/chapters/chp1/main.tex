@@ -171,7 +171,12 @@ which the modified Boltzmann equation is
     c_i(x)=c_{i\infty}\exp\left[(-(z_i e \psi(x) + \mu_i^{ex}(x)-\mu_{i\infty}^{ex})/kT\right]
     \label{general_Boltzmann}
 \end{equation}
-$\mu_{i\infty}$ refers to the (fixed) excess chemical potential of the ion in bulk solution.
+This corresponds to a total chemical potential of each ion 
+defined by $\mu_i(x)=\mu_{i\infty} + kT \ln(c_i(x)/c_{i\infty})
++ ez_i \psi(x) + \mu_i^{ex}(x)-\mu_{i\infty}^{ex}$.
+$\mu_{i\infty}$ refers to the (fixed) excess chemical potential of the
+ion in bulk solution, defined relative to an ideal unit
+reference solution by $\mu_{i\infty} = kT\ln c_{i\infty} + \mu_{i\infty}^{ex}$.
 The steric model we employ is the Carnahan-Starling model
 \cite{CarnahanStarling1969} with a contribution to the grand potential
 % for future reference, the CS model (both energy and chemical
@@ -231,9 +236,8 @@ derivation of these weak formulations from the energy functionals,
 chemical potential of the ions, not the concentration directly. That
 is, fundamentally the strong form of the Boltzmann equation is simply $\mu_i =
 \mu_{i\infty}$, the condition of equal chemical potential at all
-points in the domain in equilibrium with an external bulk bath, with the total chemical potential of each ion 
-given by $\mu_i(x)=\mu_{i\infty} + kT \ln(c_i(x)/c_{i\infty})
-+ ez_i \psi(x) + \mu_i^{ex}(x)-\mu_{i\infty}^{ex}$.  The Boltzmann
+points in the domain in equilibrium with an external bulk bath.
+The Boltzmann
 equation in terms of 
 concentration, \eqnref{general_Boltzmann}, is then simply a rearrangement of
 the strong equation for chemical potential. Since chemists are in the
@@ -249,7 +253,7 @@ dx
 \end{equation}
 for all test functions $b_i$, rather than applying it via the chemical
 potential components in \eqnref{weak_Boltzmann}
-+\eqnref{weak_CS}. Since the concentration functions $c_i(x)$ being
++\eqnref{weak_CS}. Because the concentration functions $c_i(x)$ being
 solved are the same, this change in weak form should not affect
 residuals. The question can be asked, though out of scope
 to answer here, whether these alternative weak forms for the Boltzmann
