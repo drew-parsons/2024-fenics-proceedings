@@ -1,3 +1,12 @@
+
+
+@Book{Jackson_Classical_Electrodynamics,
+  author = 	 {John David Jackson},
+  title = 	 {Classical Electrodynamics},
+  publisher = 	 {John Wiley \& Sons, Inc.},
+  year = 	 1999,
+  edition = 	 {3rd}}
+
 @article{alnaes2015fenics,
   title     = {The FEniCS Project Version 1.5},
   journal   = {Archive of Numerical Software},
@@ -207,4 +216,70 @@ year = {2022}
    volume = {9783642251320},
    url = {https://link.springer.com/10.1007/978-3-642-25132-0},
    year = {2012},
+}
+
+@misc{PETSc_manual,
+   abstract = {This manual describes the use of the Portable, Extensible Toolkit for Scientific Computation (PETSc) and the Toolkit for Advanced Optimization (TAO) for the numerical solution of partial differential equations and related problems on high-performance computers. PETSc/TAO is a suite of data structures and routines that provide the building blocks for the implementation of large-scale application codes on parallel (and serial) computers. PETSc uses the MPI standard for all distributed memory communication.},
+   author = {S. Balay and S. Abhyankar and M. Adams and S. Benson and J. Brown and P. Brune and K. Buschelman and E. Constantinescu and L. Dalcin and A. Dener and V. Eijkhout and J. Faibussowitsch and W. Gropp and V. Hapla and T. Isaac and P. Jolivet and D. Karpeev and D. Kaushik and M. Knepley and F. Kong and S. Kruger and D. May and L. McInnes and R. Mills and L. Mitchell and T. Munson and J. Roman and K. Rupp and P. Sanan and J. Sarich and B. Smith and S. Zampini and H. Zhang and J. Zhang},
+   city = {Argonne, IL (United States)},
+   doi = {10.2172/2205494},
+   institution = {Argonne National Laboratory (ANL)},
+   keywords = {mathematics and computing},
+   month = {11},
+   title = {PETSc/TAO Users Manual (Rev. 3.20)},
+   url = {https://www.osti.gov/servlets/purl/2205494/},
+   year = {2023},
+}
+
+@article{petsc4py_2011,
+   abstract = {This work presents two software components aimed to relieve the costs of accessing high-performance parallel computing resources within a Python programming environment: MPI for Python and PETSc for Python. MPI for Python is a general-purpose Python package that provides bindings for the Message Passing Interface (MPI) standard using any back-end MPI implementation. Its facilities allow parallel Python programs to easily exploit multiple processors using the message passing paradigm. PETSc for Python provides access to the Portable, Extensible Toolkit for Scientific Computation (PETSc) libraries. Its facilities allow sequential and parallel Python applications to exploit state of the art algorithms and data structures readily available in PETSc for the solution of large-scale problems in science and engineering.MPI for Python and PETSc for Python are fully integrated to PETSc-FEM, an MPI and PETSc based parallel, multiphysics, finite elements code developed at CIMEC laboratory. This software infrastructure supports research activities related to simulation of fluid flows with applications ranging from the design of microfluidic devices for biochemical analysis to modeling of large-scale stream/aquifer interactions. © 2011 Elsevier Ltd.},
+   author = {Lisandro D. Dalcin and Rodrigo R. Paz and Pablo A. Kler and Alejandro Cosimo},
+   doi = {10.1016/j.advwatres.2011.04.013},
+   issn = {03091708},
+   issue = {9},
+   journal = {Advances in Water Resources},
+   keywords = {MPI,PETSc,Python},
+   month = {9},
+   pages = {1124-1139},
+   publisher = {Elsevier},
+   title = {Parallel distributed computing using Python},
+   volume = {34},
+   url = {https://linkinghub.elsevier.com/retrieve/pii/S0309170811000777},
+   year = {2011},
+}
+
+
+@article{MUMPS_2001,
+   abstract = {In this paper, we analyze the main features and discuss the tuning of the algorithms for the direct solution of sparse linear systems on distributed memory computers developed in the context of a l...},
+   author = {Patrick R. Amestoy and Iain S. Duff and Jean-Yves L'Excellent and Jacko Koster},
+   doi = {10.1137/S0895479899358194},
+   issn = {0895-4798},
+   issue = {1},
+   journal = {SIAM Journal on Matrix Analysis and Applications},
+   keywords = {65F05,65F50,Gaussian elimination,asynchronous parallelism,distributed memory computation,dynamic scheduling,multifrontal methods,sparse linear equations},
+   month = {1},
+   pages = {15-41},
+   publisher = {Society for Industrial and Applied Mathematics},
+   title = {A Fully Asynchronous Multifrontal Solver Using Distributed Dynamic Scheduling},
+   volume = {23},
+   url = {http://epubs.siam.org/doi/10.1137/S0895479899358194},
+   year = {2001},
+}
+
+
+@article{MUMPS_2019,
+   abstract = {Matrices coming from elliptic Partial Differential Equations have been shown to have a low-rank property that can be efficiently exploited in multifrontal solvers to provide a substantial reduction of their complexity. Among the possible low-rank formats, the Block Low-Rank format (BLR) is easy to use in a general purpose multifrontal solver and its potential compared to standard (full-rank) solvers has been demonstrated. Recently, new variants have been introduced and it was proved that they can further reduce the complexity but their performance has never been analyzed. In this article, we present a multithreaded BLR factorization and analyze its efficiency and scalability in shared-memory multicore environments. We identify the challenges posed by the use of BLR approximations in multifrontal solvers and put forward several algorithmic variants of the BLR factorization that overcome these challenges by improving its efficiency and scalability. We illustrate the performance analysis of the BLR multifrontal factorization with numerical experiments on a large set of problems coming from a variety of real-life applications.},
+   author = {Patrick R. Amestoy and Alfredo Buttari and Jean-Yves L'Excellent and Theo Mary},
+   doi = {10.1145/3242094},
+   issn = {0098-3500},
+   issue = {1},
+   journal = {ACM Transactions on Mathematical Software},
+   keywords = {Block Low-Rank,Sparse linear algebra,multicore architectures,multifrontal factorization},
+   month = {3},
+   pages = {1-26},
+   publisher = {ACMPUB27New York, NY, USA},
+   title = {Performance and Scalability of the Block Low-Rank Multifrontal Factorization on Multicore Architectures},
+   volume = {45},
+   url = {https://dl.acm.org/doi/10.1145/3242094},
+   year = {2019},
 }
