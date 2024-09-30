@@ -258,7 +258,23 @@ solved are the same, this change in weak form should not affect
 residuals. The question can be asked, though out of scope
 to answer here, whether these alternative weak forms for the Boltzmann
 equation affect efficiency, perhaps by changing the condition number
-of the matrices used to solve the Poisson-Boltzmann system.
+of the matrices used to solve the Poisson-Boltzmann system. Our
+testing found the chemical potential formulation to be less stable than the
+concentration formulation (failing to converge with an 1V electrode
+potential, where the latter weak form achieves successful convergence
+with the log-zero concentration scaling described next).
+
+\section{Nonlinear mesh}
+The nonlinear solution requires a finer mesh in the nonlinear region
+close to an electrode boundary, rendering solutions on a uniform linear mesh  impractical at electrode
+potentials greater than 0.1V.  The general exponential nature of the potential,
+$\psi(x) \sim \psi_{0} \exp(-\kappa x)$, suggests logarithmic spacing of
+mesh may be suitable. The strongly nonlinear  system
+considered here  would be a good candidate for adaptive mesh refinement. In
+lieu of adaptive remeshing, however, we find a sufficient nonlinear
+mesh spacing can be achieved with a geometric sequence of mesh points,
+multiplying the points $x$ of a uniform unit interval by $x^3$ to
+obtain finer spacing for the points closer to the boundary at $x=0$.
 
 \section{Function scaling}
 We constructed a finite element implementation of the weak
@@ -272,8 +288,8 @@ electrostatic and ion concentration profiles of ion adsorbed at a
 single flat electrode surface along the direction perpendicular to the
 surface, with the electrode boundary at $x=0$.  The electrode
 potential is controlled (Dirichlet boundary condition), and bulk
-solution represented by a zero Neumann condition ("zero electric
-field") at a distance of 30 Debye lengths (at $x=9.1$ nm, for the 1M
+solution represented by a zero Neumann condition (``zero electric
+field'') at  a distance of 30 Debye lengths (at $x=9.1$ nm, for the 1M
 electrolyte). Nonlinear solutions are computed using FEniCS-X's
 NonlinearProblem with a standard NewtonSolver. Convergence criterion
 is set to dolfinx's default ``incremental'' method with absolute
@@ -406,14 +422,14 @@ to 100\% if the procedure would exceed it).  The values of $d$ and $u$
 must find a balance between reaching 100\% throttle in as few
 iterations as possible, while not collapsing back to non-converging
 conditions when raising the throttle.  For potentials below 5V, we
-find a drop level $d=75\%$ and a raise level $u=25\%$ (such that
-$d=3u$), with simple log
+find a drop level $d=30\%$ and a raise level $u=25\%$, with simple log
 scaling of concentrations, gives a reasonable balance between speed and
 stability. If log-zero scaling is employed and the rise rate is
 weakened to $u=10\%$, then electrode potentials of 20V can be
-reached. With 5\% rising steps, 100V can be reached. For a 1M
-electrolyte, calculation at 240V would require such a small rise rate
-that this algorithm becomes impractical.
+reached. With 5\% rising steps, 100V can be reached. 1\% rise steps
+enable calculations up to 1000V. Computation of the interaction of
+100~kV electrical transmission cables with saline water would require such a small rise rate
+that this algorithm would become impractical.
 
 If the throttling rates are not appropriately set, then the algorithm
 may loop indefinitely between a converged solution at lower throttling
@@ -456,7 +472,7 @@ rate 10\% functions up to $V<20$V (blue region). Log-zero scaling with
 In our  implementation a simple value for the throttling rise rate  is fixed for a given
 calculation and the throttling drop rate automatically applied 
 after failing to converge in any iteration
-($d=3u$, making up-throttling more conservative than
+(with up-throttling more conservative than
 down-throttling). It is plausible that the algorithm may be more
 efficient if the throttle is never permitted to drop back below a
 level for which a converged solution has already been found, and
@@ -473,8 +489,8 @@ ensure that the next iteration converges.
   electrode potential $V<0.5$V (yellow region), log scaling (with
   steric forces) for $V<5$V with throttling rise rate 25\% (purple
   region), log-zero scaling with throttling rise rate 10\% for $V<20$V
-  (blue region), and 5\% throttling rise rate for $V<100$V (green
-  region).  }
+  (blue region),  5\% throttling rise rate for $V<100$V (green
+  region), and 1\% throttling rise rate for $V<2500$V (colour).  }
 \end{figure}
 
 \section{Conclusion}
