@@ -456,7 +456,7 @@ ion size (a cap of 46 mol/L in the case of our \ce{Cl-} ion).
 \caption{\label{fig_results_throttling}Solutions to the modified
   Poisson-Boltzmann model of a 1M NaCl electrolyte solution with
   Carnahan-Starling steric forces, shown as profiles along $x$, the
-  perpendicular distance from a 5V electrode surface (a) Electrostatic
+  perpendicular distance from a 10V electrode surface (a) Electrostatic
   potential. (b) Counterion (\ce{Cl-}) concentration. }
 \end{figure}
 
@@ -467,7 +467,8 @@ $V<0.5$V. Log-scaling, \eqnref{log_scaling}, (purple region) with
 throttling rise rate 25\% is successful up to 5V (purple
 region). Log-zero scaling, \eqnref{log_zero}, with throttling rise
 rate 10\% functions up to $V<20$V (blue region). Log-zero scaling with
-5\% throttling rise rate can access up to $V<100$V (green region).
+5\% throttling rise rate can access up to $V<100$V (green region), and
+up to 2500V with a 1\% rise rate (red region).
 
 In our  implementation a simple value for the throttling rise rate  is fixed for a given
 calculation and the throttling drop rate automatically applied 
@@ -485,12 +486,12 @@ ensure that the next iteration converges.
 \includegraphics[width=0.9\linewidth]{counterion_potential_CS_bands.eps}
 \caption{\label{fig_all_potential_high} Algorithm conditions for
   electrostatic potential profiles with electrode potentials up to
-  100V. Electrolyte is 1M NaCl. Linear scaling is functional for
+  1000V. Electrolyte is 1M NaCl. Linear scaling is functional for
   electrode potential $V<0.5$V (yellow region), log scaling (with
   steric forces) for $V<5$V with throttling rise rate 25\% (purple
   region), log-zero scaling with throttling rise rate 10\% for $V<20$V
   (blue region),  5\% throttling rise rate for $V<100$V (green
-  region), and 1\% throttling rise rate for $V<2500$V (colour).  }
+  region), and 1\% throttling rise rate for $V<2500$V (red).  }
 \end{figure}
 
 \section{Conclusion}
