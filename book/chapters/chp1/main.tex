@@ -399,17 +399,23 @@ the boundary condition. We nudge the solver to a stable solution by
 applying a throttling algorithm: reduce the boundary condition to a
 small value for which a solution can be obtained, then incrementally
 increase the boundary value back towards the target value, using the
-previous found solution as an initial guess for the next iteration. The approach is known to mathematicians as a homotopy
+previous found solution as an initial guess for the next
+<<<<<<< Updated upstream
+iteration. The approach is known to mathematicians as a homotopy
  method \cite{homotopy_analysis_Liao2012}, with our throttle
 serving as a homotopy parameter applied to boundary conditions.
 A flowchart for the algorithm is
 shown in \figref{fig_throttling_algorithm}.
+=======
+iteration. The concept is known to mathematicians as Numerical Continuation Method \cite{allgower1990numerical}. A flowchart for the algorithm is
+shown in \figref{fig:throttling_algorithm}.
+>>>>>>> Stashed changes
 
 \begin{figure}
 \centering
 \includegraphics[width=0.8\linewidth]{throttling.eps}
 \caption{Flowchart for the throttling algorithm. }
-\label{fig_throttling_algorithm}
+\label{fig:throttling_algorithm}
 \end{figure}
 
 The throttle is a multiplier
@@ -453,12 +459,11 @@ ion size (a cap of 46 mol/L in the case of our \ce{Cl-} ion).
 \includegraphics[width=0.4\linewidth]{steric_potential_10V.eps}
 (b)
 \includegraphics[width=0.4\linewidth]{steric_10V_counterion.eps}
-\caption{Solutions to the modified
+\caption{\label{fig_results_throttling}Solutions to the modified
   Poisson-Boltzmann model of a 1M NaCl electrolyte solution with
   Carnahan-Starling steric forces, shown as profiles along $x$, the
   perpendicular distance from a 10V electrode surface (a) Electrostatic
   potential. (b) Counterion (\ce{Cl-}) concentration. }
-  \label{fig_results_throttling}
 \end{figure}
 
 \figref{fig_all_potential_high} presents algorithm conditions required
