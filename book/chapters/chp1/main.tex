@@ -400,16 +400,12 @@ applying a throttling algorithm: reduce the boundary condition to a
 small value for which a solution can be obtained, then incrementally
 increase the boundary value back towards the target value, using the
 previous found solution as an initial guess for the next
-<<<<<<< Updated upstream
 iteration. The approach is known to mathematicians as a homotopy
- method \cite{homotopy_analysis_Liao2012}, with our throttle
-serving as a homotopy parameter applied to boundary conditions.
-A flowchart for the algorithm is
-shown in \figref{fig_throttling_algorithm}.
-=======
-iteration. The concept is known to mathematicians as Numerical Continuation Method \cite{allgower1990numerical}. A flowchart for the algorithm is
-shown in \figref{fig:throttling_algorithm}.
->>>>>>> Stashed changes
+method \cite{homotopy_analysis_Liao2012}
+or numerical continuation method \cite{allgower1990numerical},
+with our throttle serving as a homotopy parameter applied to boundary
+conditions.  A flowchart for the algorithm is shown in
+\figref{fig:throttling_algorithm}.
 
 \begin{figure}
 \centering
