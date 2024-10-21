@@ -409,35 +409,116 @@ conditions.  A flowchart for the algorithm is shown in
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth]{throttling.eps}
+\includegraphics[width=0.8\linewidth]{throttling2.eps}
 \caption{Flowchart for the throttling algorithm. }
 \label{fig:throttling_algorithm}
 \end{figure}
 
 The throttle is a multiplier
 applied to the magnitude of the boundary conditions.
-If the solver fails to converge, then reduce the throttle downwards to
-a fraction $d$ of its previous value. Once the boundary
-condition is throttled low enough to generate a converged solution, raise
+If the solver fails to converge, then reduce the throttle downwards by
+bisection between the current failed value (``current throttle'', ct) and the highest converged
+throttle (hct, initially 0). Once the boundary
+condition is throttled low enough to generate a converged solution,
+update the hct and raise
 the throttle upwards by an amount $u$, towards 100\% (set the throttle
-to 100\% if the procedure would exceed it).  The values of $d$ and $u$
+to 100\% if the procedure would exceed it).  The value of $u$
 must find a balance between reaching 100\% throttle in as few
-iterations as possible, while not collapsing back to non-converging
-conditions when raising the throttle.  For potentials below 5V, we
-find a drop level $d=30\%$ and a raise level $u=25\%$, with simple log
-scaling of concentrations, gives a reasonable balance between speed and
-stability. If log-zero scaling is employed and the rise rate is
-weakened to $u=10\%$, then electrode potentials of 20V can be
-reached. With 5\% rising steps, 100V can be reached. 1\% rise steps
-enable calculations up to 1000V. Computation of the interaction of
-100~kV electrical transmission cables with saline water would require such a small rise rate
-that this algorithm would become impractical.
+iterations as possible (don't make $u$ too small), while not collapsing back to non-converging
+conditions when raising the throttle (don't make $u$ too
+large). Empirically we find that when the hct is small, the rise rate
+must also be small to obtain the next converged iteration. Once hct is
+large, the rise rate may be proportionally larger. We therefore
+propose a rise rate $u=m\times \mathrm{hct}$, such that the next
+throttle applied after a converged iteration is
+\begin{equation}
+  \mathrm{ct [new]} = \mathrm{hct} + m (1-\mathrm{hct})
+\end{equation}
+with
+\begin{equation}
+  m =
+  \begin{cases}
+    \frac{\mathrm{hct}}{r} & \\
+    1 & \text{if } 1-\mathrm{hct} < 5\%
+  \end{cases}
+\end{equation}
+This produces a quadratically accelerating rise rate (and attempts a
+direct jump to 100\% once the remaining gap is less than 5\%). An example of
+the  throttle against number of iterations is shown in
+\figref{fig:throttle_rate} for 1V and 10V boundaries with different
+choices of $r$. It is likely
+that our formulation, quadratic in hct, approximates a more 
+optimal exponential (or
+sigmoidal) rise rate.  The factor $r$
+may be tuned to provide the maximum possible rise rate (smallest
+possible $r$) that minimises the number of unsuccessful non-converged
+attempts for the range of anticipated boundary conditions. For 1V
+boundaries relevant to typical electrochemical applications,$r=??$ is
+optimal. For 10V boundaries, a milder rise rate is needed and $r=??$ reduces the number of nonconverged iterations.
+We halt if the step between the current throttling rate and highest
+converged throttle drops below $10^{-5}$, or when 100\% throttle is attempted (and failed) more than 3 times.
 
-If the throttling rates are not appropriately set, then the algorithm
-may loop indefinitely between a converged solution at lower throttling
-rate and non-convergence at a higher throttling rate. We therefore
-halt after 200 throttle drops, or when the throttling rate drops below
-$10^{-5}$, or when 100\% throttle is attempted (and failed) more than 3 times.
+\begin{figure}
+\centering
+%\includegraphics[width=0.8\linewidth]{throttling_algorithm.eps}
+\caption{Attempted throttle rate vs iteration number, for 1V and 10V
+  boundaries with rise rate multiplier $r=??$ and $r=??$.
+}
+\label{fig:throttle_rate}
+\end{figure}
+
+
+Table~\ref{tab:convergence} shows  the number of iterations required
+to converge with various boundary conditions for the different
+concentrations scaling functions. Trivial scaling converges quickly,
+but only for electrode potentials $<0.8$V.
+
+\begin{table}
+  \centering
+  \begin{tabular}{c|ccc|ccc}
+pot(V)  & \multicolumn{3}{c|}{Point charge} & \multicolumn{3}{c}{Steric}    \\
+        & trivial & log & log-zero & trivial & log & log-zero \\ \hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%  This is a LaTeX2e table fragment exported from Gnumeric.        %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+0.5	&1	& 1 & 1 &1	&43	&39\\
+1	&F	& 1 & 1 &1	&52	&48\\
+1.3	&	& 73 & 63  &26	&52	&52\\
+1.9	&	& S & 400 &26	&59	&52\\
+5	&	&  & S &44	&69	&69\\
+25	&	&  &  &59	&F	&85\\
+100	&	&  &  &139	&	&101\\
+500	&	&  &  &430	&	&296\\
+1000	&	&  &  &561	&	&479\\
+2000	&	&  &  &S	&	&691\\
+3000	&	&  &  &	&	&S\\
+  \end{tabular}  
+\caption{\label{tab:convergence}Number of throttling iterations
+  required to  solve the  Poisson-Boltzmann model of a 1M NaCl electrolyte solution
+  for various electrode potentials and concentration scaling
+  functions (trivial, log, or log-zero scaling), for both the classic point charge model and the steric
+  model (Carnahan-Starling) with finite ion sizes. ``F''=Failed
+  (throttle step $<10^{-5}$). ``S''=Stopped at 1000 iterations.}
+\end{table}
+
+For the classical point charge model, throttling does not help trivial
+concentration scaling reach potentials above 0.5V.  With log scaling,
+1.3V is reached, and 1.9V with log-zero scaling. For the steric model
+with finite ion sizes, throttling enables 1000V to be reached, even
+with trivial concentration scaling. Log-zero scaling reaches further,
+up to 2700V. The steric model naturally keeps concentrations within
+physically reasonable bounds, such that  log-zero scaling is not
+required for normal electrochemical conditions. In fact, trivial
+scaling actually performs better for potentials $<100$V, requiring
+less throttling iterations.
+[[!! CHECK FOR TRUTH AFTER CONSIDERING $r$ OPTIMISED FOR VOLTAGE REGIMES !!]
+Plain log scaling is unable to reach 25V,
+due to instability introduces by near-zero coion concentrations.
+Even with log-zero scaling, computation of the interaction of 100~kV electrical transmission
+cables with saline water would require such a large number of iterations that
+this algorithm would become impractical.
 
 The results of the throttling algorithm for an electrode charged to
 10V, with Carnahan-Starling steric forces, is shown in
@@ -472,16 +553,19 @@ rate 10\% functions up to $V<20$V (blue region). Log-zero scaling with
 5\% throttling rise rate can access up to $V<100$V (green region), and
 up to 2500V with a 1\% rise rate (red region).
 
-In our  implementation a simple value for the throttling rise rate  is fixed for a given
-calculation and the throttling drop rate automatically applied 
-after failing to converge in any iteration
-(with up-throttling more conservative than
-down-throttling). It is plausible that the algorithm may be more
-efficient if the throttle is never permitted to drop back below a
-level for which a converged solution has already been found, and
-instead an adaptive rise rate is applied, such that $u$ is reduced
-(e.g.\ by factor 2) until the throttle rise rate becomes small enough to
-ensure that the next iteration converges.
+
+%% This was indeed plausible, and has now been down.
+%%
+%In our  implementation a simple value for the throttling rise rate  is fixed for a given
+%calculation and the throttling drop rate automatically applied 
+%after failing to converge in any iteration
+%(with up-throttling more conservative than
+%down-throttling). It is plausible that the algorithm may be more
+%efficient if the throttle is never permitted to drop back below a
+%level for which a converged solution has already been found, and
+%instead an adaptive rise rate is applied, such that $u$ is reduced
+%(e.g.\ by factor 2) until the throttle rise rate becomes small enough to
+%ensure that the next iteration converges.
 
 \begin{figure}
 \centering
@@ -503,8 +587,8 @@ with electrode potentials 1V or greater requires both nontrivial
 physics and nontrivial numerical algorithms.
 With respect to the
 physics, aside from redox chemistry and electrolysis (not considered
-here), the finite sizes of ions must be taken into consideration. In
-order to achieve numerical convergence, we have proposed two
+here), the finite sizes of ions must be taken into consideration via steric forces.
+In order to achieve numerical convergence, we have proposed two
 features. Firstly, we propose log-zero function scaling of
 concentration functions that accounts
 not only for the heightened concentrations of counterions near an
@@ -514,8 +598,11 @@ down to the linear regime where a solution is easily obtained, then
 progressively propagates that solution by releasing the throttle
 until the target boundary condition is obtained. The combination of
 log-zero scaling and throttling facilitates calculations of electrolyte
-solutions with electrode potentials up to 100V. We
-illustrated the throttling algorithm using Dirichlet boundary
+solutions with electrode potentials greater than 2000V.
+But for typical electrochemical applications with potentials lower than 25V,
+where steric forces are needed in order to maintain the physical relevance
+of the model, trivial scaling is sufficient and indeed faster than log-zero scaling.
+We illustrated the throttling algorithm using Dirichlet boundary
 conditions (electrode potentials), but the  principle applies
 equally to Neumann or more complex boundary conditions.
 
