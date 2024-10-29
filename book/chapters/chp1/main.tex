@@ -173,9 +173,15 @@ which the modified Boltzmann equation is
     c_i(x)=c_{i\infty}\exp\left[(-(z_i e \psi(x) + \mu_i^{ex}(x)-\mu_{i\infty}^{ex})/kT\right]
     \label{general_Boltzmann}
 \end{equation}
-This corresponds to a total chemical potential of each ion 
-defined by $\mu_i(x)=\mu_{i\infty} + kT \ln(c_i(x)/c_{i\infty})
-+ ez_i \psi(x) + \mu_i^{ex}(x)-\mu_{i\infty}^{ex}$.
+This corresponds to a total chemical potential $\mu_i(x)$ of each ion,
+defined by
+\begin{eqnarray}
+  \mu_i(x) &=& \mu_{i}^{\textrm{entropic}} +  \mu_{i}^{\textrm{electrostatic}} +
+               \mu_{i}^{ex} \\
+{} &  =&\mu_{i\infty} + kT \ln(c_i(x)/c_{i\infty})
+         + ez_i \psi(x) + \mu_i^{ex}(x)-\mu_{i\infty}^{ex}.
+         \label{chem_pot}
+\end{eqnarray}
 $\mu_{i\infty}$ refers to the (fixed) excess chemical potential of the
 ion in bulk solution, defined relative to an ideal unit
 reference solution by $\mu_{i\infty} = kT\ln c_{i\infty} + \mu_{i\infty}^{ex}$.
@@ -235,7 +241,7 @@ continuity equation rather than a Boltzmann equation.
 One last point on the weak formulation of the Boltzmann equation. The variational
 derivation of these weak formulations from the energy functionals,
 \eqnref{weak_Boltzmann} and \eqnref{weak_CS}, presents them in terms of the
-chemical potential of the ions, not the concentration directly. That
+chemical potential of the ions, \eqnref{chem_pot}, not the concentration directly. That
 is, fundamentally the strong form of the Boltzmann equation is simply $\mu_i(x) =
 \mu_{i\infty}$, the condition of equal chemical potential at all
 points in the domain in equilibrium with an external bulk bath.
