@@ -26,24 +26,26 @@ Discipline of Physics, Chemistry and Mathematics, 90 South St, Murdoch 6150, Wes
   Boltzmann equation $c = c_0 \exp[-e\psi/kT]$ is highly
   nonlinear once the electrostatic potential exceeds several thermal
   energy ($kT$) units (i.e.\ when $\psi>0.1$ V). This introduces two
-  related numerical challenges. Firstly, suitable convergence criteria
-  for the concentration functions becomes variable, depending on the
+  related numerical challenges. Firstly, suitable convergence conditions
+  for the concentration functions become sensitive to the
   boundary potential. Secondly a controlled initial guess must be
   provided must be provided to avoid the FEM calculation diverging to
   NaN. We resolve the first challenge by logarithmic scaling of the
   concentration function, as suggested by the exponential nature of
   the Boltzmann equation.  However a nontrivial complex logarithmic
-  form is required in order to allow for the near-zero concentrations
-  of coions, which would trigger numerical divergence in a trivial
-  $\ln[c(x)]$ scaled function. The second challenge is resolved by
-  iteratively with a throttling algorithm that suppresses large
-  boundary conditions down to the linear regime, which is then iteratively applied
-  as an initial guess for the nonlinear regime. Our implementation
+  form (``log-zero scaling'') is required in order to allow for the near-zero concentrations
+  of coions. The second challenge is resolved  with an adaptive
+  throttling algorithm that suppresses large
+  boundary conditions down to the linear regime, then iteratively
+  applies the throttled solution as an initial guess until the
+  nonlinear solution  is iteratively  obtained.
+  Our implementation
   allows for other nonelectrostatic molecular interactions important
   for modelling real chemical and electrochemical systems, in
   particular steric forces due to finite ions sizes, enabling
   computation of concentrated electrolytes with electrode potentials
-  as high as 100V.  }
+  as high as 2000V. We provide a general derivation of the weak and
+  strong forms of the system from the underlying thermodynamic energy functional. }
 
 \section*{Introduction}
 
