@@ -1,8 +1,10 @@
 % Write the full path to the location of the graphics relative to book.tex
 \graphicspath{{chapters/chp1/graphics/}}
 
-\title{Function scaling and boundary condition throttling for convergence control in highly nonlinear Poisson-Boltzmann electrolyte models.}
-\titlerunning{Function Scaling and Convergence Throttling}
+\title{Function scaling and adaptive boundary condition throttling for
+  convergence control in highly nonlinear Poisson-Boltzmann
+  electrolyte models.}
+\titlerunning{Function Scaling and Adaptive Convergence Throttling}
 
 \author{D.~F.~Parsons, M.~Farci,  A.~Grigoras, Dagmawi Tadesse}
 \authorrunning{Parsons et al.}
@@ -32,20 +34,21 @@ Discipline of Physics, Chemistry and Mathematics, 90 South St, Murdoch 6150, Wes
   provided must be provided to avoid the FEM calculation diverging to
   NaN. We resolve the first challenge by logarithmic scaling of the
   concentration function, as suggested by the exponential nature of
-  the Boltzmann equation.  However a nontrivial complex logarithmic
+  the Boltzmann equation.  We find a nontrivial complex logarithmic
   form (``log-zero scaling'') is required in order to allow for the near-zero concentrations
   of coions. The second challenge is resolved  with an adaptive
-  throttling algorithm that suppresses large
-  boundary conditions down to the linear regime, then iteratively
-  applies the throttled solution as an initial guess until the
-  nonlinear solution  is iteratively  obtained.
+  throttling algorithm that throttles large values of
+  boundary conditions down to the level of the linear regime, then 
+  raises the throttle and applies the throttled solution as an initial guess until the
+  final nonlinear solution  is iteratively  obtained.
   Our implementation
-  allows for other nonelectrostatic molecular interactions important
+  allows for other nonelectrostatic molecular interactions that are important
   for modelling real chemical and electrochemical systems, in
-  particular steric forces due to finite ions sizes, enabling
+  particular steric forces due to finite ion sizes. The combination enables
   computation of concentrated electrolytes with electrode potentials
   as high as 2000V. We provide a general derivation of the weak and
-  strong forms of the system from the underlying thermodynamic energy functional. }
+  strong forms of the modified Poisson-Boltzmann system from the
+  underlying thermodynamic energy functional.} 
 
 \section*{Introduction}
 
