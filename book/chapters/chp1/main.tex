@@ -79,12 +79,19 @@ electrode potentials without requiring manual readjustment of
 convergence parameters.  We identify two main steps, implemented via
 finite element methods using FEniCSx \citep{baratta2023dolfinx}: log-scaling of
 ion concentration functions, and adaptive throttling of boundary
-conditions. For context we also present a summary of the physics and
-weak formulation defining the Poisson-Boltzmann model, including
-finite ion size effects.
+conditions.
+
+For context we first present a summary of the physics and
+derive the
+weak and strong formulations defining the Poisson-Boltzmann model from
+the underlying thermodynamic energy functional. The derivation
+is general, allowing for a spatially varying permittivity, although we
+employ a dielectric constant in calculations here. The derivation
+allows for nonelectrostatic interactions of the electrolyte, in
+particular steric forces due to finite ion size effects.  
 In order to focus on the numerical algorithms, we omit redox
-phenomenon (including electrolysis of water) which would occur in real
-systems at such high electrode potentials.
+phenomena (including electrolysis of water) which would occur in real
+systems at  high electrode potentials.
 
 \section{Weak formulation of the Poisson-Boltzmann model}
 
@@ -122,6 +129,7 @@ than $F$. A free energy formulation (with fixed number of ions) would
 require use of a thermal de Broglie wavelength instead of
 $c_{i\infty}$ \citep{GrayStiles2018}.
 
+
 $\Omega_{el} + \Omega_{en}$ alone construct the conventional
 Poisson-Boltzmann model. The term $\Omega_{ex}$ represents extra
 contributions to the total energy functional that describe other
@@ -157,6 +165,8 @@ equation,
     \label{weak_Boltzmann}
 \end{equation}
 for all test functions $b_i$. The strong form of the classical Boltzmann equation can then obtained, $c_i(x)=c_{i\infty}\exp(-z_i e \psi(x)/kT)$. 
+
+\subsection{Nonelectrostatic interactions: Steric model with  finite ion size}
 
  In the classical point-charge Poisson-Boltzmann model, the
 ion concentrations $c_i$ are determined completely by the
@@ -275,19 +285,22 @@ concentration formulation, failing to converge with an 1V electrode
 potential, where the latter weak form achieves successful convergence
 with the log-zero concentration scaling described below.
 
-\section{Nonlinear mesh}
-The nonlinear solution requires a finer mesh in the  region
+\section{Numerical convergence}
+
+\subsection{Nonlinear mesh}
+Solution of the nonlinear Poisson-Boltmann model requires a finer mesh in the  region
 close to an electrode boundary, rendering solutions on a uniform linear mesh  impractical at electrode
 potentials greater than 0.1V.  The general exponential nature of the potential,
 $\psi(x) \sim \psi_{0} \exp(-\kappa x)$, suggests logarithmic spacing of
 mesh may be suitable. The strongly nonlinear  system
 considered here  would be a good candidate for adaptive mesh refinement. In
 lieu of adaptive remeshing, however, we find a sufficient nonlinear
-mesh spacing can be achieved with a geometric sequence of mesh points,
-multiplying the points $x$ of a uniform unit interval by $x^3$ to
+mesh spacing can be achieved with a geometric sequence of mesh points.
+Taking $x$ as the distance from the boundary, we multiply the points
+$x$ of a uniform unit interval by $x^3$ to 
 obtain finer spacing for the points closer to the boundary at $x=0$.
 
-\section{Function scaling}
+\subsection{Function scaling}
 We constructed a finite element implementation of the weak
 formulation (\eqnref{weak_Poisson} and \eqref{weak_Boltzmann_conc}) in
 FEniCS-X \citep{baratta2023dolfinx}, using continuous 
@@ -379,7 +392,7 @@ which keeps the scaled coion function constrained between -1 and 0
 rather than $-\infty$ and 0. Since this scaling function addresses the
 near-zero concentration of the coion, we call it ``log-zero'' scaling.
 
-\section{Throttling algorithm}
+\subsection{Throttling algorithm}
 
 Log-zero scaling of concentration functions facilitates a successful numerical solution to
 the conventional Poisson-Boltzmann at electrode potentials
@@ -482,7 +495,7 @@ more iterations are required to fall back to a converging throttle rate.
 \label{fig:throttle_rate}
 \end{figure}
 
-\subsection{Adaptive throttle rate}
+\subsubsection{Adaptive throttle rate}
 
 The best-performing fixed values of $r$  for potentials up to 1000V are shown
 in  \figref{fig:best_throttle_rate}. The trend suggests that an
