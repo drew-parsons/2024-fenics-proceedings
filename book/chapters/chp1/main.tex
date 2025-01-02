@@ -113,7 +113,8 @@ electric displacement $D=\varepsilon_0
 \varepsilon(x)E$. $\varepsilon_0$ is the permittivity of the vacuum,
 and $\varepsilon(x)$ is the (spatially varying) relative
 permittivity. $z_i$ is the valency of ion $i$.  $\sigma(s)$ is the
-surface charge density on boundary $S$.
+surface charge density on boundary $S$. Here $V$ refers to the domain
+(volume) of the system in space.
 
 $\Omega_{en}$ describes the ideal entropic energy of ions, treated as ideal (noninteracting) particles \citep{GrayStiles2018,DagmawiParsons2024},
 \begin{equation}
@@ -145,11 +146,30 @@ $\delta\Omega=0$ with respect to $\psi$ and $c_i$. Variation with
 respect to $\psi$ (with test function $p \equiv \delta \psi$) leads to a weak formulation
 for the Poisson equation,
 \begin{equation}
-    0 = -\int_{V} \varepsilon_{0}\varepsilon(x) (\nabla\psi,\nabla p) dx + \sum_{i}z_i e \int_{V} c_{i}(x) p dx + \int_{S} \sigma(s) p ds  
+    0 = -\int_{V} \varepsilon_{0}\varepsilon(x) (\nabla\psi,\nabla p) dx + \sum_{i}z_i e \int_{V} c_{i}(x) p dx + \int_{S_{N}} \sigma(s) p ds
     \label{weak_Poisson}
 \end{equation}
-for all test functions $p$ in the relevant finite element space.  After additional
-integration by parts, this weak formulation leads to the strong
+for all test functions $p$ in the relevant function space (vanishing
+on the Dirichet boundary subdomain $S_{D} \subset S$).  A Dirichlet boundary
+condition $\psi(x)=\psi_{0}$ for $x \in S_{D}$ may be applied to set a defined potential,
+for instance the potential of an  electrode controlled by a
+potentiostat. For other boundary subdomains $S_{N} = S \setminus
+S_{D}$, a Neumann boundary condition is set via the surface
+charge density $\sigma$ in the surface term, applying Gauss' Law at
+the external boundary,\footnote{at an internal boundary, $\sigma=D^{\text{out}}_{\perp}-D^{\text{in}}_{\perp}$}
+\begin{equation}
+  \sigma = -D_{\perp} = (n, \varepsilon_{0}\varepsilon\nabla \psi)
+  \label{surface_charge_gauss}
+\end{equation}
+where $D_{\perp}$ is the transverse component of the electric
+displacement vector $D$ at the boundary, or, equivalently, $n$ is the
+outward normal vector at the boundary. \eqnref{surface_charge_gauss}
+is valid across the entire  external surface $S$, but sets a Neumann
+boundary condition when applied to the surface subdomain
+$S_{N}$ in \eqnref{weak_Poisson}. Applied at $S_{D}$, it provides an
+evaluation of the surface charge density generated at Dirichlet surfaces.
+ After additional
+integration by parts, the weak formulation \eqnref{weak_Poisson} leads to the strong
 formulation of the electrostatic Poisson equation,
 $\nabla\cdot D = \sum_i z_i e c_{i}(x)$.
 
@@ -164,7 +184,11 @@ equation,
   \right] b_i dx
     \label{weak_Boltzmann}
 \end{equation}
-for all test functions $b_i$. The strong form of the classical Boltzmann equation can then be obtained, $c_i(x)=c_{i\infty}\exp(-z_i e \psi(x)/kT)$.
+for all test functions $b_i$. The strong form of the classical
+Boltzmann equation can then be obtained, $c_i(x)=c_{i\infty}\exp(-z_i
+e \psi(x)/kT)$.  The Boltzmann equation is implicitly controlled by
+the bulk concentrations $c_{i\infty}$, and an explicit boundary condition
+for the concentration functions is not needed.
 
 \subsection{Nonelectrostatic interactions: Steric model with  finite ion size}
 
@@ -307,10 +331,10 @@ Symmetry renders the system of the flat electrode essentially one-dimensional al
 perpendicular $x$-coordinate, although the calculation can be performed in a 2D
 or 3D geometry. Whether in 1D, 2D, or 3D, the same graded mesh can be
 applied  along the  $x$-direction.
-For more complex non-planar geometries, adaptive remeshing
-would be suitable, controlled by the magnitude of concentration
-gradients or the gradient of the electrostatic potential (i.e.\ the
-electric field).
+For more complex non-planar geometries, adaptive mesh refinement would
+be suitable, likely controlled by the magnitude of the gradient of the
+electrostatic potential (i.e.\ the electric field) or by concentration
+gradients.
 
 \subsection{Function scaling}
 We constructed a finite element implementation of the weak
@@ -324,7 +348,7 @@ electrostatic and ion concentration profiles of ion adsorbed at a
 single flat electrode surface along the direction perpendicular to the
 surface, with the electrode boundary at $x=0$.  The electrode
 potential is controlled (Dirichlet boundary condition), and bulk
-solution represented by a zero Neumann condition (``zero electric
+solution represented by a zero Neumann condition (``zero net charge'', ``zero electric
 field'') at  a distance of 10 nm (~30 Debye lengths for the 1M
 electrolyte). Nonlinear solutions are computed using FEniCSx's
 \texttt{NonlinearProblem} with a standard Newton solver. Convergence criterion
