@@ -175,7 +175,7 @@ such that
 only the Poisson equation would need to be solved directly. However, the
 physical problem with the classical model is evident in electrochemical
 systems with electrode potential 1 V. A one volt potential is
-equivalent to a thermal energy of $40 kT)$, for which the conventional
+equivalent to a thermal energy of $40 kT$ (at room temperature), for which the conventional
 Boltzmann factor for a counterion is
 $\exp(40)\approx 2.3 \times 10^{17}$.  That is, the surface counterion
 concentration of a 1M electrolyte would exceed $10^{17}$ mol/L, which
@@ -301,7 +301,7 @@ we take a uniformly spaced set of $s \in [0,1]$  (e.g. $s=x'/L$ for an
 initially uniformly spaced $x'\in [0,L]$) , and obtain a sufficiently
 well graded mesh with
 \begin{equation}
-  $x = s^3 L$
+  x = s^3 L
 \end{equation}
 Symmetry renders the system of the flat electrode essentially one-dimensional along the
 perpendicular $x$-coordinate, although the calculation can be performed in a 2D
@@ -315,7 +315,7 @@ electric field).
 \subsection{Function scaling}
 We constructed a finite element implementation of the weak
 formulation (\eqnref{weak_Poisson} and \eqref{weak_Boltzmann_conc}) in
-FEniCS-X \citep{baratta2023dolfinx}, using continuous 
+FEniCSx \citep{baratta2023dolfinx}, using continuous
 Lagrange elements with polynomial order 2 (linear elements with order
 1 may also be used).  The electrolyte solution
 is taken as NaCl with bulk concentration 1 mol/L.  To illustrate
@@ -326,9 +326,9 @@ surface, with the electrode boundary at $x=0$.  The electrode
 potential is controlled (Dirichlet boundary condition), and bulk
 solution represented by a zero Neumann condition (``zero electric
 field'') at  a distance of 10 nm (~30 Debye lengths for the 1M
-electrolyte). Nonlinear solutions are computed using FEniCS-X's
-NonlinearProblem with a standard NewtonSolver. Convergence criterion
-is set to dolfinx's default ``incremental'' method with absolute
+electrolyte). Nonlinear solutions are computed using FEniCSx's
+\texttt{NonlinearProblem} with a standard Newton solver. Convergence criterion
+is set to DOLFINx's default ``incremental'' method with absolute
 tolerance $10^{-5}$.
 We set PETSc options \citep{PETSc_manual,petsc4py_2011} configuring the solver to use the LU direct
 solver provided by MUMPS \citep{MUMPS_2001,MUMPS_2019}, with the PETSc Krylov type set to apply the
@@ -424,7 +424,7 @@ quantum mechanical volumes of the electron clouds \citep{ParsonsNinham2009}).
 The additional nonlinearity introduced by the Carnahan-Starling model,
 where the chemical potential depends on the concentrations being
 calculated, introduces a new challenge. The default nonlinear solver
-in FEniCS assumes zero as an initial guess for the functions being
+in FEniCSx assumes zero as an initial guess for the functions being
 solved. But under the nonlinear conditions (with electrode potential
 $>0.2$ V) where the Carnahan-Starling steric force is required, the
 zero initial guess leads quickly to a diverging solution with infinite
