@@ -287,18 +287,30 @@ with the log-zero concentration scaling described below.
 
 \section{Numerical convergence}
 
-\subsection{Nonlinear mesh}
+\subsection{Graded mesh}
 Solution of the nonlinear Poisson-Boltmann model requires a finer mesh in the  region
 close to an electrode boundary, rendering solutions on a uniform linear mesh  impractical at electrode
 potentials greater than 0.1V.  The general exponential nature of the potential,
 $\psi(x) \sim \psi_{0} \exp(-\kappa x)$, suggests logarithmic spacing of
-mesh may be suitable. The strongly nonlinear  system
-considered here  would be a good candidate for adaptive mesh refinement. In
-lieu of adaptive remeshing, however, we find a sufficient nonlinear
-mesh spacing can be achieved with a geometric sequence of mesh points.
-Taking $x$ as the distance from the boundary, we multiply the points
-$x$ of a uniform unit interval by $x^3$ to 
-obtain finer spacing for the points closer to the boundary at $x=0$.
+mesh may be suitable.
+A graded mesh spacing can be achieved with a geometric sequence of
+mesh points  to obtain finer spacing for the points closer to the boundary.
+For the simple planar geometry of a flat electrode located at $x=0$,
+where $x$ is the perpendicular distance from the boundary,
+we take a uniformly spaced set of $s \in [0,1]$  (e.g. $s=x'/L$ for an
+initially uniformly spaced $x'\in [0,L]$) , and obtain a sufficiently
+well graded mesh with
+\begin{equation}
+  $x = s^3 L$
+\end{equation}
+Symmetry renders the system of the flat electrode essentially one-dimensional along the
+perpendicular $x$-coordinate, although the calculation can be performed in a 2D
+or 3D geometry. Whether in 1D, 2D, or 3D, the same graded mesh can be
+applied  along the  $x$-direction.
+For more complex non-planar geometries, adaptive remeshing
+would be suitable, controlled by the magnitude of concentration
+gradients or the gradient of the electrostatic potential (i.e.\ the
+electric field).
 
 \subsection{Function scaling}
 We constructed a finite element implementation of the weak
