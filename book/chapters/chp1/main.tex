@@ -528,6 +528,8 @@ direct jump to 100\% once the remaining gap is less than 5\%.  It is likely
 that our formulation, quadratic in hct, approximates a more 
 optimal exponential (or
 sigmoidal) rise rate.
+
+\subsubsection{Optimal throttling}
 An example of
 the  throttle rate against number of iterations is shown in
 \figref{fig:throttle_rate} for 1V and 10V boundaries with different
@@ -553,10 +555,41 @@ more iterations are required to fall back to a converging throttle rate.
 \label{fig:throttle_rate}
 \end{figure}
 
-\subsubsection{Adaptive throttle rate}
-
 The best-performing fixed values of $r$  for potentials up to 1000V are shown
-in  \figref{fig:best_throttle_rate}. The trend suggests that an
+in  \figref{fig:best_throttle_rate}.  We observe a similar trend in 1D calculations with
+trivial and log-zero function scaling  (the
+differences may not be significant since only integer values of $r$ up
+to 10 were tested). \textit{A priori} we have no reason to expect the
+optimal value of $r$ to be universal, and might expect it to vary with
+conditions such as electrolyte concentration or
+dimensionality. However, we plot the best $r$ for trivial
+scaling over  a wide range of concentrations (1D calculations), and
+also 2D and 3D calculations of the flat electrode (at 1M
+concentration). In all cases the best $r(V)$  essentially follows the
+same curve.  The time per iteration and the total number of
+required iterations varies with system conditions and
+dimensionality. But the optimal $r(V)$ for minimising the number of
+iterations remains the same. The optimal $r(V)$ may be considered universal after all.
+
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{best_r_vs_v.eps}
+\caption{Best fixed rate multiplier $r$ for each voltage, giving lowest
+  number of throttling iterations. The steric model is solved with both
+  trivial and log-zero concentration scaling (1D calculation at 1M
+  electrolyte concentration).
+  We also show best $r$ for 1D calculations with trivial scaling over a range of
+  concentrations,
+  and 2D and 3D calculations of a flat electrode at 1M concentration.
+}
+\label{fig:best_throttle_rate}
+\end{figure}
+
+
+\subsubsection{Adaptive throttle rate}
+The trend in best-performing $r$ shown in \figref{fig:best_throttle_rate} suggests that an
 optimal multiplier follows
 $r \propto \ln V$, indicating that $r$ 
 may be tuned adaptively to provide the maximum possible rise rate (smallest
@@ -581,18 +614,6 @@ not the throttled boundary condition at the given iteration.  If a throttled $V$
 applied, $r$ would be small when the boundary condition is strongly
 throttled, resulting in large rise steps that cause convergence
 failure when the  target voltage is large.
-
-
-\begin{figure}
-\centering
-\includegraphics[width=0.8\linewidth]{best_r_vs_v.eps}
-\caption{Best fixed rate multiplier $r$ for each voltage, giving lowest
-  number of throttling iterations. Solving the steric model with both
-  trivial and log-zero concentration scaling.
-}
-\label{fig:best_throttle_rate}
-\end{figure}
-
 
 
 Table.~\ref{tab:convergence} shows  the number of iterations required
@@ -743,6 +764,12 @@ the steric model to reach electrode potentials greater than 2000V.
 But for typical electrochemical applications with potentials lower than 20V,
 where steric forces are needed in order to maintain the physical relevance
 of the model, trivial scaling is sufficient, and faster than log-zero scaling.
+The empirical parameters for optimal throttling, minimising the number of
+required iterations, appears to be universal, independent of
+electrolyte concentration or whether the geometry is 1D, 2D or 3D.
+This might indicate a deeper structure in the algorithm that could be
+revealed with further mathematical analysis.
+
 We illustrated the throttling algorithm using Dirichlet boundary
 conditions (electrode potentials), but the  principle applies
 equally to Neumann or more complex boundary conditions.
