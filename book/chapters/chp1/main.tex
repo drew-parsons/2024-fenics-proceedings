@@ -336,7 +336,23 @@ be suitable, likely controlled by the magnitude of the gradient of the
 electrostatic potential (i.e.\ the electric field) or by concentration
 gradients.
 
-\subsection{Function scaling}
+The Debye length (electrostatic screening length) of the electrolyte
+provides a natural reference for the units of $L$. The Debye length is
+the  decay length of the exponential decaying profile of the potential $\psi(x)$
+found far from the electrode where its magnitude has fallen below 25
+mV. The distance to zero potential (bulk solution) may be taken as
+$L=10$--30 Debye lengths, depending on one's tolerance for
+``zero''. The Debye length itself could be taken as the length unit
+for $L$. But typical Debye lengths lie in the nanoscale, ranging from 0.5 nm for
+sea water (0.5M salt), to 1000 nm for pure water (due to \ce{H+} and
+\ce{OH-} from dissociated water). We use nm as the units for $L$ to facilitate
+comparison of length scales in different systems, setting $L$ as
+approximately 30 Debye lengths (in nm) to reach bulk solution. At
+higher potentials above
+100V we amplify that value of $L$ by a factor 2 to allow for the formation of a steric counterion adsorption
+layer before the decay region is reached \cite{DagmawiParsons2022}.
+
+\subsection{Solver description}
 We constructed a finite element implementation of the weak
 formulation (\eqnref{weak_Poisson} and \eqref{weak_Boltzmann_conc}) in
 FEniCSx \citep{baratta2023dolfinx}, using continuous
@@ -362,6 +378,13 @@ conjugate gradient solver (\verb|ksp_type=cg|, \verb|pc_type=gamg|)
 generates a spurious oscillatory electrostatic potential profile with electrode
 potentials higher than 0.1 V.
 
+In our implementation we have adopted nm for the length scale of the
+mesh ($x$). The physical units for real  electrostatic potential
+$\psi(x)$ and concentration functions  $c_{i}(x)$, are Volts and M
+(mol/L), respectively. However in computations we used units for the
+potential and concentration functions scaled to unity, described next.
+
+\subsection{Function scaling}
 The electrostatic potential $\psi(x)$ is handled with trivial
 scaling, solving $P(x)=\psi(x)/\psi_0$, where $\psi_0$ is the
 electrode potential.
@@ -398,7 +421,6 @@ in \figref{fig_classical_PB}. Shown on a log scale, strong
 nonlinearity in the PB system becomes apparent in the bend in the
 electrostatic potential (\figref{fig_classical_PB}a) close to the
 surface ($x<2$\AA) for electrode potentials $> 0.2$ V.
-
 
 \begin{figure}
 \centering
