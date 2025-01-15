@@ -20,7 +20,7 @@ J. Sundnes \at Simula Research Laboratory, Oslo, Norway and \\ Department of Inf
 In classical continuum mechanics one normally studies the mechanics of bodies where mass is a conserved property\added{ in addition to linear/angular momentum and energy}. This has been extremely successful and is the bedrock for traditional engineering disciplines, but it does not accurately capture aspects of how living organisms change with respect to their environment. One of the unique features of biological material is its ability to grow by adding or removing mass. Understanding how biological matter grows and what triggers it to start or stop is important, not only to understand normal growth and development, but also when and how growth may become non-compensatory and drive disease.\par It has been known for a long time that the growth of a body is regulated at least in part by the forces applied to it \cite{Hsu1968}. This has led to formulating growth and remodelling laws in frameworks that merge the growth dynamics together with stress strain relationships. 
 \section{Methods}
 \subsection{Continuum Mechanics}
-Consider a solid body that is continuously and smoothly deforming into another configuration. We denote the initial configuration (also called the reference configuration) as $\mathcal{M}$ and the current configuration $\mathcal{N}$. We denote a point in $\mathcal{M}$ with uppercase letters $\mathbf{X} = (X, Y, Z)$ and a point in $\mathcal{N}$ with lowercase letters $\mathbf{x} = (x, y, z)$. A point in $\mathcal{M}$ can be mapped to a point in $\mathcal{N}$ by a motion, $\phi(\mathbf{X}): \mathbf{X} \rightarrow \mathbf{x}$, which is a diffeomorphism. We can map a vector from the reference configuration to the current configuration via the pushforward of $\phi$ which is commonly denoted with $\mathbf{F}$ and is referred to as the deformation gradient and is computed as $\partial\phi/\partial\mathbf{X} = \partial\mathbf{x}/\partial\mathbf{X}$. The displacement field is a vector field where each point, $\mathbf{X}$, has an associated  vector whose tail is located at $\mathbf{X}$, and whose head is located at $\phi(\mathbf{X})$. The displacement field is computed as $\mathbf{u}\added{ = (u, v, w)} = \phi(\mathbf{X}) - \mathbf{X}$. \par 
+Consider a solid body that is continuously and smoothly deforming into another configuration. We denote the initial configuration (also called the reference configuration) as $\mathcal{M}$ and the current configuration $\mathcal{N}$. We denote a point in $\mathcal{M}$ with uppercase letters $\mathbf{X} = (X, Y, Z)$ and a point in $\mathcal{N}$ with lowercase letters $\mathbf{x} = (x, y, z)$\footnote{Apart from the letters $X$, $Y$, and $Z$, all upper case letters represent tensors.}. A point in $\mathcal{M}$ can be mapped to a point in $\mathcal{N}$ by a motion, $\phi(\mathbf{X}): \mathbf{X} \rightarrow \mathbf{x}$, which is a diffeomorphism. We can map a vector from the reference configuration to the current configuration via the pushforward of $\phi$ which is commonly denoted with $\mathbf{F}$ and is referred to as the deformation gradient and is computed as $\partial\phi/\partial\mathbf{X} = \partial\mathbf{x}/\partial\mathbf{X}$. The displacement field is a vector field where each point, $\mathbf{X}$, has an associated  vector whose tail is located at $\mathbf{X}$, and whose head is located at $\phi(\mathbf{X})$. The displacement field is computed as $\mathbf{u}\added{ = (u, v, w)} = \phi(\mathbf{X}) - \mathbf{X}$. \par 
 The square of a vector, $\mathbf{a}$, in the current domain is computed as $(\mathbf{Fa})\cdot(\mathbf{Fa}) = \mathbf{a}\mathbf{F}^\top\mathbf{F}\mathbf{a}$. The tensor $\mathbf{F}^\top\mathbf{F}$ is denoted as $\mathbf{C}$ and referred to as the right Cauchy-Green deformation tensor. One measure of the deformation is the difference between the stretch of a vector in the current and reference configuration, this tensor is referred to as the Lagrange strain tensor 
 \begin{equation*}
     \mathbf{E} = \frac{1}{2}\left(\mathbf{C} - \mathbf{I}\right),
@@ -79,7 +79,7 @@ which is solved using FEniCSx.
 \par
 \emph{Iteratively solving the conservation of momentum}
 We now solve (\ref{conservation of momentum}) for the displacement $\mathbf{u}$, which we can use to compute all the necessary variables. We use a second order, continuous, Lagrange elements to approximate $\mathbf{u}$ and a first order, discontinuous, Lagrange elements to approximate $\mathbf{F}_e$ and $\mathbf{F}_g$. $\mathbf{F}_g$ is initially set to be the identity tensor. \par
-\emph{Numerical experiments:} We ran one simulations where we stretched a unit cube by 10\% in the fiber direction (along the $x$-axis), which we will refer to as the stretch simulation, and another simulation where we compressed a unit cube by 10\% in the fiber direction (along the $x$-axis), which we will refer to as the compression simulation. $u_D = 0.1$ and $-0.1$ for the stretch and compression simulation respectively. In the stretch simulation $F_{g,c,max}$ was set to 1.2 and 0.8 in the compression simulation. Furthermore, we used a weakly incompressible neo-Hookean model
+\emph{Numerical experiments:} We ran one simulations where we stretched a unit cube by 10\% in the fiber direction (along the $x$-axis), which we will refer to as the stretch simulation, and another simulation where we compressed a unit cube by 10\% in the fiber direction (along the $x$-axis), which we will refer to as the compression simulation. $u_D = 0.1$ and $-0.1$ for the stretch and compression simulation respectively. In the stretch simulation $F_{g,c,\mathrm{max}}$ was set to 1.2 and 0.8 in the compression simulation. Furthermore, we used a weakly incompressible neo-Hookean model
 \begin{equation*}
     \Psi = \mu\Psi_\text{iso} + \kappa\Psi_\text{vol}
 \end{equation*}
@@ -87,27 +87,6 @@ where $\mu = 15$ kilo Pascals and $\kappa = 100$ kilo Pascals.
 \subsection{The different growth models}
 \label{sub:different models}
 In this paper we compare five growth models which we have taken from \cite{Taber1998}, \cite{Kroon2009}, \cite{Goktepe}, and \cite{Kerckhoffs2012}. The growth models are given in table \ref{tab:growth models} where LT2 is from \cite{Taber1998}, KFR is from \cite{Kroon2009}, GEG and GCG are from \citep{Goktepe} and KOM is from \cite{Kerckhoffs2012}. Each growth model had a set point that either determined the homeostatic level of stress, stretch, or strain. When the stress, stretch, or strain reaches the set point, then growth will cease to occur. If this does not happen, the body will grow indefinitely, which we call runaway growth. We used the same variables as they were given in the original papers, except for the \replaced{GCG}{$GCG$}, where we scaled the variables to more accurately fit with the shear modulus used here. The values are tabulated in table \ref{tab:varaibles}.
-\begin{table}[]
-    \centering
-    \begin{tabular}{c|c|c|c|c|c}
-        Models & LT2 & KFR & GEG & GCG & KOM \\
-        \hline
-         & $\sigma_{a,0 = 30}$ & $s_{hom} = 0.13$ & $F_{g,f,max}=1.5$ & $F_{g,c,max}=1.2$ and $0.8$ & $f_{ff,max} = 0.31$\\ 
-         & $\sigma_{p,0 = 3}$ &  & $\lambda^\text{crit}=1.01$ & $p^\text{crit}=0.12$ & $f_f = 150$ \\
-         & & & $\gamma = 2$ & $\gamma = 2$ & $s_{l50} = 0.06$\\
-         & & & & & $F_{ff50} = 1.35$\\
-         Variables & & & & & $f_{l,slope} = 40$\\
-         & & & & & $f_{ff,max} = 0.1$\\
-         & & & & & $c_f = 75$\\
-         & & & & & $s_t50 = 0.07$\\
-         & & & & & $F_{cc50} = 1.28$\\
-         & & & & & $c_{th,slope} = 60$\\
-         & & & & & $E_{ff, \text{set}} = 0$ \\
-         & & & & & $E_\text{cross, set}= 0$
-    \end{tabular}
-    \caption{Values for the model variables.}
-    \label{tab:varaibles}
-\end{table}
 \newgeometry{left=10cm,right=1cm,top=1cm,bottom=1cm}
 \begin{sidewaystable}
 \centering
@@ -119,21 +98,21 @@ In this paper we compare five growth models which we have taken from \cite{Taber
 \hline \hline
 LT2 & $\displaystyle F_{g,f}^i\left(\frac{\sigma_{\theta p} - \sigma_{p,0}}{T\sigma_{p,0}} + 1\right)$ & $\displaystyle F_{g,r}^i\left(\frac{\sigma_{\theta a} - \sigma_{a,0}}{T\sigma_{a,0}} + 1\right)$ & $\displaystyle 1$ \\
 \hline
-KFR & $\displaystyle F_{g,f}^i(\beta(\sqrt{2 E_{ff} + 1} - 1 - s_{hom}) + 1)^{1/3}$ & $\displaystyle F_{g,r}^i(\beta(\sqrt{2 E_{ff} + 1} - 1 - s_{hom}) + 1)^{1/3}$ & $\displaystyle F_{g,c}^i(\beta(\sqrt{2 E_{ff} + 1} - 1 - s_{hom}) + 1)^{1/3}$ \\
+KFR & $\displaystyle F_{g,f}^i(\beta(\sqrt{2 E_{ff} + 1} - 1 - s_\mathrm{hom}) + 1)^{1/3}$ & $\displaystyle F_{g,r}^i(\beta(\sqrt{2 E_{ff} + 1} - 1 - s_\mathrm{hom}) + 1)^{1/3}$ & $\displaystyle F_{g,c}^i(\beta(\sqrt{2 E_{ff} + 1} - 1 - s_\mathrm{hom}) + 1)^{1/3}$ \\
 \hline
-GEG & $\displaystyle \frac{1}{\tau}\left(\frac{F_{g,f,max} - F_{g,f}^i}{F_{g,f,max} - 1}\right)^\gamma(F_{e, f}^i - \lambda^\text{crit}) + F^i_{g, f}$ & $\displaystyle 1$ & $\displaystyle 1$ \\
+GEG & $\displaystyle \frac{1}{\tau}\left(\frac{F_{g,f,\mathrm{max}} - F_{g,f}^i}{F_{g,f,\mathrm{max}} - 1}\right)^\gamma(F_{e, f}^i - \lambda^\text{crit}) + F^i_{g, f}$ & $\displaystyle 1$ & $\displaystyle 1$ \\
 \hline
-GCG & $\displaystyle 1$ & $\displaystyle  \frac{1}{\tau}\left(\frac{F_{g,c,max} - F_{g,c}^i}{F_{g,c,max} - 1}\right)^\gamma(\tr(\mathbf{M}) - p^\text{crit}) + F^i_{g, c}$ & $\displaystyle 1$ \\
+GCG & $\displaystyle 1$ & $\displaystyle  \frac{1}{\tau}\left(\frac{F_{g,c,\mathrm{max}} - F_{g,c}^i}{F_{g,c,\mathrm{max}} - 1}\right)^\gamma(\tr(\mathbf{M}) - p^\mathrm{crit}) + F^i_{g, c}$ & $\displaystyle 1$ \\
 \hline
 KOM & $\displaystyle \begin{cases}
-        F_{g,f}^{i}k_{ff}\frac{f_{ff,\text{max}}\Delta t_\text{growth}}{1 + \exp(-f_f(s_l-s_{l,50}))} + 1, \qquad s_l \geq 0\\
-        F_{g,f}^{i}\frac{-f_{ff,\text{max}}\Delta t_\text{growth}}{1 + \exp(f_f(s_l+s_{l,50}))} + 1, \qquad s_l < 0
+        F_{g,f}^{i}k_{ff}\frac{f_\mathrm{ff, max}\Delta t_\text{growth}}{1 + \exp(-f_f(s_\mathrm{l}-s_{l,50}))} + 1, \qquad s_\mathrm{l} \geq 0\\
+        F_{g,f}^{i}\frac{-f_\mathrm{ff, max}\Delta t_\text{growth}}{1 + \exp(f_f(s_\mathrm{l}+s_{l,50}))} + 1, \qquad s_\mathrm{l} < 0
     \end{cases} $ & $\displaystyle \begin{cases}
-        F_{g,c}^{i}\sqrt{k_{cc}\frac{f_{cc,\text{max}}\Delta t_\text{growth}}{1 + \exp(-c_f(s_t-s_{t,50}))} + 1}, \qquad s_t \geq 0\\
-        F_{g,c}^{i}\sqrt{\frac{-f_{cc,\text{max}}\Delta t_\text{growth}}{1 + \exp(c_f(s_t+s_{t,50}))} + 1}, \qquad s_t < 0 
+        F_{g,c}^{i}\sqrt{k_{cc}\frac{f_{cc,\mathrm{max}}\Delta t_\text{growth}}{1 + \exp(-c_\mathrm{f}(s_\mathrm{t}-s_{t,50}))} + 1}, \qquad s_\mathrm{t} \geq 0\\
+        F_{g,c}^{i}\sqrt{\frac{-f_{cc,\mathrm{max}}\Delta t_\text{growth}}{1 + \exp(c_\mathrm{f}(s_\mathrm{t}+s_{t,50}))} + 1}, \qquad s_\mathrm{t} < 0 
     \end{cases} $ & $\displaystyle \begin{cases}
-        F_{g,c}^{i}\sqrt{k_{cc}\frac{f_{cc,\text{max}}\Delta t_\text{growth}}{1 + \exp(-c_f(s_t-s_{t,50}))} + 1}, \qquad s_t \geq 0\\
-        F_{g,c}^{i}\sqrt{\frac{-f_{cc,\text{max}}\Delta t_\text{growth}}{1 + \exp(c_f(s_t+s_{t,50}))} + 1}, \qquad s_t < 0 
+        F_{g,c}^{i}\sqrt{k_{cc}\frac{f_{cc,\mathrm{max}}\Delta t_\text{growth}}{1 + \exp(-c_\mathrm{f}(s_\mathrm{t}-s_{t,50}))} + 1}, \qquad s_\mathrm{t} \geq 0\\
+        F_{g,c}^{i}\sqrt{\frac{-f_{cc,\mathrm{max}}\Delta t_\text{growth}}{1 + \exp(c_\mathrm{f}(s_\mathrm{t}+s_{t,50}))} + 1}, \qquad s_\mathrm{t} < 0 
     \end{cases} $ \\
 \hline
 \end{tabular}
@@ -141,19 +120,59 @@ KOM & $\displaystyle \begin{cases}
 \label{tab:growth models}
 \end{sidewaystable}
 \restoregeometry
-The parameters $T$, $\beta$, $\tau$, and $\Delta t$, simply determine the rate of growth and can be tuned to \replaced{match}{math} the growth rate of data obtained from experiments. In LT2, $\sigma_{p,0}$ and $\sigma_{a,0}$ are set points for the passive and active fiber stress at equilibrium. For KFR, $s_{hom}$ is the strain set point. For GEG and GCG, $F_{g,f,max}$ and $F_{g,c,max}$ is the maximum amount of growth allowed to occur. $\mathbf{M}$ is the Mandel stress, which is defined as 
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|l|l|l|}
+        \hline
+        \multicolumn{4}{|c|}{\textbf{Models}} \\
+        \hline
+        \textbf{LT2} & \textbf{KFR} & \textbf{GEG} & \textbf{GCG} \\
+        \hline
+        $\sigma_{a,0} = 30$ & $s_\mathrm{hom} = 0.13$ & $F_{g,f,\mathrm{max}}=1.5$ & $F_{g,c,\mathrm{max}}=1.2$ and $0.8$\\
+        $\sigma_{p,0} = 3$ & & $\lambda^\mathrm{crit}=1.01$ & $p^\mathrm{crit}=0.12$ \\
+        & & $\gamma = 2$ & $\gamma = 2$\\
+        \hline
+    \end{tabular}
+    \caption{Model variables for LT2, KFR, GEG, and GCG models.}
+    \label{tab:variables1}
+\end{table}
+    
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|}
+        \hline
+        \multicolumn{1}{|c|}{\textbf{KOM}} \\
+        \hline
+        $f_\mathrm{ff,max} =0.31$ \\
+        $f_f = 150$ \\
+        $s_{l50} = 0.06$ \\
+        $F_{ff50} = 1.35$ \\
+        $f_{l,\mathrm{slope}} = 40$ \\
+        $f_\mathrm{ff,max} = 0.1$ \\
+        $c_\mathrm{f} = 75$ \\
+        $s_\mathrm{t50} = 0.07$ \\
+        $F_\mathrm{cc50} = 1.28$ \\
+        $c_\mathrm{th,slope} = 60$ \\
+        $E_{ff,\mathrm{set}} = 0$ \\
+        $E_\mathrm{cross,\mathrm{set}} = 0$ \\
+        \hline
+    \end{tabular}
+    \caption{Model variables for the KOM model.}
+    \label{tab:variables2}
+\end{table}
+The parameters $T$, $\beta$, $\tau$, and $\Delta t$, simply determine the rate of growth and can be tuned to \replaced{match}{math} the growth rate of data obtained from experiments. In LT2, $\sigma_{p,0}$ and $\sigma_{a,0}$ are set points for the passive and active fiber stress at equilibrium. For KFR, $s_\mathrm{hom}$ is the strain set point. For GEG and GCG, $F_{g,f,\mathrm{max}}$ and $F_{g,c,\mathrm{max}}$ is the maximum amount of growth allowed to occur. $\mathbf{M}$ is the Mandel stress, which is defined as 
 \begin{equation*}
     \mathbf{M} = \mathbf{F}^\top \mathbf{P}
 \end{equation*}
-and $p^\text{crit}$ is the stress set point. $\lambda^\text{crit}$ is the strain set point. For KOM, $k_{ff}$ and $k_{cc}$ are defined as
+and $p^\mathrm{crit}$ is the stress set point. $\lambda^\text{crit}$ is the strain set point. For KOM, $k_{ff}$ and $k_{cc}$ are defined as
 \begin{align*}
     k_{ff} &= \frac{1}{1 + \exp(f_\text{length,slope}(\mathbf{F}_{g,ff}^i - F_{ff,50}))} \\
     k_{cc} &= \frac{1}{1 + \exp(c_\text{thickness,slope}(\mathbf{F}_{g,cc}^i - F_{cc,50}))}
 \end{align*}
-and $s_l$, and $s_t$ are defined as
+and $s_\mathrm{l}$, and $s_\mathrm{t}$ are defined as
 \begin{align*}
-    s_l &= \max(E_{ff}) - E_{ff, \text{set}} \\
-    s_t &= \min(E_\text{cross, max}) - E_\text{cross, set}
+    s_\mathrm{l} &= \max(E_{ff}) - E_{ff, \mathrm{set}} \\
+    s_\mathrm{t} &= \min(E_\text{cross, max}) - E_\mathrm{cross, set}
 \end{align*}
 where $E_{ij}$ is the Lagrange strain tensor, and $E_{ff}$ is the strain in the fiber direction, and $E_\text{cross, max}$ is the maximum algebraic maximum principle strain of the matrix (see \cite{Witzenburg2018})
 \begin{equation*}
@@ -162,7 +181,7 @@ where $E_{ij}$ is the Lagrange strain tensor, and $E_{ff}$ is the strain in the 
         E_{rc} & E_{rr}
     \end{pmatrix}
 \end{equation*}
-and $E_{ff, \text{set}}$ and $E_\text{cross, set}$ are set points. \par
+and $E_{ff, \mathrm{set}}$ and $E_\mathrm{cross, set}$ are set points. \par
 In the simulations run, LT2 displayed runaway growth as was also observed in the simulations run in \cite{Witzenburg2018}. Growth stops for the LT2 model when \begin{equation*}
 \label{eq: LT2 equilibrium}
     \frac{\sigma_{\theta} - \sigma_{0}}{\sigma_{0}} = T\left(\frac{1}{F_{g}^i} - 1\right).
@@ -170,22 +189,22 @@ In the simulations run, LT2 displayed runaway growth as was also observed in the
 which was not satisfied in our simulations or in the simulations run by \cite{Witzenburg2018}. Since $F_g^i$ is dependent on $\sigma$ which in turn is nonlinearly dependent on $F_g^{i-1}$ it is not straightforward to know under what conditions \ref{eq: LT2 equilibrium} will be satisfied. For GCG and GEG, the simulations show that they are forced to stop either when the stretch or stress reaches the growth limit or when the maximal allowed growth is reached. For KOM, since $k_{cc}$ and $k_{ff}$ are logistic functions, the growth is bounded from above and below inhibiting runaway growth. Finally, for KFR, it does not appear obvious that it will not obtain runaway growth, but other simulations setups that were tested did result in runaway growth, even though the one we present here does not.
 \section{Results}
 The data we collected from the two experiments (see bottom of section \ref{subsec: experiments}) were the the stretch and growth that occurred in the middle of the cube. The results are depicted in figures \ref{fig:10p_stretch} and \ref{fig:10p_compression}. The top row of each figure displays the fiber and crossfiber components of the growth tensor, $F_g$, and the bottom row displays the fiber and crossfiber components of the elastic deformation tensor $F_e$. Increasing $\kappa$ did not yield qualitatively different results. \par
-First, we note that LT2 displayed runaway growth, as was also found in \cite{Witzenburg2018}. GCG seems to be converging to $F_{g,c,max}$, and GEG seem to have converged because it reached $\lambda^\text{crit}$. The reason GCG is growing oppositely compared to GEG is probably because GEG was created to model growth triggered by volume overload while GCG was created to capture growth triggered by pressure overload. KFR grew an equal amount in each direction, and stabilized. It is not clear under what conditions KFR should be stable because $s_{hom}$ is the same in each direction. When we ran simulations with other boundary conditions, it was not stable. The KOM model was stable for many different types of boundary conditions, but is the most computationally expensive model to run.\par 
+First, we note that LT2 displayed runaway growth, as was also found in \cite{Witzenburg2018}. GCG seems to be converging to $F_{g,c,\mathrm{max}}$, and GEG seem to have converged because it reached $\lambda^\text{crit}$. The reason GCG is growing oppositely compared to GEG is probably because GEG was created to model growth triggered by volume overload while GCG was created to capture growth triggered by pressure overload. KFR grew an equal amount in each direction, and stabilized. It is not clear under what conditions KFR should be stable because $s_\mathrm{hom}$ is the same in each direction. When we ran simulations with other boundary conditions, it was not stable. The KOM model was stable for many different types of boundary conditions, but is the most computationally expensive model to run.\par 
 The package makes it easy to run similar simulations with different material models and different boundary conditions, but we do not have the space to display the results here. \par
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{10p_stretch_fiber.png}
+    \includegraphics[width=\textwidth]{10p_stretch_fiber2.png}
     \caption{Growth and stretch predicted by a 10\% stretch in the fiber direction. The runaway growth in LT2 was also reported in \cite{Taber1998}.}
     \label{fig:10p_stretch}
 \end{figure}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{10p_compression_fiber.png}
+    \includegraphics[width=\textwidth]{10p_compression_fiber2.png}
     \caption{Growth and stretch predicted by a 10\% compression in the fiber direction. For the models that converge, these results make intuitive sense; as time increases the growth appraoches the stretched state and the stretch (which is solely computed from $\mathbf{F}_e$) approaches 1.}
     \label{fig:10p_compression}
 \end{figure}    
 \section{Conclusion and future work}
-We have implemented a general growth and remodelling framework using the FEniCSx program in Python. The goal is to easily change material models and growth models. Hopefully this will allow researchers to compare their models with other models in the field. Future work will include implementing more complex geometry, more growth laws, and more material models. Specifically, we wish to add models that have more mathematically sophisticated stopping criteria, such as the ones developed by Erlich et al. \cite{Erlich2023} uses an energy penalty to construct a stopping criteria and \cite{Erlich2024} looks into how curvature\footnote{The intrinsic three dimensional curvature, not the two dimensional curvature of the surface of the body.} in the reference configuration could be used as a stopping criteria. Future work will also implement the growth models on geometries with fibers. We tried running the models on various fiber orientations and found them extremely sensitive to fibers that varied throughout the domain. Preliminary results indicate that some of the models do not converge to a steady state for relatively small perturbations of the variables or if the fibers are not well aligned with the body. We hope to quantify this in a future paper. \par
+We have implemented a general growth and remodelling framework using the FEniCSx program in Python. The goal is to easily change material models and growth models. Hopefully this will allow researchers to compare their models with other models in the field. Future work will include implementing more complex geometry, more growth laws, and more material models. Specifically, we wish to add models that have more mathematically sophisticated stopping criteria, such as the ones developed by Erlich et al. \cite{Erlich2023} uses an energy penalty to construct a stopping criteria and \cite{Erlich2024} looks into how curvature\footnote{The intrinsic three dimensional curvature, not the two dimensional curvature of the surface of the body.} in the reference configuration could be used as a stopping criteria. \added{We have also not looked into the entropy dissipation equation, which is what is often used to determine growth laws. Future work should look into how various entropy sources affect the growth law}. Future work will also implement the growth models on geometries with fibers. We tried running the models on various fiber orientations and found them extremely sensitive to fibers that varied throughout the domain. Preliminary results indicate that some of the models do not converge to a steady state for relatively small perturbations of the variables or if the fibers are not well aligned with the body. We hope to quantify this in a future paper. \par
 When this package is further developed we hope to add to to the Pulse\footnote{https://github.com/finsberg/fenicsx-pulse} package. Hopefully, this will allow us to combine a circulation model with a growth model which will enable us to more accurately describe cardiac growth and remodelling phenomena. \par
 The models we compared have been developed to capture different aspects of growth and were tuned to be used on different material models, so an apples-to-apples comparison might not be fair. Furthermore, the growth models we have used are not taking into account residual stresses that exist within the material before growth occurs. \par
 Finally, experimental data is needed to verify which models are accurate or capture the correct phenomena of growing cardiac tissue.
