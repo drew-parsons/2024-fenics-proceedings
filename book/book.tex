@@ -22,7 +22,16 @@
 \usepackage{multicol}        % used for the two-column index
 \usepackage[bottom]{footmisc}% places footnotes at page bottom
 
-
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily,
+    mathescape=true,
+    numbers=left,
+    numberstyle=\small,
+    frame=single,
+    breaklines=true,
+    commentstyle=\itshape
+}
 \usepackage{newtxtext}       % 
 \usepackage[varvw]{newtxmath}       % selects Times Roman as basic font
 
@@ -55,7 +64,7 @@
 \usepackage{chapterbib}
 
 \usepackage{todonotes}
-\usepackage{changes}
+\usepackage{changes} 
 
 \input{packages}
 \input{commands}
