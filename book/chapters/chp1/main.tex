@@ -19,7 +19,7 @@ J. Sundnes \at Simula Research Laboratory, Oslo, Norway and \\ Department of Inf
 \section{Introduction}
 In classical continuum mechanics one normally studies the mechanics of bodies where mass\replaced{, linear momentum, angular momentum, and energy are conserved properties}{is a conserved property conserved property}. This has been extremely successful and is the bedrock for traditional engineering disciplines, but it does not accurately capture aspects of how living organisms change with respect to their environment. One of the unique features of biological material is its ability to grow by adding or removing mass. Understanding how biological matter grows and what triggers it to start or stop is important, not only to understand normal growth and development, but also when and how growth may become non-compensatory and drive disease.\par It has been known for a long time that the growth of a body is regulated at least in part by the forces applied to it \citep{Hsu1968}. This understanding has led to the formulation of growth laws that link growth and remodeling to local stress or strain. 
 \section{Methods}
-\subsection{Continuum Mechanics}
+\subsection{Growth and Remodeling in Continuum Mechanics}
 Consider a solid body that is continuously and smoothly deforming from one configuration to another, and denote the initial configuration (also called the reference configuration) as $\mathcal{M}$ and the current configuration $\mathcal{N}$. We denote a point in $\mathcal{M}$ with uppercase letters $\mathbf{X} = (X, Y, Z)$ and a point in $\mathcal{N}$ with lowercase letters $\mathbf{x} = (x, y, z)$\footnote{Apart from the letters $X$, $Y$, and $Z$, all upper case letters represent tensors.}. A point in $\mathcal{M}$ can be mapped to a point in $\mathcal{N}$ by a motion, $\phi(\mathbf{X}): \mathbf{X} \rightarrow \mathbf{x}$, which is a diffeomorphism. We can map a vector from the reference configuration to the current configuration via the pushforward of $\phi$, which is commonly denoted by $\mathbf{F}$ and is referred to as the deformation gradient, computed as $\partial\phi/\partial\mathbf{X} = \partial\mathbf{x}/\partial\mathbf{X}$. The displacement field $\mathbf{u} = \mathbf{x} - \mathbf{X}$ is a vector field describing the displacement of each point $\mathbf{X}$ in the reference configuration to its location $\mathbf{x}$ in the deformed configuration. \par 
 The tensor $\mathbf{F}^\top\mathbf{F}$ is denoted as $\mathbf{C}$ and referred to as the right Cauchy-Green deformation tensor. Most models of the heart assume that it is hyperelastic, meaning that deformations of the material conserve its energy. If one wants to model growth of the tissue, one needs to incorporate a plastic deformation. This is commonly done with a multiplicative split, 
 \begin{equation}
@@ -51,30 +51,30 @@ where the initial growth tensor, $\mathbf{F}_g^0$, is set to the identity tensor
     \mathbf{F} & = \mathbf{F}_e\mathbf{F}_g, && \text{in } \mathcal{M}\\
     \nabla\cdot\mathbf{P} & = 0 && \text{in } \mathcal{M} \\
     \mathbf{P}\cdot \nu & = 0 && \text{on } \partial\mathcal{M}_N \\
-    \mathbf{P} & = 0 && \text{on } \partial\mathcal{M}_D
+    \mathbf{u} & = g_D && \text{on } \partial\mathcal{M}_D
 \end{aligned}
 \end{equation} 
-where $\nu$ is a normal vector, $\partial\mathcal{M}_N$ amd $\partial\mathcal{M}_D$ denote the boundaries which are prescribed Neumann and Dirichlet boundary conditions respectively. For further information about continuum mechanics we recommend \citep{Marsden1983} and \citep{Holzapfel2002}, and for further information about growth and remodelling we recommend \citep{Goriely2017} and \citep{Yavari2010}.
-
-\subsection{Numerical Implementation And Experiments}
-For ease implementation we use a \replaced{nearly}{weakly} incompressible hyperelasticity stress tensor, so (\ref{eq: stress}) becomes
+where $\nu$ is a normal vector, $\partial\mathcal{M}_N$ amd $\partial\mathcal{M}_D$ denote the boundaries which are prescribed Neumann and Dirichlet boundary conditions respectively. Finally, we need to specify the material model, and in this paper we use a \replaced{nearly}{weakly} incompressible hyperelasticity stress tensor, so (\ref{eq: stress}) becomes
 \begin{equation*}
     \mathbf{P} = \frac{\partial }{\partial \mathbf{F}_e}(\Psi_\text{iso}(\mathbf{I}_1, \mathbf{I}_2) + \Psi_\text{vol}(\mathbf{I}_3))
 \end{equation*}
-where $\Psi_\text{iso}$ and $\Psi_\text{vol}$ are the isochoric (distortional) and volumetric (dilational) parts of the strain energy function, and $\mathbf{I}_1$, $\mathbf{I}_2$, and $\mathbf{I}_3$ are the first three principle invariants of $\mathbf{C}$. To decouple the energy stored in the body as a result of volume preserving deformation and non-volume preserving deformation, we set $\mathbf{\bar{F}}_e = \mathbf{F}_eJ^{-1/3}$, whose determinant is equal to the identity tensor. $\mathbf{\bar{C}}$ is then used in $\Psi_\text{iso}$ and is calculated as $\mathbf{\bar{C}} = \mathbf{\bar{F}}_e^\top \mathbf{\bar{F}}_e$. Now, $\partial\Psi_\text{iso}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the shape, and $\partial\Psi_\text{vol}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the volume (see chapter 6 of \citep{Holzapfel2002} for more details). In this paper, we have used the neo-Hookean model where $\Psi_\text{iso} = \mu\left(\tr\mathbf{\bar{C}} - 3\right)$, and $\Psi_\text{vol} = \kappa(J-1)^2$, where $J$ is the determinant of $\mathbf{F}_e$, $\mu$ is the shear modulus, and $\kappa$ is proportional to the incompressibility of the material. \par 
+where $\Psi_\text{iso}$ and $\Psi_\text{vol}$ are the isochoric (distortional) and volumetric (dilational) parts of the strain energy function, and $\mathbf{I}_1$, $\mathbf{I}_2$, and $\mathbf{I}_3$ are the first three principle invariants of $\mathbf{C}$. To decouple the energy stored in the body as a result of volume preserving deformation and non-volume preserving deformation, we set $\mathbf{\bar{F}}_e = \mathbf{F}_eJ^{-1/3}$, whose determinant is equal to the identity tensor. $\mathbf{\bar{C}}$ is calculated as $\mathbf{\bar{C}} = \mathbf{\bar{F}}_e^\top \mathbf{\bar{F}}_e$ and it is from this tensor that we compute the principle invariants we use in $\Psi_\text{iso}$ . Now, $\partial\Psi_\text{iso}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the shape, and $\partial\Psi_\text{vol}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the volume (see chapter 6 of \citep{Holzapfel2002} for more details). In this paper, we have used the neo-Hookean model where $\Psi_\text{iso} = \mu\left(\tr\mathbf{\bar{C}} - 3\right)$, and $\Psi_\text{vol} = \kappa(J-1)^2$, where $J$ is the determinant of $\mathbf{F}_e$, and $\mu$ and $\kappa$ material parameters. \par 
+For further information about continuum mechanics we recommend \citep{Marsden1983} and \citep{Holzapfel2002}, and for further information about growth and remodelling we recommend \citep{Goriely2017} and \citep{Yavari2010}.
+
+\subsection{Numerical Implementation And Experiments}
+ 
 \added{Algorithm \ref{alg:growth_deform} shows the algorithm used for strain based growth. For stress based growth, you would update the stress tensor rather than the strain tensor, and for additatve growth laws, you would add the cumulative and incremental growth tenors instead of multiplying them together.}
 \begin{algorithm} 
     \caption{Growth tensor and elastic strain tensor are updated as shown. Note that the growth tensor, $\mathbf{F}_\mathrm{g}^{i + 1}$ is updated by recursively multiplying it with the incremental growth tensor, $\mathbf{F}_g^\mathrm{inc}$. Both $\mathbf{F}_\mathrm{e}$ and $\mathbf{F}_g^\mathrm{inc}$ are dependent on $\mathbf{u}$.}\label{alg:growth_deform}
     \SetAlgoLined
     \For{i = 0 \KwTo N}{
         $\mathbf{u}$ = Solve (\ref{eq: system of equations})\;
-        $\mathbf{E}_\mathrm{e}^{i + 1} = (\mathbf{F}_\mathrm{e}^\top \cdot \mathbf{F}_\mathrm{e} - \mathbf{I})/2$\;
-        $\mathbf{F}_\mathrm{g}^{i + 1} = \mathbf{F}_\mathrm{g}^i * \mathbf{F}_g^\mathrm{inc}$\;
+        Update the stress/strain tensor using $\mathbf{u}$ from the previous line.\;
+        Update the growth tensor using the stress/strain tensor from the previous line.\;
     }
 \end{algorithm} 
 \subsection{Solving Growth Laws on the Unit Cube}
 \label{subsec: experiments}
-% We will now walk through how we solve a basic growth problem for the unit cube with coordinates $(x, y, z)$, where each component ranges from 0 to 1. In other words, $\mathcal{N} = (0, 1)^3$. 
 In the literature of growth and remodelling it is common to refer to the fiber direction, crossfiber direction, and the normal direction, which create a natural orthonormal basis to describe growth. In the simulations we have run we have aligned the $x$-axis with the fiber direction and the $y$-, and $z$-axis are the crossfiber and normal direction. To be consistent with the literature we will use $\mathbf{e}_f$, $\mathbf{e}_c$, and $\mathbf{e}_n$ to denote the unit vectors in the $(x, y, z)$ directions respectively.  \par
 \emph{Boundary conditions:} We set the following boundary conditions
 \begin{align*}
@@ -177,7 +177,7 @@ where $E_{ij}$ is the Lagrange strain tensor, and $E_{ff}$ is the strain in the 
 and $E_{ff, \mathrm{set}}$ and $E_\mathrm{cross, set}$ are set points. \par
 \deleted{In the simulations run, LT2 displayed runaway growth as was also observed in the simulations run in }\citep{Witzenburg2018}. Growth stops for the LT2 model when \begin{equation}
 \label{eq: LT2 equilibrium}
-    \frac{\sigma_{\theta} - \sigma_{0}}{\sigma_{0}} = T\left(\frac{1}{F_{g}^i} - 1\right).
+    \frac{\sigma_{\theta} - \sigma_{0}}{\sigma_{0}} = 0.
 \end{equation}
 \deleted{which was not satisfied in our simulations or in the simulations run by} \citep{Witzenburg2018}. Since $F_g^i$ is dependent on $\sigma$ which in turn is nonlinearly dependent on $F_g^{i-1}$ it is not straightforward to know under what conditions \ref{eq: LT2 equilibrium} will be satisfied. For GCG and GEG, the simulations show that they are forced to stop either when the stretch or stress reaches the growth limit or when the maximal allowed growth is reached. For KOM, since $k_{cc}$ and $k_{ff}$ are logistic functions, the growth is bounded from above and below inhibiting runaway growth. Finally, for KFR, it does not appear obvious that it will not obtain runaway growth, but other simulations setups that were tested did result in runaway growth, even though the one we present here does not.
 \section{Results}
