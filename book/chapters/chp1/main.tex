@@ -17,35 +17,36 @@ J. Sundnes \at Simula Research Laboratory, Oslo, Norway and \\ Department of Inf
 \abstract{The heart is a dynamic organ that changes its size and shape to regulate its behaviour to the demands of the body, which can change for example through body growth, exercise, the onset of a disease, or taking medication. Different models exist to try to capture various types of cardiac growth as a result of mechanical stimuli. In this manuscript we will present a framework created with FEniCSx that allows one to quickly run simulations of growth and remodelling of a unit cube with different material models and different growth laws. We present some of the simulations and compare them to the relevant literature in the field. \added{All the code can be found at \url{https://github.com/karlfm/Growth-and-Remodeling-in-FEniCSx}}}
 \vspace{12pt}
 \section{Introduction}
-In classical continuum mechanics one normally studies the mechanics of bodies where mass\replaced{, linear momentum, angular momentum, and energy are conserved properties}{is a conserved property conserved property}. This has been extremely successful and is the bedrock for traditional engineering disciplines, but it does not accurately capture aspects of how living organisms change with respect to their environment. One of the unique features of biological material is its ability to grow by adding or removing mass. Understanding how biological matter grows and what triggers it to start or stop is important, not only to understand normal growth and development, but also when and how growth may become non-compensatory and drive disease.\par It has been known for a long time that the growth of a body is regulated at least in part by the forces applied to it \citep{Hsu1968}. This understanding has led to the formulation of growth laws that link growth and remodeling to local stress or strain. 
+In classical continuum mechanics one normally studies the mechanics of bodies where mass\replaced{, linear momentum, angular momentum, and energy are conserved properties}{is a conserved property conserved property}. This has been extremely successful and is the bedrock for traditional engineering disciplines, but it does not accurately capture aspects of how living organisms change with respect to their environment. One of the unique features of biological material is its ability to grow by adding or removing mass. Understanding how biological matter grows and what triggers it to start or stop is important, not only to understand normal growth and development, but also when and how growth may become non-compensatory and drive disease.\par It has been known for a long time that the growth of organs, such as the heart, is regulated at least in part by the forces applied to it \citep{Hsu1968}. This understanding has led to the formulation of growth laws that link growth and remodeling to local stress or strain. \par
+In this chapter we will introduce a package written in FEniCSx that allows one to easily model growth and remodelling of biological tissue, with the aim of quickly testing combinations of growth models and material models.
 \section{Methods}
 \subsection{Growth and Remodeling in Continuum Mechanics}
 Consider a solid body that is continuously and smoothly deforming from one configuration to another, and denote the initial configuration (also called the reference configuration) as $\mathcal{M}$ and the current configuration $\mathcal{N}$. We denote a point in $\mathcal{M}$ with uppercase letters $\mathbf{X} = (X, Y, Z)$ and a point in $\mathcal{N}$ with lowercase letters $\mathbf{x} = (x, y, z)$\footnote{Apart from the letters $X$, $Y$, and $Z$, all upper case letters represent tensors.}. A point in $\mathcal{M}$ can be mapped to a point in $\mathcal{N}$ by a motion, $\phi(\mathbf{X}): \mathbf{X} \rightarrow \mathbf{x}$, which is a diffeomorphism. We can map a vector from the reference configuration to the current configuration via the pushforward of $\phi$, which is commonly denoted by $\mathbf{F}$ and is referred to as the deformation gradient, computed as $\partial\phi/\partial\mathbf{X} = \partial\mathbf{x}/\partial\mathbf{X}$. The displacement field $\mathbf{u} = \mathbf{x} - \mathbf{X}$ is a vector field describing the displacement of each point $\mathbf{X}$ in the reference configuration to its location $\mathbf{x}$ in the deformed configuration. \par 
-The tensor $\mathbf{F}^\top\mathbf{F}$ is denoted as $\mathbf{C}$ and referred to as the right Cauchy-Green deformation tensor. Most models of the heart assume that it is hyperelastic, meaning that deformations of the material conserve its energy. If one wants to model growth of the tissue, one needs to incorporate a plastic deformation. This is commonly done with a multiplicative split, 
+Most models of the heart assume that it is hyperelastic, meaning that deformations of the material conserve its energy. Even though growth is not a plastic deformation, it is modeled using the same framework. The most common framework is to multiplicatively split the deformation tensor into an elastic part and a growth part, 
 \begin{equation}
 \label{eq: multiplicative split}
     \mathbf{F} = \mathbf{F}_e\mathbf{F}_g,
 \end{equation}
-where $\mathbf{F}_e$ is the elastic deformation and $\mathbf{F}_g$ is the plastic deformation that represents growth. The mulitplicative split of elastic and plastic deformations was originally motivated by the study of large deformations and was first used by \citep{Kondaurov1987}, \citep{Takamizawa1990}, and \citep{Rodriguez1994} to study growth and remodelling of biological tissue. \par 
-\added{One interpretation of \ref{eq: multiplicative split} is that the material first deforms by $\mathbf{F}_g$ in a way that does not cause stress, but might cause incompatibilites in the form of discontinuities or overlapping material. The deformation described by $\mathbf{F}_g$ leads to an unphysical intermediate configuration, which is then deformed by $\mathbf{F}_e$} \deleted{Then it deforms by $\mathbf{F}_e$}in a way that removes the unphysical characteristics that occurred from $\mathbf{F}_g$, but adds residual stress. \added{Sufficient conditions for the existence of intermediate configurations such as $\mathbf{F}_g$ are discussed in \citep{Goodbrake2021}}. We assume that $\mathbf{F}_e$ is hyperelastic such that we can obtain the first Piola–Kirchhoff stress tensor by differentiating a strain energy function, $\Psi$
+where $\mathbf{F}_e$ is the elastic deformation and $\mathbf{F}_g$ is the plastic deformation that represents growth. The mulitplicative split of elastic and plastic deformations was first used by \citep{Kondaurov1987}, \citep{Takamizawa1990}, and \citep{Rodriguez1994} to study growth and remodelling of biological tissue. \par 
+\added{One interpretation of \ref{eq: multiplicative split} is that the material first deforms by $\mathbf{F}_g$ in a way that does not cause stress, but might cause incompatibilites in the form of discontinuities or overlapping material. The deformation described by $\mathbf{F}_g$ leads to an unphysical intermediate configuration, which is then deformed by $\mathbf{F}_e$} \deleted{Then it deforms by $\mathbf{F}_e$}in a way that removes the unphysical characteristics that occurred from $\mathbf{F}_g$, but adds residual stress. \added{Sufficient conditions for the existence of intermediate configurations such as $\mathbf{F}_g$ are discussed in \citep{Goodbrake2021}}. We assume that the deformation described by $\mathbf{F}_e$ is hyperelastic, such that we can obtain the first Piola–Kirchhoff stress tensor by differentiating a strain energy function, $\Psi$
 \begin{equation}
 \label{eq: stress}
     \mathbf{P} = \frac{\partial\Psi}{\partial \mathbf{F}_e},
 \end{equation}
-which we use to solve the conservation of momentum equation,
-\begin{equation}
-\label{eq: conservation of momentum}
-    \nabla\cdot\mathbf{P} = 0.
-\end{equation}
-Solving (\ref{eq: conservation of momentum}) will give a displacement field which is used to update the growth tensor, $\mathbf{F}_g$, via either the stress or strain tensor, resepctively called stress based and strain based growth. It is common to express the growth tensor in terms of fiber, crossfiber, and normal directions 
+which we use to solve the conservation of momentum equation. \par 
+It is common to express the growth tensor in terms of fiber, crossfiber, and normal directions 
 \begin{equation*}
     \mathbf{F}_g^\mathrm{inc} = F^\mathrm{inc}_{g,f}\mathbf{e}_f\otimes \mathbf{e}_f + F^\mathrm{inc}_{g,c}\mathbf{e}_c\otimes \mathbf{e}_c + F^\mathrm{inc}_{g,n}\mathbf{e}_n\otimes \mathbf{e}_n.
 \end{equation*}
-where $F^\mathrm{inc}_{g, i}$ for  $i = \{f, c, n\}$ are functions of either the stress or strain. The total deformation is obtained by 
+where $F^\mathrm{inc}_{g, i}$ for  $i = \{f, c, n\}$ are functions of either the stress or strain, and $\mathbf{e}_{\{f, c, n\}}$ are orthonormal basis vectors in the fiber, crossfiber, and normal directions respectively. The total deformation is obtained by 
 \begin{equation*}
     \mathbf{F}_g^{i + 1} = \mathbf{F}_g^i\mathbf{F}_g^\mathrm{inc},
 \end{equation*}
-where the initial growth tensor, $\mathbf{F}_g^0$, is set to the identity tensor. Finally, the equations are then furnished with boundary conditions that make them well-posed. Using homogenous boundary conditions, the system of equations becomes
+where the initial growth tensor, $\mathbf{F}_g^0$, is set to the identity tensor. The reason we have to use the total deformation is because we are always mapping from the same reference configuration; so after $n$ steps, we are applying $n$ growth deformations, which looks like 
+\begin{equation*}
+    \mathbf{F}_g^{n} = \mathbf{F}_{g}^\mathrm{inc}\vert_{t=0}\mathbf{F}_{g}^\mathrm{inc}\vert_{t=1} \cdots \mathbf{F}_{g}^\mathrm{inc}\vert_{t=n}
+\end{equation*}  
+where $\mathbf{F}_{g}^\mathrm{inc}\vert_{t=i}$ means the $\mathbf{F}_{g}^\mathrm{inc}$ at the $i$'th step. Note that the $i$'th incremental growth tensor is dependent on the stress or strain that occurred in the $i-1$'th growth step. The equations are then furnished with boundary conditions that that describe the load and displacement of the boundary. Using homogenous boundary conditions, the system of equations becomes
 \begin{equation} \label{eq: system of equations}
 \begin{aligned}
     \mathbf{F} & = \mathbf{F}_e\mathbf{F}_g, && \text{in } \mathcal{M}\\
@@ -54,11 +55,11 @@ where the initial growth tensor, $\mathbf{F}_g^0$, is set to the identity tensor
     \mathbf{u} & = g_D && \text{on } \partial\mathcal{M}_D
 \end{aligned}
 \end{equation} 
-where $\nu$ is a normal vector, $\partial\mathcal{M}_N$ amd $\partial\mathcal{M}_D$ denote the boundaries which are prescribed Neumann and Dirichlet boundary conditions respectively. Finally, we need to specify the material model, and in this paper we use a \replaced{nearly}{weakly} incompressible hyperelasticity stress tensor, so (\ref{eq: stress}) becomes
+where $\nu$ is a surface normal vector, $\partial\mathcal{M}_N$ amd $\partial\mathcal{M}_D$ denote the boundaries which are prescribed Neumann and Dirichlet boundary conditions respectively. Finally, we need to specify the material model, and in this paper we use a \replaced{nearly}{weakly} incompressible neo-Hookean model, so (\ref{eq: stress}) becomes
 \begin{equation*}
-    \mathbf{P} = \frac{\partial }{\partial \mathbf{F}_e}(\Psi_\text{iso}(\mathbf{I}_1, \mathbf{I}_2) + \Psi_\text{vol}(\mathbf{I}_3))
+    \mathbf{P} = \overbrace{\mu\left(\tr\mathbf{\bar{C}} - 3\right)}^{\partial\Psi_\text{iso}/\partial \mathbf{F}_e} + \overbrace{\kappa(J-1)^2}^{\partial\Psi_\text{vol}/\partial \mathbf{F}_e}
 \end{equation*}
-where $\Psi_\text{iso}$ and $\Psi_\text{vol}$ are the isochoric (distortional) and volumetric (dilational) parts of the strain energy function, and $\mathbf{I}_1$, $\mathbf{I}_2$, and $\mathbf{I}_3$ are the first three principle invariants of $\mathbf{C}$. To decouple the energy stored in the body as a result of volume preserving deformation and non-volume preserving deformation, we set $\mathbf{\bar{F}}_e = \mathbf{F}_eJ^{-1/3}$, whose determinant is equal to the identity tensor. $\mathbf{\bar{C}}$ is calculated as $\mathbf{\bar{C}} = \mathbf{\bar{F}}_e^\top \mathbf{\bar{F}}_e$ and it is from this tensor that we compute the principle invariants we use in $\Psi_\text{iso}$ . Now, $\partial\Psi_\text{iso}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the shape, and $\partial\Psi_\text{vol}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the volume (see chapter 6 of \citep{Holzapfel2002} for more details). In this paper, we have used the neo-Hookean model where $\Psi_\text{iso} = \mu\left(\tr\mathbf{\bar{C}} - 3\right)$, and $\Psi_\text{vol} = \kappa(J-1)^2$, where $J$ is the determinant of $\mathbf{F}_e$, and $\mu$ and $\kappa$ material parameters. \par 
+where and $\mu$ and $\kappa$ material parameters. $\Psi_\text{iso}$ and $\Psi_\text{vol}$ are the isochoric (distortional) and volumetric (dilational) parts of the strain energy function. To decouple the energy stored in the body as a result of volume preserving deformation and non-volume preserving deformation, we set $\mathbf{\bar{F}}_e = \mathbf{F}_eJ^{-1/3}$, whose determinant is equal to the identity tensor. $\mathbf{\bar{C}}$ is calculated as $\mathbf{\bar{C}} = \mathbf{\bar{F}}_e^\top \mathbf{\bar{F}}_e$. Now, $\partial\Psi_\text{iso}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the shape, and $\partial\Psi_\text{vol}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the volume (see chapter 6 of \citep{Holzapfel2002} for more details). \par 
 For further information about continuum mechanics we recommend \citep{Marsden1983} and \citep{Holzapfel2002}, and for further information about growth and remodelling we recommend \citep{Goriely2017} and \citep{Yavari2010}.
 
 \subsection{Numerical Implementation And Experiments}
@@ -87,27 +88,24 @@ In the literature of growth and remodelling it is common to refer to the fiber d
 \end{align*}
 where $u$, $v$, and $w$ are the displacement in the $x$, $y$, and $z$ direction respectively. $u_D$ is a Dirichlet boundary condition that specifies how much the body is displaced. 
 \par
-\emph{Constructing the weak form}: We multiply (\ref{eq: conservation of momentum}) by a test function, which we set to be in the same function space as $\mathbf{u}$, and for every subdomain $\Omega \subseteq \mathcal{M}$ the divergence of stress must equal zero. By applying integration by parts, we obtain
-\begin{align*}
-    \int_\Omega(\nabla\cdot\mathbf{P})\cdot\eta d\mathbf{X} &= 0 \\
+\emph{Constructing the weak form}: We multiply $\nabla\cdot\mathbf{P}$ by a test function, which we set to be in the same function space as $\mathbf{u}$, and integrate over a discretization of $\mathcal{M}$. By applying integration by parts, we obtain
+\begin{align}
+    \label{eq: weak conservation of momentum}
+    \int_\Omega(\nabla\cdot\mathbf{P})\cdot\eta d\mathbf{X} &= 0  \notag\\
     \int_\Omega \mathbf{P} : \nabla\eta d\mathbf{X} &= \int_{\partial\Omega}\mathbf{P}\cdot\eta \cdot \nu dA.
-\end{align*}
-\replaced{Since we are using test functions, $\eta$, that vanish on $\partial_D\mathcal{M}$, and the normal component of $\mathbf{P}$ is zero on $\partial_N\mathcal{M}$ we can set the boundary integral to zero. }{Since we are using Dirichlet boundary conditions, $\mathbf{P} = 0$ on the boundary of $\mathcal{N}$}. Additionally, since this must hold for any subdomain $\Omega \subseteq \mathcal{M}$, it must be true for the integrand. The conservation of momentum equation thus reduces to
-\begin{equation}
-\label{eq: weak conservation of momentum}
-    \mathbf{P} : \nabla\eta = 0,
-\end{equation}
-which is solved using FEniCSx.
+\end{align}
+\replaced{Since we are using test functions, $\eta$, that vanish on $\partial_D\mathcal{M}$, and the normal component of $\mathbf{P}$ is zero on $\partial_N\mathcal{M}$ we can set the boundary integral to zero. }{Since we are using Dirichlet boundary conditions, $\mathbf{P} = 0$ on the boundary of $\mathcal{N}$}. (\ref{eq: weak conservation of momentum}) is solved using FEniCSx. 
 \par
-\emph{Iteratively solving the conservation of momentum}: We now solve (\ref{eq: weak conservation of momentum}) for the displacement $\mathbf{u}$, which we can use to compute all the necessary variables. We use a second order, continuous, Lagrange elements to approximate $\mathbf{u}$ and a first order, discontinuous, Lagrange elements to approximate $\mathbf{F}_e$ and $\mathbf{F}_g$. $\mathbf{F}_g$ is initially set to be the identity tensor. Finally, we used tetrahedral elements, which has been shown to not exhibit unwanted phenomena such as locking \citep{oliveira2016comparison}. \par
+\emph{Iteratively solving the conservation of momentum}: We now solve (\ref{eq: weak conservation of momentum}) for the displacement $\mathbf{u}$, which we can use to compute all the necessary variables. We use tetrahedral, second order, continuous, Lagrange elements to approximate $\mathbf{u}$; and a first order, discontinuous, Lagrange elements to approximate $\mathbf{F}_e$ and $\mathbf{F}_g$. This is a common numerical scheme in cardiac mechanics \citep{oliveira2016comparison}. $\mathbf{F}_g$ is initially set to be the identity tensor. \par
 \emph{Numerical experiments:} We ran one simulations where we stretched a unit cube by 10\% in the fiber direction (along the $x$-axis), which we will refer to as the stretch simulation, and another simulation where we compressed a unit cube by 10\% in the fiber direction (along the $x$-axis), which we will refer to as the compression simulation. $u_D = 0.1$ and $-0.1$ for the stretch and compression simulation respectively. In the stretch simulation $F_{g,c,\mathrm{max}}$ was set to 1.2 and 0.8 in the compression simulation. We set $\mu = 15$ kilo Pascals and $\kappa = 100$ kilo Pascals.
 \subsection{The different growth models}
 \label{sub:different models} 
 In this paper we compare five growth models which we have taken from \citep{Taber1998}, \citep{Kroon2009}, \citep{Goktepe}, and \citep{Kerckhoffs2012}. The growth models are given in table \ref{tab:growth models} where LT2 is from \citep{Taber1998}, KFR is from \citep{Kroon2009}, GEG and GCG are from \citep{Goktepe} and KOM is from \citep{Kerckhoffs2012}. Each growth model had a set point that either determined the homeostatic level of stress, stretch, or strain. When the stress, stretch, or strain reaches the set point, then growth will cease to occur. If this does not happen, the body will grow indefinitely, which we call runaway growth. We used the same variables as they were given in the original papers, except for the \replaced{GCG}{$GCG$}, where we scaled the variables to more accurately fit with the shear modulus used here. The values are tabulated in table \ref{tab:parameters}.
-\newgeometry{right=1cm, left=1cm}%,right=1cm,top=1cm,bottom=1cm}
+%\newgeometry{right=1cm, left=1cm}%,right=1cm,top=1cm,bottom=1cm}
 \begin{table}
 \centering
-\renewcommand{\arraystretch}{5}
+\makebox[\textwidth][c]{
+\renewcommand{\arraystretch}{4}
 \begin{tabular}{|c||c|c|c|}
 \hline \hline
  & $F_{g,f}^{i+1}$ & $F_{g,r}^{i+1}$ & $F_{g,c}^{i+1}$ \\
@@ -132,10 +130,11 @@ KOM & $\displaystyle \begin{cases}
     \end{cases} $ \\
 \hline
 \end{tabular}
+}
 \caption{$F_{g,f}$, $F_{g,r}$, $F_{g,s}$ for each of the five models. The parameters $T$, $\beta$, $\tau$, and $\Delta t$, simply determine the rate of growth and can be tuned to \replaced{match}{math} the growth rate of data obtained from experiments.}
 \label{tab:growth models}
 \end{table}
-\restoregeometry
+%\restoregeometry
 \begin{table}[htbp]
     \centering
     \begin{tabular}{|l|l|}
