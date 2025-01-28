@@ -1,7 +1,7 @@
 
 
 % Write the full path to the location of the graphics relative to book.tex
-\graphicspath{{chapters/chp1/graphics/}}
+% \graphicspath{{chapters/chp1/graphics/}}
 
 \title{Blood flow in the beating heart: Coupling fluid dynamics to reduced wall and circulation models for data-driven cardiac FSI}
 \titlerunning{Blood flow in the beating heart}
@@ -35,7 +35,7 @@ In particular, domain and motion data are retrieved from time-resolved dynamic c
 The model is further coupled to a closed-loop systemic, pulmonary, and coronary circulation system \cite{hirschvogel2017,arthurs2016} in order to provide physiologically meaningful cardiovascular loads to the 3D model.
 \begin{figure}[!htp]
 \centering
-\includegraphics[width=1\textwidth]{heart_problem}
+\includegraphics[width=1\textwidth]{chapters/hirschvogel/heart_problem.pdf}
 \caption{\textbf{A.} Dynamic cardiac computed tomography (CT) images with contrast and dynamic segmentation of left heart lumen for subsequent finite element mesh generation, motion tracking of deformation over the heart cycle. 
 \textbf{B.} Principal component analysis by means of Proper Orthogonal Decomposition (POD) of wall motion space. The first three most dominant POD modes are shown (10 are used). 
 \textbf{C.} Partition of unity fields for regional decomposition of POD space: Atrium, ventricle, and aortic outflow tract---as well as their junctions and truncations around the in-/outflows---can exhibit independent kinematics. 
@@ -200,7 +200,7 @@ Figure~\ref{fig:heart_results} shows the results of a full heart cycle simulatio
 
 \begin{figure}[!htp]
 \centering
-\includegraphics[width=1\textwidth]{heart_results.pdf}
+\includegraphics[width=1\textwidth]{chapters/hirschvogel/heart_results.pdf}
 \caption{Adapted from \cite{hirschvogel2025-prec}: \textbf{A.} Left atrial, left ventricular, systemic arterial, right atrial, right ventricular, and pulmonary arterial pressures over time. \textbf{B.} Left atrial, left ventricular, right atrial, right ventricular, left and right proximal coronary fluxes over time. \textbf{C.} Magnitude of fluid velocity $\boldsymbol{v}$, streamlines on longitudinal cut through deformed domain $\mathit{\Omega}$. Note the different scales for diastolic and systolic snapshots. \textbf{D.} Fluid pressure $p$, plotted on undeformed reference domain $\tilde{\mathit{\Omega}}_{0}$.}\label{fig:heart_results}
 \end{figure}
 
@@ -216,6 +216,6 @@ DN acknowledges funding from the Engineering and Physical Sciences Research Coun
 
 \bibliographystyle{spbasic}
 % Write the full path of your bibfile relative to book.tex
-\bibliography{chapters/chp1/bibliography.bib}
+\bibliography{chapters/hirschvogel/bibliography.bib}
 
 
