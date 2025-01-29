@@ -43,7 +43,7 @@ where $F^\mathrm{inc}_{g, i}$ for  $i = \{f, c, n\}$ are functions of either the
 \end{equation*}
 where the initial growth tensor, $\mathbf{F}_g^0$, is set to the identity tensor. The reason we have to use the total deformation is because we are always mapping from the same reference configuration; so after $n$ steps, we are applying $n$ growth deformations, which looks like 
 \begin{equation*}
-    \mathbf{F}_g^{n} = \mathbf{F}_{g}^\mathrm{inc}\vert_{t=0}\mathbf{F}_{g}^\mathrm{inc}\vert_{t=1} \cdots \mathbf{F}_{g}^\mathrm{inc}\vert_{t=n}
+    \mathbf{F}_g^{n} = \mathbf{F}_{g}^\mathrm{inc}\vert_{t=0}\mathbf{F}_{g}^\mathrm{inc}\vert_{t=1} \cdots \mathbf{F}_{g}^\mathrm{inc}\vert_{t=n},
 \end{equation*}  
 where $\mathbf{F}_{g}^\mathrm{inc}\vert_{t=i}$ means the $\mathbf{F}_{g}^\mathrm{inc}$ at the $i$'th step. Note that the $i$'th incremental growth tensor is dependent on the stress or strain that occurred in the $i-1$'th growth step. The equations are then furnished with boundary conditions that that describe the load and displacement of the boundary. Using homogenous Neumann boundary conditions, the system of equations becomes
 \begin{equation} \label{eq: system of equations}
@@ -57,7 +57,7 @@ where $\mathbf{F}_{g}^\mathrm{inc}\vert_{t=i}$ means the $\mathbf{F}_{g}^\mathrm
 where $\nu$ is a surface normal vector, $\partial\mathcal{M}_N$ amd $\partial\mathcal{M}_D$ denote the boundaries which are prescribed Neumann and Dirichlet boundary conditions respectively. Finally, we need to specify the material model, and in this paper we use a \replaced{nearly}{weakly} incompressible neo-Hookean model, so (\ref{eq: stress}) becomes
 \begin{align*}
     \mathbf{P} &= \frac{\partial\Psi_\text{iso}}{\partial \mathbf{F}_e} + \frac{\partial\Psi_\text{vol}}{\partial \mathbf{F}_e} \\
-    \mathbf{P} &= \mu\left(\tr\mathbf{\bar{C}} - 3\right) + \kappa(J-1)^2
+    \mathbf{P} &= \frac{\partial}{\partial \mathbf{F}_e}\left[\mu\left(\tr\mathbf{\bar{C}} - 3\right) + \kappa(J-1)^2\right]
 \end{align*}
 where and $\mu$ and $\kappa$ material parameters. $\Psi_\text{iso}$ and $\Psi_\text{vol}$ are the isochoric (distortional) and volumetric (dilational) parts of the strain energy function. To decouple the energy stored in the body as a result of volume preserving deformation and non-volume preserving deformation, we set $\mathbf{\bar{F}}_e = \mathbf{F}_eJ^{-1/3}$, whose determinant is equal to the identity tensor. $\mathbf{\bar{C}}$ is calculated as $\mathbf{\bar{C}} = \mathbf{\bar{F}}_e^\top \mathbf{\bar{F}}_e$. Now, $\partial\Psi_\text{iso}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the shape, and $\partial\Psi_\text{vol}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the volume (see chapter 6 of \citep{Holzapfel2002} for more details). \par 
 For further information about continuum mechanics we recommend \citep{Marsden1983} and \citep{Holzapfel2002}, and for further information about growth and remodelling we recommend \citep{Goriely2017} and \citep{Yavari2010}.
@@ -69,7 +69,7 @@ For further information about continuum mechanics we recommend \citep{Marsden198
     \caption{Growth tensor and stress/strain tensor are updated at each growth step. Both $\mathbf{F}_\mathrm{e}$ and $\mathbf{F}_g^\mathrm{inc}$ are dependent on $\mathbf{u}$.}\label{alg:growth_deform}
     \SetAlgoLined
     \For{i = 0 \KwTo N}{
-        $\mathbf{u}$ = Solve (\ref{eq: system of equations}) for the displacement $\mathbf{u}$\;
+        Solve (\ref{eq: system of equations}) for the displacement $\mathbf{u}$\;
         Update the stress/strain tensor using $\mathbf{u}$ from the previous line.\;
         Update the growth tensor using the stress/strain tensor from the previous line.\;
     }
@@ -90,12 +90,12 @@ In the literature of growth and remodelling it is common to refer to the fiber d
 \begin{align*}
     u &= \begin{cases}
         0, & x = 0 \\
-        u_D, & x = 1
+        g_D, & x = 1
     \end{cases} \\
     v &= 0, \qquad \ y = 0 \\
     w &= 0, \qquad \ z = 0
 \end{align*}
-where $u$, $v$, and $w$ are the displacement in the $x$, $y$, and $z$ direction respectively. $u_D$ is a Dirichlet boundary condition that specifies how much the body is displaced. 
+where $u$, $v$, and $w$ are the displacement in the $x$, $y$, and $z$ direction respectively. $g_D$ is a Dirichlet boundary condition that specifies how much the body is displaced. 
 \par
 
 \emph{Numerical experiments:} We ran one simulations where we stretched a unit cube by 10\% in the fiber direction (along the $x$-axis), which we will refer to as the stretch simulation, and another simulation where we compressed a unit cube by 10\% in the fiber direction (along the $x$-axis), which we will refer to as the compression simulation. $u_D = 0.1$ and $-0.1$ for the stretch and compression simulation respectively. In the stretch simulation $F_{g,c,\mathrm{max}}$ was set to 1.2 and 0.8 in the compression simulation. We set $\mu = 15$ kilo Pascals and $\kappa = 100$ kilo Pascals.
@@ -175,24 +175,21 @@ where $E_{ij}$ is the Lagrange strain tensor, and $E_{ff}$ is the strain in the 
     \end{pmatrix}
 \end{equation*}
 and $E_{ff, \mathrm{set}}$ and $E_\mathrm{cross, set}$ are set points. \par
-\deleted{In the simulations run, LT2 displayed runaway growth as was also observed in the simulations run in }\citep{Witzenburg2018}. Growth stops for the LT2 model when \begin{equation}
-\label{eq: LT2 equilibrium}
-    \frac{\sigma_{\theta} - \sigma_{0}}{\sigma_{0}} = 0.
-\end{equation}
+\deleted{In the simulations run, LT2 displayed runaway growth as was also observed in the simulations run in }\citep{Witzenburg2018}. Growth stops for the LT2 model when $\sigma_{\theta} = \sigma_{0}$.
 \deleted{which was not satisfied in our simulations or in the simulations run by} \citep{Witzenburg2018}. For KOM, since $k_{cc}$ and $k_{ff}$ are logistic functions, the growth is bounded from above and below inhibiting runaway growth. Finally, for KFR, it does not appear obvious that it will not obtain runaway growth, but other simulations setups that were tested did result in runaway growth, even though the one we present here does not.
 \section{Results}
-The data we collected from the two experiments (see bottom of section \ref{subsec: experiments}) were the the stretch and growth that occurred in the middle of the cube. The results are depicted in figures \ref{fig:10p_stretch} and \ref{fig:10p_compression}. The top row of each figure displays the fiber and crossfiber components of the growth tensor, $F_g$, and the bottom row displays the fiber and crossfiber components of the elastic deformation tensor $F_e$. Increasing $\kappa$ did not yield qualitatively different results. \par
-First, we note that LT2 displayed runaway growth, as was also found in \citep{Witzenburg2018}. GCG seems to be converging to $F_{g,c,\mathrm{max}}$, and GEG seem to have converged because it reached $\lambda^\text{crit}$. The reason GCG is growing oppositely compared to GEG is probably because GEG was created to model growth triggered by volume overload while GCG was created to capture growth triggered by pressure overload. KFR grew an equal amount in each direction, and stabilized. It is not clear under what conditions KFR should be stable because $s_\mathrm{hom}$ is the same in each direction. When we ran simulations with other boundary conditions, it was not stable. The KOM model was stable for many different types of boundary conditions, but is the most computationally expensive model to run.\par 
+The data we collected from the two experiments (see bottom of section \ref{subsec: experiments}) were the the stretch and growth that occurred in the middle of the cube. The results are depicted in figures \ref{fig:10p_stretch_3} and \ref{fig:10p_compression_3}. The top row of each figure displays the fiber and crossfiber components of the growth tensor, $F_g$, and the bottom row displays the fiber and crossfiber components of the elastic deformation tensor $F_e$. Increasing $\kappa$ did not yield qualitatively different results. \par
+First, we note that LT2 displayed runaway growth, as was also found in \citep{Witzenburg2018}. GCG seems to be converging to $F_{g,c,\mathrm{max}}$, and GEG seem to have converged because it reached $\lambda^\text{crit}$. The reason GCG is growing oppositely compared to GEG is probably because GEG was created to model growth triggered by volume overload while GCG was created to capture growth triggered by pressure overload. KFR grew an equal amount in each direction, and stabilized. It is not clear under what conditions KFR should be stable because $s_\mathrm{hom}$ is the same in each direction. When we ran simulations with other boundary conditions, the solution diverged. The KOM model was stable for many different types of boundary conditions, but is the most computationally expensive model to run.\par 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{10p_stretch_fiber2.png}
+    \includegraphics[width=\textwidth]{10p_stretch_3.png}
     \caption{Growth and stretch predicted by a 10\% stretch in the fiber direction. The runaway growth in LT2 was also reported in \citep{Taber1998}.}
     \label{fig:10p_stretch}
 \end{figure}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{10p_compression_fiber2.png}
-    \caption{Growth and stretch predicted by a 10\% compression in the fiber direction. For the models that converge, these results make intuitive sense; as time increases the growth appraoches the stretched state and the stretch (which is solely computed from $\mathbf{F}_e$) approaches 1.}
+    \includegraphics[width=\textwidth]{10p_compression_3.png}
+    \caption{Growth and stretch predicted by a 10\% compression in the fiber direction. For the models that converge, these results make intuitive sense; as time increases the growth approaches the stretched state and the stretch (which is solely computed from $\mathbf{F}_e$) approaches 1.}
     \label{fig:10p_compression}
 \end{figure}    
 \section{Conclusion and future work}
