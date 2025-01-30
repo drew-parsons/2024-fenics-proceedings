@@ -3,7 +3,7 @@
 
 \title{Growth and Remodelling Package in FEniCSx}
 
-\author{Karl Munthe and Henrik Finsberg and Samuel Wall and Joakim Sundnes}
+\author{Karl Munthe, Henrik Finsberg, Samuel Wall, Joakim Sundnes}
 
 \institute{K. Munthe \at Simula Research Laboratory, Oslo, Norway and \\ Department of Informatics, University of Oslo, Norway, \email{karlfredrik@simula.no}
 \and
@@ -37,7 +37,7 @@ The total deformation due to growth is obtained by
 \begin{equation*}
     \mathbf{F}_g^{i + 1} = \mathbf{F}_g^i\mathbf{F}_g^\mathrm{inc},
 \end{equation*}
-where $\mathbf{F}_g^\mathrm{inc}$ is the incremental growth tensor, and $\mathbf{F}_g^i$ is the cumulative growth that has occurred after $i$ steps. The reason we have to use this form of the growth tensor is because we are always mapping from the same reference configuration; so after $n$ steps, we are applying $n$ growth deformations, which looks like 
+where $\mathbf{F}_g^\mathrm{inc}$ is the incremental growth tensor, and $\mathbf{F}_g^i$ is the cumulative growth that has occurred after $i$ steps. The initial growth tensor, $\mathbf{F}_g^0$, is set to the identity tensor. The reason we have to use this form of the growth tensor is because we are always mapping from the same reference configuration; so after $n$ steps, we are applying $n$ growth deformations, which looks like 
 \begin{equation*}
     \mathbf{F}_g^{n} = \mathbf{F}_{g}^\mathrm{inc}\vert_{t=0}\mathbf{F}_{g}^\mathrm{inc}\vert_{t=1} \cdots \mathbf{F}_{g}^\mathrm{inc}\vert_{t=n},
 \end{equation*}  
@@ -45,19 +45,19 @@ where $\mathbf{F}_{g}^\mathrm{inc}\vert_{t=i}$ means the $\mathbf{F}_{g}^\mathrm
 \begin{equation*}
     \mathbf{F}_g^\mathrm{inc} = F^\mathrm{inc}_{g,f}\mathbf{e}_f\otimes \mathbf{e}_f + F^\mathrm{inc}_{g,c}\mathbf{e}_c\otimes \mathbf{e}_c + F^\mathrm{inc}_{g,n}\mathbf{e}_n\otimes \mathbf{e}_n.
 \end{equation*}
-where $F^\mathrm{inc}_{g, i}$ for  $i = \{f, c, n\}$ are functions of either stress or strain, and $\mathbf{e}_i$ for $i = {\{f, c, n\}}$ are orthonormal basis vectors in the fiber, crossfiber, and normal directions respectively. The initial growth tensor, $\mathbf{F}_g^0$, is set to the identity tensor. The equations are then furnished with boundary conditions that that describe the load and displacement of the boundary,
+where $F^\mathrm{inc}_{g, i}$ for  $i = \{f, c, n\}$ are functions of either stress or strain, and $\mathbf{e}_i$ for $i = {\{f, c, n\}}$ are orthonormal basis vectors in the fiber, crossfiber, and normal directions respectively. The equations are then furnished with boundary conditions that that describe the load and displacement of the boundary,
 \begin{equation} \label{eq: system of equations}
 \begin{aligned}
-    \mathbf{F} & = \mathbf{F}_e\mathbf{F}_g, && \text{in } \mathcal{M}\\
-    \nabla\cdot\mathbf{P} & = 0 && \text{in } \mathcal{M} \\
-    \mathbf{P}\cdot \nu & = 0 && \text{on } \partial\mathcal{M}_N \\
-    \mathbf{u} & = g_D && \text{on } \partial\mathcal{M}_D
+    \mathbf{F} & = \mathbf{F}_e\mathbf{F}_g && \text{in } \mathcal{M} ,\\
+    \nabla\cdot\mathbf{P} & = 0 && \text{in } \mathcal{M}, \\
+    \mathbf{P}\cdot \nu & = 0 && \text{on } \partial\mathcal{M}_N, \\
+    \mathbf{u} & = g_D && \text{on } \partial\mathcal{M}_D,
 \end{aligned}
 \end{equation} 
 where $\nu$ is a surface normal vector, $\partial\mathcal{M}_N$ amd $\partial\mathcal{M}_D$ denote the boundaries which are prescribed Neumann and Dirichlet boundary conditions respectively. Finally, we need to specify the material model, and in this paper we use a \replaced{nearly}{weakly} incompressible neo-Hookean model, so (\ref{eq: stress}) becomes
 \begin{align*}
-    \mathbf{P} &= \frac{\partial\Psi_\text{iso}}{\partial \mathbf{F}_e} + \frac{\partial\Psi_\text{vol}}{\partial \mathbf{F}_e} \\
-    \mathbf{P} &= \frac{\partial}{\partial \mathbf{F}_e}\left[\mu\left(\tr\mathbf{\bar{C}} - 3\right) + \kappa(J-1)^2\right]
+    \mathbf{P} &= \frac{\partial\Psi_\text{iso}}{\partial \mathbf{F}_e} + \frac{\partial\Psi_\text{vol}}{\partial \mathbf{F}_e}, \\
+    \mathbf{P} &= \frac{\partial}{\partial \mathbf{F}_e}\left[\frac{\mu}{2}\left(\tr\mathbf{\bar{C}} - 3\right) + \kappa(J-1)^2\right],
 \end{align*}
 where and $\mu$ and $\kappa$ material parameters. $\Psi_\text{iso}$ and $\Psi_\text{vol}$ are the isochoric (distortional) and volumetric (dilational) parts of the strain energy function. To decouple the energy stored in the body as a result of volume preserving deformation and non-volume preserving deformation, we set $\mathbf{\bar{F}}_e = \mathbf{F}_eJ^{-1/3}$, whose determinant is equal to the identity tensor. $\mathbf{\bar{C}}$ is calculated as $\mathbf{\bar{C}} = \mathbf{\bar{F}}_e^\top \mathbf{\bar{F}}_e$. Now, $\partial\Psi_\text{iso}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the shape, and $\partial\Psi_\text{vol}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the volume (see chapter 6 of \citep{Holzapfel2002} for more details). \par 
 For further information about continuum mechanics we recommend \citep{Marsden1983} and \citep{Holzapfel2002}, and for further information about growth and remodelling we recommend \citep{Goriely2017} and \citep{Yavari2010}.
@@ -68,7 +68,7 @@ For further information about continuum mechanics we recommend \citep{Marsden198
 \begin{algorithm} 
     \caption{Growth tensor and stress/strain tensor are updated at each growth step. Both $\mathbf{F}_\mathrm{e}$ and $\mathbf{F}_g^\mathrm{inc}$ are dependent on $\mathbf{u}$.}\label{alg:growth_deform}
     \SetAlgoLined
-    \For{i = 0 \KwTo N}{
+    \For{each time step}{
         Solve (\ref{eq: system of equations}) for the displacement $\mathbf{u}$\;
         Update the stress/strain tensor using $\mathbf{u}$ from the previous line.\;
         Update the growth tensor using the stress/strain tensor from the previous line.\;
@@ -82,23 +82,25 @@ For further information about continuum mechanics we recommend \citep{Marsden198
 \end{align}
 \replaced{Since we are using test functions, $\eta$, that vanish on $\partial_D\mathcal{M}$, and the normal component of $\mathbf{P}$ is zero on $\partial_N\mathcal{M}$ we can set the boundary integral to zero. }{Since we are using Dirichlet boundary conditions, $\mathbf{P} = 0$ on the boundary of $\mathcal{N}$}. (\ref{eq: weak conservation of momentum}) is solved using FEniCSx. 
 \par
-\emph{Iteratively solving the conservation of momentum}: We now solve (\ref{eq: weak conservation of momentum}) for the displacement $\mathbf{u}$, which we can use to compute all the necessary variables. We use tetrahedral, second order, continuous, Lagrange elements to approximate $\mathbf{u}$; and a first order, discontinuous, Lagrange elements to approximate $\mathbf{F}_e$ and $\mathbf{F}_g$. This is a common numerical scheme in cardiac mechanics \citep{oliveira2016comparison}. $\mathbf{F}_g$ is initially set to be the identity tensor. \par
+\emph{Iteratively solving the conservation of momentum}: We now solve (\ref{eq: weak conservation of momentum}) for the displacement $\mathbf{u}$, which we can use to compute all the necessary variables. We use tetrahedral, second order, continuous, Lagrange elements to approximate $\mathbf{u}$; and a first order, discontinuous, Lagrange elements to approximate $\mathbf{F}_e$ and $\mathbf{F}_g$. This is a common numerical scheme in cardiac mechanics which has been demonstrated to avoid locking \citep{oliveira2016comparison}. $\mathbf{F}_g$ is initially set to be the identity tensor. \par
 \subsection{Solving Growth Laws on the Unit Cube}
 \label{subsec: simulations}
 In the simulations we have run we have aligned the $x$-axis with the fiber direction and the $y$-, and $z$-axis are the crossfiber and normal direction. To be consistent with the literature we will use $\mathbf{e}_f$, $\mathbf{e}_c$, and $\mathbf{e}_n$ to denote the unit vectors in the $(x, y, z)$ directions respectively.  \par
 \emph{Boundary conditions:} We set the following boundary conditions
 \begin{align*}
-    u &= \begin{cases}
-        0, & x = 0 \\
-        g_D, & x = 1
-    \end{cases} \\
-    v &= 0, \qquad \ y = 0 \\
-    w &= 0, \qquad \ z = 0
+    g_D = \begin{cases}
+        u &= \begin{cases}
+            0 & \text{on } x = 0, \\
+            u_D & \text{on } x = 1,
+        \end{cases} \\
+        v &= 0 \qquad \ \ \text{on } y = 0, \\
+        w &= 0 \qquad \ \ \text{on } z = 0,
+    \end{cases}
 \end{align*}
-where $u$, $v$, and $w$ are the displacement in the $x$, $y$, and $z$ direction respectively. $g_D$ is a Dirichlet boundary condition that specifies how much the body is displaced. 
+where $u$, $v$, and $w$ are the displacement in the $x$, $y$, and $z$ direction respectively. $u_D$ specifies how much the body is displaced. 
 \par
 
-\emph{Numerical simulations:} We ran two simulations, one with a 10\% stretch and one with a 10\% compression which corresponds to $g_D = 0.1$ and $g_D = -0.1$ respectively. In the stretch simulation $F_{g,c,\mathrm{max}}$ was set to 1.2 and 0.8 in the compression simulation. We set $\mu = 15$ kPa and $\kappa = 100$ kPa.
+\emph{Numerical simulations:} We ran two simulations, one with a 10\% stretch and one with a 10\% compression which corresponds to $u_D = 0.1$ and $u_D = -0.1$ respectively. In the stretch simulation $F_{g,c,\mathrm{max}}$ was set to 1.2 and 0.8 in the compression simulation. We set $\mu = 15$ kPa and $\kappa = 100$ kPa.
 \subsection{The different growth models}
 \label{sub:different models} 
 In this paper we compare five growth models which we have taken from \citep{Taber1998}, \citep{Kroon2009}, \citep{Goktepe}, and \citep{Kerckhoffs2012}. The growth models are given in table \ref{tab:growth models} where LT2 is from \citep{Taber1998}, KFR is from \citep{Kroon2009}, GEG and GCG are from \citep{Goktepe} and KOM is from \citep{Kerckhoffs2012}. Each growth model had a set point that either determined the homeostatic level of stress, stretch, or strain. When the stress, stretch, or strain reaches the set point, then growth will cease to occur. If this does not happen, the body will grow indefinitely, which we call runaway growth. We used the same variables as they were given in the original papers, except for the \replaced{GCG}{$GCG$}, where we scaled the variables to more accurately fit with the shear modulus used here. The values are tabulated in table \ref{tab:parameters}.
@@ -142,15 +144,15 @@ KOM & $\displaystyle \begin{cases}
     \hline
     \textbf{Model} & \textbf{Parameters} \\
     \hline
-    \textbf{LT2} &   $\sigma_{a,0} = 30, \sigma_{p,0} = 3, T = 10^{-4}$ \\ \hline
+    \textbf{LT2} &   $\sigma_{a,0} = 30$ [kPa], $\sigma_{p,0} = 3$ [kPa], $T = 10^{-4}$ \\ \hline
     \textbf{KFR} &  $s_\mathrm{hom} = 0.13, \beta = 10^{-2}$ \\ \hline
-    \textbf{GEG} &  $F_{g,f,\mathrm{max}}=1.5, \lambda^\mathrm{crit}=1.01,\gamma = 2, \tau = 10^2$ \\ \hline
+    \textbf{GEG} &  $F_{g,f,\mathrm{max}}=1.5$, $\lambda^\mathrm{crit}=1.01$, $\gamma = 2$, $\tau = 10^2$ \\ \hline
     \textbf{GCG} &  $F_{g,c,\mathrm{max}}=1.2$ and $0.8$,  $p^\mathrm{crit}=0.12, \gamma = 2, \tau = 10^4$ \\ \hline
-    \textbf{KOM} &  $f_\mathrm{ff,max} =0.31, f_f = 150, s_{l50} = 0.06, F_{ff50} = 1.35, f_{l,\mathrm{slope}} = 40, f_\mathrm{ff,max} = 0.1$ \\
-        & $c_\mathrm{f} = 75, s_\mathrm{t50} = 0.07, F_\mathrm{cc50} = 1.28, c_\mathrm{th,slope} = 60, E_{ff,\mathrm{set}} = 0, 
-        E_\mathrm{cross,\mathrm{set}} = 0, \Delta t = 10^{-2}$ \\ \hline
+    \textbf{KOM} &  $f_\mathrm{ff,max} =0.31$ [1/days], $f_f = 150$, $s_{l50} = 0.06$, $F_{ff50} = 1.35$, $f_{l,\mathrm{slope}} = 40$, $f_\mathrm{ff,max} = 0.1$ [1/days] \\
+        & $c_\mathrm{f} = 75$, $s_\mathrm{t50} = 0.07$, $F_\mathrm{cc50} = 1.28$, $c_\mathrm{th,slope} = 60$, $E_{ff,\mathrm{set}} = 0$, 
+        $E_\mathrm{cross,\mathrm{set}} = 0$, $\Delta t = 10^{-2}$ [days] \\ \hline
     \end{tabular}
-    \caption{Model parameters for the growth models. All units are SI units except for stress which is in kilo Pascals. $T$, $\beta$, and $\tau$ are dimensionless and determine the speed of growth. $\Delta t$ has units day, while $f_\mathrm{ff,max}$ and $f_\mathrm{cc,max}$ have units 1/day.}
+    \caption{Model parameters for the growth models. $T$, $\beta$, $\tau$, and $\Delta t$, determine the speed of growth.}
     \label{tab:parameters}
 \end{table}
 In LT2, $\sigma_{p,0}$ and $\sigma_{a,0}$ are set points for the passive and active fiber stress at equilibrium, and $\sigma_{\theta p}$ and $\sigma_{\theta a}$ are the active and passive fiber stresses. In the simulations we have run, we have only used the passive component of $\sigma$, and have set $\sigma_a = 0$. For KFR, $s_\mathrm{hom}$ is the strain set point. For GEG and GCG, $F_{g,f,\mathrm{max}}$ and $F_{g,c,\mathrm{max}}$ is the maximum amount of growth allowed to occur. $\mathbf{M}$ is the Mandel stress, which is defined as 
