@@ -1,7 +1,7 @@
 % Write the full path to the location of the graphics relative to book.tex
-\graphicspath{{chapters/chp1/graphics/}}
+\graphicspath{{chapters/habera/graphics/}}
 
-\linenumbers
+% \linenumbers
 
 \title{The FEniCS Project on AWS Graviton3}
 \titlerunning{The FEniCS Project on AWS Graviton3}
@@ -152,7 +152,7 @@ are setup with unified memory access.
 
 \begin{figure}
 \begin{center}
-        \includegraphics{chapters/chp1/graphics/stream_plots/stream_single_node.pdf}
+        \includegraphics{chapters/habera/graphics/stream_plots/stream_single_node.pdf}
 \end{center}
 	\caption{Single-node STREAM benchmark. Theoretical peak bandwidth of each system show as dashed line.}
         \label{fig:stream-single}
@@ -279,13 +279,13 @@ speed-up (\textgreater 4x) is more significant with the Aion nodes.
 \begin{figure}
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics{chapters/chp1/graphics/kernel_plots/local_operator_clang_deg1.pdf}
+        \includegraphics{chapters/habera/graphics/kernel_plots/local_operator_clang_deg1.pdf}
         \caption{clang 18.1.3.}
         \label{fig:local-clang-deg1}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics{chapters/chp1/graphics/kernel_plots/local_operator_gcc_deg1.pdf}
+        \includegraphics{chapters/habera/graphics/kernel_plots/local_operator_gcc_deg1.pdf}
         \caption{GCC 13.2.0.}
         \label{fig:local-gcc-deg1}
     \end{subfigure}
@@ -296,13 +296,13 @@ speed-up (\textgreater 4x) is more significant with the Aion nodes.
 \begin{figure}
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics{chapters/chp1/graphics/kernel_plots/local_operator_clang_deg8.pdf}
+        \includegraphics{chapters/habera/graphics/kernel_plots/local_operator_clang_deg8.pdf}
         \caption{clang 18.1.3.}
         \label{fig:local-clang-deg8}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics{chapters/chp1/graphics/kernel_plots/local_operator_gcc_deg8.pdf}
+        \includegraphics{chapters/habera/graphics/kernel_plots/local_operator_gcc_deg8.pdf}
         \caption{GCC 13.2.0.}
         \label{fig:local-gcc-deg8}
     \end{subfigure}
@@ -395,7 +395,7 @@ Aion ($< 5\%$) and a small increase of 15 \% on AWS c7gn is observed.
 \begin{figure}
     \begin{subfigure}{.7\textwidth}
 	\begin{center}
-        \includegraphics{chapters/chp1/graphics/parallel_scaling_plots/output/weak_scaling_aion_poisson.pdf}
+        \includegraphics{chapters/habera/graphics/parallel_scaling_plots/output/weak_scaling_aion_poisson.pdf}
         \caption{Aion, \SI{5e+5} degrees-of-freedom per process, 25 \% utilisation (32 processes per node).}
         \label{fig:weak-scaling-aion}
 	\end{center}
@@ -403,7 +403,7 @@ Aion ($< 5\%$) and a small increase of 15 \% on AWS c7gn is observed.
 
     \begin{subfigure}{.7\textwidth}
 	\begin{center}
-        \includegraphics{chapters/chp1/graphics/parallel_scaling_plots/output/weak_scaling_aws_c7gn_poisson.pdf}
+        \includegraphics{chapters/habera/graphics/parallel_scaling_plots/output/weak_scaling_aws_c7gn_poisson.pdf}
         \caption{AWS c7gn, \SI{5e+5} degrees-of-freedom per process, 50 \% utilisation (32 processes per node).}
         \label{fig:weak-scaling-aws}
 	\end{center}
@@ -465,4 +465,4 @@ version arising from this submission.
 \end{acknowledgement}
 
 \bibliographystyle{spbasic}
-\bibliography{chapters/chp1/bibliography.bib}
+\bibliography{chapters/habera/bibliography.bib}
