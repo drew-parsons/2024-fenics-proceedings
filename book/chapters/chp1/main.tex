@@ -566,7 +566,8 @@ dimensionality. However, we plot the best $r$ for trivial
 scaling over  a wide range of concentrations (1D calculations), and
 also 2D and 3D calculations of the flat electrode (at 1M
 concentration). In all cases the best $r(V)$  essentially follows the
-same curve.  The time per iteration and the total number of
+same curve, with small deviation seen only at 3V, that may be attributed simply to the
+integer resolution of the simulation.  The time per iteration and the total number of
 required iterations varies with system conditions and
 dimensionality. But the optimal $r(V)$ for minimising the number of
 iterations remains the same. The optimal $r(V)$ may be considered universal after all.
@@ -575,14 +576,17 @@ iterations remains the same. The optimal $r(V)$ may be considered universal afte
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth]{best_r_vs_v.eps}
+\includegraphics[width=0.8\linewidth]{best_r_vs_V.eps}
 \caption{Best fixed rate multiplier $r$ for each voltage, giving lowest
   number of throttling iterations. The steric model is solved with both
-  trivial and log-zero concentration scaling (1D calculation at 1M
+  trivial (black) and log-zero (orange dash) concentration scaling (1D calculation at 1M
   electrolyte concentration).
   We also show best $r$ for 1D calculations with trivial scaling over a range of
-  concentrations,
-  and 2D and 3D calculations of a flat electrode at 1M concentration.
+  concentrations (blue starpoints);
+  and 2D and 3D calculations (black box points) of a flat electrode at
+  1M concentration. The solid purple line marks the model $r(V) = 1 +
+  0.38 \ln(1 + 0.1 V)$ fitted to trivial scaling data. Grey lines
+  mark uncertainty bounds of one standard deviation in the fitted parameters.
 }
 \label{fig:best_throttle_rate}
 \end{figure}
@@ -605,9 +609,21 @@ an adaptive definition of $r$,
 This model imposes the limit $r \rightarrow 1$ as $V \rightarrow 0$.
 In principle an optimal low-voltage multiplier might allow $r<1$, if
 $r>$hct, but the limit 1 is simpler, avoiding the need to 
-compare against hct.  Fitting against best $r$ for log-zero scaling
-obtains $A=1.3$ and $B=0.7 \textrm{V}^{-1}$. Best $r$ for trivial
-scaling is similar.
+compare against hct.  Fitting against best $r$ for trivial scaling
+obtains $A=3.78 \pm 0.36$, $B=0.102 \pm 0.020 \textrm{ V}^{-1}$.
+The uncertainties here have been determined from the covariance matrix
+generating by the fitting procedure implemented in the
+\verb|curve_fit| function provided by the optimize module in scipy
+\cite{VugrinSwilerRobertsStuckyMackSullivan2007}. The fitted curve is
+shown (
+ Best $r$ for log-zero scaling is similar. One could separately fit
+ parameters for log-zero scaling (to get
+ $A=1.3\pm 0.2$, $B=0.7 \pm 0.5 \textrm{ V}^{-1}$).
+ Nevertheless,  \figref{fig:best_throttle_rate} shows that the
+ log-zero data points lie only one standard deviation below the trivial
+scaling fit. Statistically there is no significant difference in the
+best-$r$ values for trivial and log-zero scaling.
+
 We emphasise that the value of $V$ used in the adaptive $r$ formula, \eqnref{adaptive_r},
 must be the target boundary condition (the final electrode voltage),
 not the throttled boundary condition at the given iteration.  If a throttled $V$ were
@@ -702,11 +718,8 @@ such a large number of iterations that this algorithm would become impractical.
 \label{fig:convergence}
 \end{figure}
 
-These final performance tests used adaptive $r$ coefficients taken from log-zero scaling ($A=1.3$,
-$B=0.7 \textrm{ V}^{-1}$). One could fit against the best fixed  $r$ for trivial
-scaling (to get $A=1.2$, $B=1.4 \textrm{ V}^{-1}$), but empirically
-the performance overall is (marginally) better with the log-zero
-parameters, even when applied to calculations using trivial scaling.
+These final performance tests used adaptive $r$ coefficients taken
+from trivial scaling ($A=3.8$, $B=0.1 \textrm{ V}^{-1}$).
 
 
 
@@ -768,7 +781,10 @@ The empirical parameters for optimal throttling, minimising the number of
 required iterations, appears to be universal, independent of
 electrolyte concentration or whether the geometry is 1D, 2D or 3D.
 This might indicate a deeper structure in the algorithm that could be
-revealed with further mathematical analysis.
+revealed with further mathematical analysis. Our 1D, 2D and 3D
+simulations tested the same flat electrode surface. We expect the optimal throttling
+conditions will continue to apply with more complex 3D or 2D
+geometries, though it may be prudent to confirm this assumption.
 
 We illustrated the throttling algorithm using Dirichlet boundary
 conditions (electrode potentials), but the  principle applies
