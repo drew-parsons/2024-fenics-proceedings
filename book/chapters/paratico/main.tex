@@ -1,5 +1,5 @@
 % Write the full path to the location of the graphics relative to book.tex
-\graphicspath{{chapters/chp1/graphics/}}
+\graphicspath{{chapters/paratico/graphics/}}
 
 \title{Estimation of optimal inlet boundary conditions for blood flow assessment in abdominal aortic aneurysm using variational data assimilation}
 \titlerunning{Paratico et al.}
@@ -36,110 +36,11 @@ This study aims to implementing a method to compute \textit{in vivo} blood fluid
 % ORIGINAL VERSION: The VarDA approach was formulated as an optimization problem constrained by the Navier-Stokes (NS) equations, using the \emph{dolfin-adjoint} library for the adjoint problem. The process follows three steps: running a first numerical simulation with tentative inlet BCs (i.e., the Tape), solving the optimization problem to identify inlet BCs, and running a final numerical simulation yielding the refined velocity and pressure fields (Fig. \ref{fig:scheme}).
 The VarDA approach was formulated as an optimization problem constrained by the NS equations, using the \emph{dolfin-adjoint} library for the adjoint problem. The process follows three steps: running a first numerical simulation with tentative inlet BCs (which we refer to as the \emph{forward model} or \emph{Tape}), solving the optimization problem to identify inlet BCs, and running a final numerical simulation yielding the refined velocity and pressure fields (Fig. \ref{fig:scheme}).
 
-% ORIGINAL VERSION:
-%\subsection*{Governing equations of the problem}
-%
-%Blood fluid dynamics follows the NS equations, which express the conservation of linear momentum and mass. Modeling blood as a Newtonian, incompressible fluid [\cite{Khalid2021}], the Eulerian form of the momentum equations reads:
-%
-%\begin{equation}
-%\label{eq:1}
-%\small
-%\rho_f \left( \frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla \mathbf{u}) \right) - \nabla \cdot \mathbf{T}_f(\mathbf{u}, p) = \rho_f \mathbf{f} \quad \forall x \in \Omega, \quad t > 0
-%\end{equation}
-%
-%where \(\mathbf{f} = \mathbf{f}(\mathbf{x},t)\) represents volumetric forces, \(\rho_f\) is blood density ($1.06 \, g/cm^3$ [\cite{Timothy2016}]), and \(\mathbf{T}_f(\mathbf{u}, p)\) is the Cauchy stress tensor defined as:
-%
-%\begin{equation}
-%\label{eq:2}
-%\small
-%\mathbf{T}_f(\mathbf{u}, p) = -p\mathbf{I} + \mu(\nabla \mathbf{u} + (\nabla \mathbf{u})^T)
-%\end{equation}
-%
-%with blood viscosity \(\mu\) assumed to be $3.9 \, cP$ [\cite{Khnouf2019}]. The conservation of mass for an incompressible fluid is:
-%
-%\begin{equation}
-%\label{eq:3}
-%\small
-%\nabla \cdot \mathbf{u} = 0
-%\end{equation}
-%
-%Introducing kinematic viscosity \(\nu = \frac{\mu}{\rho_f}\), the NS equations become:
-%
-%\begin{equation}
-%\label{eq:4}
-%\small
-%\partial_t \mathbf{u} + \mathbf{u} \cdot \nabla \mathbf{u} - \nu \Delta \mathbf{u} + \nabla p = \mathbf{f} \quad \text{in } \Omega \times (0, T)
-%\end{equation}
-%
-%\begin{equation}
-%\label{eq:5}
-%\small
-%\nabla \cdot \mathbf{u} = 0 \quad \text{in } \Omega \times (0, T)
-%\end{equation}
-%
-%The BCs, followed by the initial condition (IC), are:
-%
-%\begin{equation}
-%\label{eq:6}
-%\small
-%\mathbf{u} = \mathbf{g} \quad \text{on } \partial \Omega_D \times (0, T)
-%\end{equation}
-%
-%\begin{equation}
-%\label{eq:7}
-%\small
-%(\nu \nabla \mathbf{u} - p \mathrm{I}) \cdot \mathbf{n} = \textbf{0} \quad %\text{on } \partial \Omega_N \times (0, T)
-%\end{equation}
-%
-%\begin{equation}
-%\label{eq:8}
-%\small
-%\mathbf{u} = (0,0,0) \quad \text{on } \partial \Omega_s \times (0, T)
-%\end{equation}
-%
-%\begin{equation}
-%\label{eq:9}
-%\small
-%\mathbf{u} = \mathbf{u}_0 \quad \text{on } \Omega \times \{0\}
-%\end{equation}
-%
-%Equations \labelcref{eq:6}-\labelcref{eq:8} prescribe velocity vectors $\mathbf{g}$ through a function of space and time at the inlet section $\Omega_D \subset \Omega$, zero pressure at the outlet section $\Omega_N$, and no-slip condition on rigid walls of $\Omega$, respectively.
-%
-
 \subsection*{Forward problem definition}
 % ORIGINAL VERSION: The weak and discretized form of NS equations was solved using the FE platform \emph{FEniCS} [\cite{alnaes2015fenics}]. Through an in house Python script, 2D and 3D fluid domains $\Omega$ were discretized into triangular and tetrahedral elements, respectively,  with 1-1.5 mm characteristic size and with linear and quadratic shape functions for nodal pressure and velocity, respectively. The explicit Crank-Nicolson (CN) time-integration scheme was applied with a time increment of $\Delta t = 0.001$ s. The IPCS proposed in [\cite{Dokken2020}] was implemented. A generalized minimal residual method (GMRES) was chosen as linear solver, with tolerances of $1 \times 10^{-4}$ for momentum and continuity equations.
 The weak and discretized form of NS equations for an incompressible fluid [\cite{Stokes2009}] was solved using the FE platform \emph{FEniCS} [\cite{Alnaes2015}] to compute velocity field $\textbf{u}$ over a domain $\Omega$ given an initial condition \(\mathbf{u}=\mathbf{u_0}\) on $\Omega$ at time $t_0$, a zero pressure condition at the outlet section $\Omega_N$ and a Dirichlet BC at the inlet section $\Omega_D$ in the form of a space- and time-dependent velocity profile $\textbf{g}$. Through an in house Python script, 2D and 3D fluid domains $\Omega$ were discretized into triangular and tetrahedral elements, respectively, with 1-1.5 mm characteristic size and with linear and quadratic shape functions for nodal pressure and velocity, respectively. The semi-implicit Crank-Nicolson (CN) time-integration scheme was applied with a time increment of $\Delta t = 0.001$ s. The incremental pressure correction scheme (IPCS) proposed in [\cite{Goda1979}] was implemented. A generalized minimal residual method (GMRES) was chosen as linear solver, with tolerances of $1 \times 10^{-4}$ for momentum and continuity equations.
 
 \subsection*{Optimization Problem definition}
-% ORIGINAL VERSION: The optimization problem, constrained by NS equations (\cref{eq:10}), aimed to minimize a functional $J(u)$ (\cref{eq:11}, defined as the difference between the computed and observed velocities.
-%
-%\begin{equation}
-%\small
-%\min_{\mathbf{c}} J(\mathbf{u}) + R(\mathbf{c}) \quad \text{s.t.} \quad F(\mathbf{u}, \mathbf{c}) = 0
-%\label{eq:10}
-%\end{equation}
-%\begin{equation}
-%\small
-%    J(\textbf{u}) = \| \mathbf{u} - \mathbf{u}_{\text{obs}} \|_{L^2(\Omega)}
-%    \label{eq:2.19}
-%\end{equation}
-%
-%To address the ill-posedness of the problem, a Tikhonov regularization term was introduced. It accounts for two terms that are scaled by parameters \(\alpha\) and \(\beta\), where \(\beta\) is set to $0$ for steady-state conditions. This reformulation transforms the problem into an unconstrained optimization scenario, more suitable for gradient descent methods. 
-%
-%\begin{equation}
-%\small
-%    \begin{aligned}
-%        R(\mathbf{c}) &= \| \mathbf{c} \|_{L^2(\Omega)} \\
-%        &\text{where} \\
-%        \small
-%        \|c\|_{\Gamma \times (0, T]} &= \left( \int_0^T \int_{\partial \Omega} \frac{\alpha}{2} \left( \left(|g_D|^2 + |\nabla g_D|^2 \right) + \frac{\beta}{2} \left( |\dot{g}_D|^2 +  |(\nabla g)_D|^2 \right) \right) \, dx \, dt \right)^{\frac{1}{2}}
-%    \end{aligned}
-%    \label{eq:11} 
-%\end{equation}
-%
-%The adjoint approach efficiently computes the total derivative of the functional, yielding the adjoint NS equations that facilitate optimization. The iterative Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm, in its L-BFGS variant [\cite{Liu1989}], served as optimizer. Convergence was ensured through Wolfe conditions [\cite{Nocedal2006}].
-%
-%The performances of the method were assessed by   $J(u)$ value before and after optimization, Root Mean Squared Error (RMSE) between \( \mathbf{u}_{\text{CFD}} \) and \( \mathbf{u}_{\text{obs}} \), and qualitative analysis of the effect on the velocity field through the software \emph{Paraview}.
 
 The optimization problem (\cref{eq:10}, constrained by the NS equations, aimed to minimize a functional $J(\mathbf{u})$ (\cref{eq:11}, defined as the difference between the computed and observed velocities. 
 
@@ -170,17 +71,10 @@ To address the ill-posedness of the problem, a Tikhonov regularization term $\te
 The adjoint approach efficiently computes the total derivative of the functional, yielding the adjoint NS equations that facilitate optimization. The iterative Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm, in its L-BFGS variant [\cite{Liu1989}], served as optimizer. The L-BFGS algorithm is already implemented in the SciPy library, which is automatically
 called by dolfin-adjoint library and which provides many user-friendly numerical routines, such as the routine for optimization.
 
-% ORIGINAL VERSION:
-% \begin{figure}
-%    \centering
-%    \includegraphics[width=\textwidth]{chapters/chp1/graphics/schema2.JPG}
-%    \caption{\small \textbf{Top-left}: FE solver solves NS equations with an initial guess for inlet BC; \textbf{Top-right}: experimental velocity measurements are taken at discrete points in the domain; \textbf{Center}: discrepancy between CFD velocity field and experimental data is minimized by iteratively refining inlet velocity profile with a gradient-based method.}
-%    \label{fig:scheme}
-%\end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{chapters/chp1/graphics/finalx4.jpg}
+    \includegraphics[width=\textwidth]{chapters/paratico/graphics/finalx4.jpg}
     \caption{\small \textbf{Top-left}: The finite element (FE) solver computes the Navier-Stokes (NS) equations with an initial guess for the inlet boundary conditions (BCs); \textbf{Top-right}: experimental velocity measurements are taken at discrete points in the domain; \textbf{Center}: discrepancy between the computational fluid dynamics (CFD) velocity field and experimental data is minimized by iteratively refining inlet velocity profile with a gradient-based method.}
     \label{fig:scheme}
 \end{figure}
@@ -189,9 +83,6 @@ Convergence was ensured through Wolfe conditions [\cite{Nocedal2006}], with maxi
 The performances of the method were assessed by $J(\textbf{u})$ value before and after optimization, Root Mean Squared Error (RMSE) between \( \mathbf{u}\) and \( \mathbf{u}_{\text{obs}} \), and qualitative analysis of the effect on the velocity field through the software \emph{Paraview}.
 
 \subsection*{Benchmark Tests}
-% ORIGINAL VERSION: \textbf{\textit{Preliminary tests}} - First, preliminary tests were run to compare the computational efficiency of IPCS vs. the coupled scheme on a 2D straight conduit (2DVar) in turbulent and laminar conditions, respectively [\cite{Hale1955}]. The conduit was a longitudinal section of a cylinder with a diameter of 41 mm and a length of 200 mm. Synthetic observations (\( \mathbf{u}_{\text{obs}} \)) were generated by an auxiliary CFD simulation, prescribing a parabolic velocity profile at the inlet with peak velocity \( U_{\text{max}} = 600 \, \text{mm/s} \) (Re = 6649) and with \( U_{\text{max}} = 50 \, \text{mm/s} \) (Re = 554) for turbulent and laminar conditions, respectively.
-%In the Tape, the tentative inlet velocity profile was parabolic with \( U_{\text{max}} = 800 \, \text{mm/s} \) (Re = 8865) and \( U_{\text{max}} = 100 \, \text{mm/s} \) (Re = 1108).
-%The iterative minimization of the discrepancy between \( \mathbf{u}_{\text{CFD}} \) and \( \mathbf{u}_{\text{obs}} \) was performed to determine the optimal velocity profile for CFD simulations, verifying if it matched the parabolic profile used to generate the synthetic observations.\\
 
 \label{sec:bench}
 \textbf{\textit{Preliminary tests}} - 
@@ -200,25 +91,6 @@ The conduit was a longitudinal section of a cylinder with a diameter of 41 mm an
 In the Tape, the tentative inlet velocity profile was parabolic with \( U_{\text{max}} = 800 \, \text{mm/s} \) (Re = 8865) and \( U_{\text{max}} = 100 \, \text{mm/s} \) (Re = 1108).
 The iterative minimization of the discrepancy between \( \mathbf{u} \) and \( \mathbf{u}_{\text{obs}} \) was performed to determine the optimal velocity profile for CFD simulations, verifying if it matched the parabolic profile used to generate the synthetic observations.\\
 
-% ORIGINAL VERSION: \textbf{\textit{Progressively demanding tests}} - Next, the method was benchmarked through three progressively more demanding tests:
-%
-%\begin{enumerate}
-%    \item 2D straight conduit in transient conditions (2DVar+t benchmark) - This benchmark shared the same domain of the 2DVar benchmark. However, both the auxiliary simulation for the generation of the experimental observations and Tape consisted in a sequence of two transient simulations: in the first simulation, velocity was initially equal to 0 mm/s everywhere in the domain, and at the inlet a parabolic velocity profile was imposed, whose peak velocity increased linearly from 0 to \( \frac{ U_{\text{max}}}{2} \) over 0.3 s; in the second simulation, the velocity field computed by the first one was used as IC and the inlet velocity parabolic profile was scaled by the time-dependent function \( f(t) \):
-%
-%\begin{equation}
-%\small
-%f(t) = 
-%\begin{cases}
-%\frac{U_{\text{max}}}{2}\cos\left(\frac{\pi}{T_s}\left(t - \frac{T_s}{2}\right)\right), & \text{if } t \leq T_s \\
-%\frac{U_{\text{max}}}{2}, & \text{if } T_s < t \leq T_d
-%\label{eq:12}
-%\end{cases}
-%\end{equation}
-%
-%where \( T_s = 300 \) ms and \( T_d = 540 \) ms are cardiac cycle's systolic and diastolic phases. 
-%
-%Besides determining the optimal velocity profile for CFD simulations, spatial and temporal regularization terms [\cref{eq:12}] were incorporated into the optimization process and subjected to a sensitivity analysis.\\
-%
 
 \textbf{\textit{Progressively demanding tests}} - Next, the method was benchmarked through three progressively more demanding tests:
 
@@ -236,15 +108,7 @@ f(t) =
 \end{equation}
 
 where \( T_s = 300 \) ms and \( T_d = 540 \) ms are cardiac cycle's systolic and diastolic phases [\cite{Katz1977}]. Besides determining the optimal velocity profile for CFD simulations, spatial and temporal regularization terms [\cref{eq:12}] were incorporated into the optimization process and subjected to a sensitivity analysis.\\
-% ORIGINAL VERSION: \item 3D straight conduit in steady-state conditions (3DVar benchmark) - This benchmark evaluated the computational cost increase when transitioning from a 2D to a 3D problem. The fluid domain was a 3D cylinder with a radius of 30 mm and a length of 200 mm. IC and BCs, as well as the objective function, were identical to those in the 2DVar benchmark.\\
-%\item Patient-specific AAA geometry in steady-state conditions (AAA benchmark) - This benchmark aimed to test VarDA in a complex 3D domain using real experimental observations. 4D flow imaging was acquired from an adult male with AAA using a 3T coronary magnetic resonance (CMR) system (Ingenia, Philips Healthcare, Netherlands) at Linköping University Hospital. The 4D flow data were processed with in-house Python code DOI 10.5281/zenodo.7236014 \cite{Saitta2024} and CMR angiography was performed for 3D AAA geometry segmentation.
-%Two tests were carried out with laminar flow in the AAA. In the first test, observations consisted in 4DFlow data acquired during early systole (at the third time frame of the cardiac cycle), while the Tape was generated by a CFD simulation fed by 4DFlow-based inlet velocity profiles. The second test assessed the method's robustness against noise, using an inlet velocity profile, scaled by 0.15, at peak systole to produce the Tape's output. Noisy observations were generated by processing the Tape's output according to \cite{Saitta2024}.
-%In addition to already-mentioned metrics, wall shear stresses (WSSs) from final simulation we analyzed using custom Paraview filters.
-%\end{enumerate}
-%
-%The associated codes can be found at the following link:
-%\url{https://github.com/saraparatico/proceedings/tree/main/book/chapters/chp1/codes}.
-%
+
     \item 3D straight conduit in steady-state conditions (which represents a case of 3D VarDA and can thus be addressed using the term I defined as \emph{3DVar} benchmark) - This benchmark evaluated the computational cost increase when transitioning from a 2D to a 3D problem. The fluid domain was a 3D cylinder with a radius of 30 mm and a length of 200 mm, made of 74,968 mesh elements. IC and BCs, as well as the objective function, were identical to those in the 2DVar benchmark.
     \item Patient-specific AAA geometry in steady-state conditions (which represents a case of 3DVar applied to a patient-specific AAA geometry and can thus be addressed using the term I defined as AAA benchmark) - This benchmark aimed to test VarDA in a complex 3D domain using real experimental observations. 4D flow imaging was acquired from an adult male with AAA using a 3T coronary magnetic resonance (CMR) system (Ingenia, Philips Healthcare, Netherlands) at Linköping University Hospital. The 4D flow data were processed with in-house Python [\cite{Saitta2024}] and CMR angiography was performed for 3D AAA geometry segmentation.
 Two tests were carried out with laminar flow in the AAA. In the first test, observations consisted in 4DFlow data acquired during early systole, corresponding to the third time frame (about 63 ms from the start of the cardiac cycle, with a 21 ms time step), while the Tape was generated by a CFD simulation fed by 4DFlow-based inlet velocity profiles. The second test assessed the method's robustness against noise, using an inlet velocity profile, scaled by 0.15, at peak systole to produce the Tape's output. Noisy observations were generated by processing the Tape's output according to medium noise setting of \cite{Saitta2024}.
@@ -277,39 +141,29 @@ Moreover, these tests did not yield improvements by changing \(\alpha\), and inc
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth, height = 0.3\textheight]{chapters/chp1/graphics/1p2x4.jpg}
+    \includegraphics[width=0.8\textwidth, height = 0.3\textheight]{chapters/paratico/graphics/1p2x4.jpg}
     \caption{Sensitivity analysis of regularization parameters at systolic peak. First row: 2DVar + t velocity magnitude for different $\alpha$ values ($10^{-3}$, $10^{-1}$, $10^{1}$), with $\beta = 10^{-3}$. Second row: test with $\beta = 10^{1}$ to assess time regularization. Third and fourth rows: velocity difference between reference and 3DVar results for each $\alpha$ and $\beta$.}
     \label{fig:3.3}
 \end{figure}
 
 When the initial velocity and pressure fields were set equal to those yielded by the previous post-optimization simulation, the results showed a more homogeneous flow better matching parabolic characteristics and with lower \(J + R\) values.\\
 
-% ORIGINAL VERSION: \textbf{\textit{3DVar benchmark}} - VarDA was performed by varying the magnitude of the spatial regularization term with \(\alpha\) set to \(10^{-2}\), \(10^{1}\), and \(10^{3}\). The lowest value of \(J + R\) was achieved with \(\alpha = 10^{-2}\), but it did not correspond to the lowest \(RMSE\). The velocity field exhibited a peak near the inlet, indicating a loss of continuity. For \(\alpha = 10^{1}\), the lowest \(RMSE\) was obtained, and the post-optimization velocity field better reflected the observed data. Increasing \(\alpha\) to \(10^{3}\) led to significant deviations from the observations, with unexpected velocity behaviors and higher values of \(J + R\) and \(RMSE\).\\
 \textbf{\textit{3DVar benchmark}} - VarDA was performed with spatial regularization terms set to $\alpha = 10^{-2}$, $10^1$, and $10^3$. The lowest value of $J + R$ was achieved with $\alpha = 10^{-2}$, but it did not correspond to the lowest RMSE. The velocity field exhibited a peak near the inlet, suggesting continuity loss. For $\alpha = 10^1$, the lowest RMSE was achieved, and the post-optimization velocity field more accurately reflected the observed data. Increasing $\alpha$ to $10^3$ resulted in significant deviations from the observations, with unexpected velocity behaviors and higher values of $J + R$ and RMSE. This suggests that lower $\alpha$ values improve RMSE, while higher $\alpha$ values lead to smoother solutions, but can introduce inaccuracies when too large.\\
 
-% ORIGINAL VERSION: \textbf{\textit{AAA benchmark}} - In first tests, \(RMSE\) improved from 59.3 mm/s to 55.1 mm/s, indicating a better alignment with observations. Generating a Tape took about 25 minutes, while optimization required 17 hours with 80 Gb of memory. WSS distributions from Tape's output and 3DVar predictions were consistent, identifying regions with high shear stress. WSS distributions from Tape's output and 3DVar predictions were consistent in terms of location of high WSS regions. Moreover, while enforcing consistency with 4DFlow-based velocity measurements, the 3DVar method yielded a regular and realistic WSS distribution. This is a major difference as compared to the WSS distribution estimated directly from 4DFlow data, which was unrealistic owing to their poor space-resolution and to the impact of noise in the near-wall region.
-%
-% \begin{figure}
-%    \centering
-%    \includegraphics[width=0.55\textwidth, height = 0.15\textheight]{chapters/chp1/graphics/RealData3DVar.JPG}
-%    \caption{\small AAA benchmark velocity magnitude maps obtained from Tape (\textbf{left}), observations based on 4DFlow MRI (\textbf{right}) and assimilated results (\textbf{centre}).}
-%    \label{fig:3.7}
-%\end{figure}
-%In tests with noisy observations, 3DVar effectively reconstructed the velocity field, slightly reducing \(RMSE\) from 36.8 mm/s to 36.4 mm/s, while maintaining WSS predictions consistent with CFD results, particularly at the iliac bifurcation.
 
 \textbf{\textit{AAA benchmark}} - In first tests, \(RMSE\) improved from 59.3 mm/s to 55.1 mm/s, indicating a better alignment with observations (Fig. \ref{fig:3.7a}). 
 \begin{figure}
     \centering
     \begin{minipage}{\textwidth}
         \centering
-        \includegraphics[width=0.7\textwidth, height = 0.2\textheight]{chapters/chp1/graphics/RealData3DVar.JPG}
+        \includegraphics[width=0.7\textwidth, height = 0.2\textheight]{chapters/paratico/graphics/RealData3DVar.JPG}
         \subcaption{\small AAA benchmark velocity magnitude maps.}
         \label{fig:3.7a}
     \end{minipage}
     \\[1em]  
     \begin{minipage}{\textwidth}
         \centering
-        \includegraphics[width=0.7\textwidth, height = 0.2\textheight]{chapters/chp1/graphics/WSS3DVar.JPG}
+        \includegraphics[width=0.7\textwidth, height = 0.2\textheight]{chapters/paratico/graphics/WSS3DVar.JPG}
         \subcaption{\small AAA benchmark WSS maps.}
         \label{fig:3.7b}
     \end{minipage}
@@ -321,22 +175,16 @@ Generating a Tape took about 25 minutes, while optimization required 17 hours wi
 
 
 \section*{Discussion}
-% ORIGINAL VERSION: \subsection*{From 2DVar+t to 3DVar}
-%The 2DVar+t reveals challenges due to inertial effects and short simulation durations, causing reconstruction defects from incomplete flow development. Extending simulation time for optimization is impractical due to high computational costs. A potential solution includes proper initialization of CFD simulations and implementing a checkpointing method to reduce computational costs by using only the last cardiac cycle for gradient calculations.
-%Moreover, a key difference between 2DVar+t and 3DVar is the flow field's response to regularization. In 2DVar+t, increasing $\alpha$ has minimal effect due to dominant time-dependent effects, reducing spatial regularization's impact. Additionally, increasing $\beta$ deteriorates the results, a challenge not present in 3DVar, emphasizing the difficulty of balancing temporal and spatial regularization in dynamic flows. Conversely, in 3DVar, moderate $\alpha$ values ($10^{1}$) significantly improve the velocity field, reducing inlet peaks and lowering \(RMSE\). However, excessive regularization ($\alpha = 10^{3}$) causes unrealistic velocity patterns. 
-%
+
 \subsection*{From 2DVar+t to 3DVar}
 The 2DVar+t reveals challenges due to inertial effects and short simulation durations, causing reconstruction defects from incomplete flow development. Extending simulation time for optimization is impractical due to high computational costs. A potential solution includes proper initialization of CFD simulations and implementing a checkpointing method to reduce computational costs by using only the last cardiac cycle for gradient calculations.
 Moreover, a key difference between 2DVar+t and 3DVar is the flow field's response to regularization. In 2DVar+t, increasing $\alpha$ has minimal effect due to dominant time-dependent effects, reducing spatial regularization's impact. Additionally, increasing $\beta$ deteriorates the results, a challenge not present in 3DVar, emphasizing the difficulty of balancing temporal and spatial regularization in dynamic flows. Conversely, in 3DVar, moderate $\alpha$ values ($10^{1}$) significantly improve the velocity field, reducing inlet peaks and lowering \(RMSE\). However, excessive regularization ($\alpha = 10^{3}$) causes unrealistic velocity patterns. 
 
-% ORIGINAL VERSION: \subsection*{AAA benchmark}
-% AAA benchmark effectively reconstructs the velocity field in AAA geometry, maintaining high consistency with the data obtained from 4D flow imaging. It identifies high shear stress regions despite challenges due to lower resolution of 4D flow data near boundaries.The method remains robust against noise, indicating real-world applicability. 
 \subsection*{AAA benchmark}
 AAA benchmark effectively reconstructs the velocity field in AAA geometry, maintaining high consistency with data obtained from 4D flow
 imaging. It identifies high shear stress regions despite challenges due to lower resolution of 4D flow data near boundaries. The method remains robust against noise. 
 
-% ORIGINAL VERSION: \section*{Conclusions}
-%This project advances cardiovascular hemodynamic analysis by validating the VarDA method, demonstrating IPCS's superiority in computational efficiency and accuracy. While challenges in transient flow analyses remain, ongoing research will further enhance VarDA's application in cardiovascular medicine.
+
 \section*{Conclusions}
 This study applies VarDA to estimate optimal inlet BCs for CFD using noisy 4D flow MRI data, minimizing mismatch with \textit{in vivo} velocity measurements.
 The method yields a resolved, noise-free velocity field and is validated on 2D, 3D and patient-specific AAA geometries, demonstrating potential for personalized hemodynamic simulations.
@@ -345,6 +193,6 @@ The IPCS framework enhances efficiency and accuracy in transient flow analyses. 
 
 \bibliographystyle{spbasic}
 % Write the full path of your bibfile relative to book.tex
-\bibliography{chapters/chp1/bibliography.bib}
+\bibliography{chapters/paratico/bibliography.bib}
 
 
