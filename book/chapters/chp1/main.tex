@@ -585,7 +585,7 @@ iterations remains the same. The optimal $r(V)$ may be considered universal afte
   concentrations (blue starpoints);
   and 2D and 3D calculations (black box points) of a flat electrode at
   1M concentration. The solid purple line marks the model $r(V) = 1 +
-  0.38 \ln(1 + 0.1 V)$ fitted to trivial scaling data. Grey lines
+  3.78 \ln(1 + 0.102 V)$ fitted to trivial scaling data. Grey lines
   mark uncertainty bounds of one standard deviation in the fitted parameters.
 }
 \label{fig:best_throttle_rate}
@@ -614,8 +614,7 @@ obtains $A=3.78 \pm 0.36$, $B=0.102 \pm 0.020 \textrm{ V}^{-1}$.
 The uncertainties here have been determined from the covariance matrix
 generating by the fitting procedure implemented in the
 \verb|curve_fit| function provided by the optimize module in scipy
-\cite{VugrinSwilerRobertsStuckyMackSullivan2007}. The fitted curve is
-shown (
+\cite{VugrinSwilerRobertsStuckyMackSullivan2007}. 
  Best $r$ for log-zero scaling is similar. One could separately fit
  parameters for log-zero scaling (to get
  $A=1.3\pm 0.2$, $B=0.7 \pm 0.5 \textrm{ V}^{-1}$).
@@ -636,9 +635,9 @@ Table.~\ref{tab:convergence} shows  the number of iterations required
 to converge with various boundary conditions for the different
 concentration scaling functions, in both the point charge model and the
 steric model, and applying adaptive
-$r(V)=1+1.3\ln(1+0.7V)$. For the point charge model, trivial scaling only
-permits calculation up to 0.5V. Log scaling reaches 1.3V, log-zero
-scaling reaches 1.9V.
+$r(V)=1+3.78\ln(1+0.102V)$ for 1D meshes with 30 cells. For the point charge model, trivial scaling only
+permits calculation up to 0.7V. Log scaling reaches 0.8V, log-zero
+scaling reaches 1V (1.5V may be reached with a finer mesh).
 
 \begin{table}
   \centering
@@ -655,79 +654,81 @@ pot(V)  & \multicolumn{3}{c|}{Point charge} & \multicolumn{3}{c}{Steric}    \\
 %	&Steric OFF	&Steric OFF + log	&Steric OFF + log\_zero	&Steric ON	&Steric ON + log	&Steric ON + log\_zero\\
 %Surface Potential [V]	&Throttle attemps	&	&	&	&	&\\
 0.1	&1	&1	&1	&1	&1	&1\\
-%0.2	&1	&1	&1	&1	&6	&6\\
-%0.3	&1	&1	&1	&1	&9	&9\\
-0.5	&1	&1	&1	&1	&12	&9\\
-0.6	&F	&1	&1	&1	&12	&12\\
-1	&	&1	&1	&1	&16	&13\\
-1.3	&	&55	&41	&8	&17	&17\\
-1.4	&	&S	&143	&8	&17	&17\\
-%1.5	&	&S	&187	&8	&17	&18\\
-1.9	&	&	&573	&9	&21	&18\\
-2	&	&	&S	&9	&21	&18\\
-%3	&	&	&	&14	&23	&23\\
-5	&	&	&	&20	&30	&30\\
+0.5	&1	&1	&1	&1	&11	&9\\
+0.7	&6	&1	&1	&1	&11	&11\\
+0.8	&S	&10	&6	&6	&11	&11\\
+0.9	&	&S	&8	&1	&14	&12\\
+1	&	&	&7	&1	&14	&12\\
+1.1	&	&	&F	&7	&14	&14\\
+1.5	&	&	&	&10	&15	&15\\
+2	&	&	&	&8	&19	&16\\
+5	&	&	&	&18	&27	&27\\
 10	&	&	&	&27	&F	&39\\
-%25	&	&	&	&56	&	&52\\
-%50	&	&	&	&92	&	&72\\
-100	&	&	&	&132	&	&122\\
+100	&	&	&	&91	&	&114\\
 %250	&	&	&	&240	&	&180\\
 %375	&	&	&	&355	&	&212\\
 %500	&	&	&	&419	&	&230\\
 %625	&	&	&	&478	&	&321\\
 %750	&	&	&	&517	&	&382\\
 %875	&	&	&	&551	&	&428\\
-1000	&	&	&	&586	&	&463    \\
-2000	&	&	&	&S	&	&647    
+1000	&	&	&	&439	&	&369    \\
+2000	&	&	&	&S	&	&762    
   \end{tabular}
 \caption{\label{tab:convergence}Number of throttling iterations
-  required to  solve the  Poisson-Boltzmann model of a 1M NaCl electrolyte solution
+  required to  solve the Poisson-Boltzmann model of a 1M NaCl electrolyte solution
   for various electrode potentials and concentration scaling
   functions (trivial, log, or log-zero scaling), for both the classic point charge model, and the steric
   model (Carnahan-Starling) with finite ion sizes. Adaptive rise rate
-  multiplier $r(V)=1+1.3\ln(1+0.7V)$.
+  multiplier $r(V)=1+3.78\ln(1+0.102V)$, for 1D mesh with 30 cells. 
   ``F''=Failed
   (throttle step $<10^{-5}$). ``S''=Stopped at 1000 iterations.}
 \end{table}
 
 
-The corresponding
-performance plot of iterations vs voltage for the steric model
-(with both trivial and log-zero scaling) is shown in \figref{fig:convergence}.
 Trivial scaling is successful with the steric model up to 1000V, while simple log
 scaling fails at 10V due to instability introduced by near-zero coion
 concentrations.
 Log-zero scaling enables calculation to 2000V
-and greater, beyond the limit of trivial scaling. But the steric model
+and greater, beyond the limit of trivial scaling.
+The corresponding
+performance plot of iterations vs voltage for the steric model
+(with both trivial and log-zero scaling) is shown in \figref{fig:convergence}.
+ The steric model
 naturally keeps concentrations within 
 physically reasonable bounds, such that  log-zero scaling is not
 required for normal electrochemical conditions. In fact
-trivial scaling performs better than log-zero scaling when $V<20$V,
+trivial scaling performs better than log-zero scaling when $V<100$V,
 the region of electrochemical interest.
-But even with log-zero scaling, computation of the interaction of
+Performance is robust with respect to the $A$, $B$ parameters used to
+determined $r(V)$, whether fitted to best-$r$ for trivial or log-zero scaling.
+2D and 3D calculations generally require the same number of iterations
+as 1D calculations, showing small differences only at 1--2V.
+Even with log-zero scaling, computation of the interaction of
 100~kV electrical transmission cables with saline water would require
 such a large number of iterations that this algorithm would become impractical.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth]{a_v_V.eps}
+\includegraphics[width=0.8\linewidth]{num_attempts_vs_V.eps}
 \caption{Number of throttling iterations,  as a function of electrode
   voltage, needed to solve the steric model with trivial and log-zero scaling.
-  Uses an adaptive rise rate multiplier $r(V)=1+1.3\ln(1+0.7V)$.
+  Uses an adaptive rise rate multiplier
+  $r(V)=1+3.78\ln(1+0.102V)$ fitting to best trivial scaling (solid
+  curves). 1D calculations with trivial scaling are shown in black,
+  and log-zero scaling in orange. Rise rate $r(V)=1+1.3 \ln(1+0.7V)$
+  (fitted for best log-zero) is also shown (dash curves) for
+  comparison. 2D data points are shown with square (trivial scaling) and
+  diamond (log-zero scaling) symbols. 3D data points (trivial scaling) are
+  shown as blue crosses.
 }
 \label{fig:convergence}
 \end{figure}
-
-These final performance tests used adaptive $r$ coefficients taken
-from trivial scaling ($A=3.8$, $B=0.1 \textrm{ V}^{-1}$).
-
-
 
 
 Sample results of the adaptive throttling algorithm for an electrode charged to
 10V, with Carnahan-Starling steric forces, are shown in
 \figref{fig_results_throttling}, calculated with trivial scaling of the
-concentration functions. \figref{fig_results_throttling}b shows the onset
+concentration functions with adaptive $r$ coefficients $A=3.78$, $B=0.102 \textrm{ V}^{-1}$). \figref{fig_results_throttling}b shows the onset
 of a steric adsorption layer \citep{DagmawiParsons2022} with counterion
 concentrations constrained below a concentration cap determined by the
 ion size, a cap of 46 mol/L in the case of our \ce{Cl-} ion.
