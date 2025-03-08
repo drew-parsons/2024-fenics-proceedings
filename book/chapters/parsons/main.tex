@@ -162,13 +162,13 @@ the external boundary,\footnote{at an internal boundary, $\sigma=D^{\text{out}}_
 \end{equation}
 where $D_{\perp}$ is the transverse component of the electric
 displacement vector $D$ at the boundary, or, equivalently, $n$ is the
-outward normal vector at the boundary. \eqnref{surface_charge_gauss}
+outward normal vector at the boundary. Eq.~\eqref{surface_charge_gauss}
 is valid across the entire  external surface $S$, but sets a Neumann
 boundary condition when applied to the surface subdomain
-$S_{N}$ in \eqnref{weak_Poisson}. Applied at $S_{D}$, it provides an
+$S_{N}$ in Eq.~\eqref{weak_Poisson}. Applied at $S_{D}$, it provides an
 evaluation of the surface charge density generated at Dirichlet surfaces.
  After additional
-integration by parts, the weak formulation \eqnref{weak_Poisson} leads to the strong
+integration by parts, the weak formulation Eq.~\eqref{weak_Poisson} leads to the strong
 formulation of the electrostatic Poisson equation,
 $\nabla\cdot D = \sum_i z_i e c_{i}(x)$.
 
@@ -241,12 +241,12 @@ and weak formulation
     0 = \int_{V} (\mu_i^{ex}-\mu_{i\infty}^{ex}) b_i \, dx
     \label{weak_CS}
 \end{equation}
-for all $b_i$, which is added to \eqnref{weak_Boltzmann}, the weak
+for all $b_i$, which is added to Eq.~\eqref{weak_Boltzmann}, the weak
 formulation for the Boltzmann equation, together generating the strong
 formulation of the modified Boltzmann
-equation,  \eqnref{general_Boltzmann}.  Here the excess chemical potential
+equation,  Eq.~\eqref{general_Boltzmann}.  Here the excess chemical potential
 per ion for the Carnahan-Starling (CS) model, corresponding to the energy
-functional \eqnref{CS_energy_functional}, is
+functional Eq.~\eqref{CS_energy_functional}, is
 \begin{equation}
     \mu_{i}^{ex} = kT \frac{\phi(8-9\phi+3\phi^2)}{(1-\phi)^3}.
     \label{chem_pot_CS}
@@ -254,7 +254,7 @@ functional \eqnref{CS_energy_functional}, is
 $\phi$ is the \emph{total} ion volume fraction defined by
 $\phi=\sum_i c_i v_i$ where $v_i$ is the intrinsic molar volume per
 ion $i$. Hence the CS excess chemical potential is defined identically
-for all ions. To derive the weak formulation in \eqnref{weak_CS}, we
+for all ions. To derive the weak formulation in Eq.~\eqref{weak_CS}, we
 applied an homogenised component approximation that assigns common
 volumes at the point of introducing the variation  $\delta c_i$ (i.e.\
 the test function $b_i$), such that $\delta\phi=v_j \delta c_i$ rather 
@@ -265,7 +265,7 @@ potentials \citep{MansooriCarnahanStarlingLeland1971}, removing the
 need for this approximation.  $\phi_{\infty}$, $\mu_{i\infty}^{ex}$
 are the bulk total volume fraction and excess chemical potential
 defined by bulk concentrations $c_{i\infty}$. With this term, the
-Boltzmann equation \eqnref{general_Boltzmann} becomes transcendental in $c_i$, precluding a closed
+Boltzmann equation Eq.~\eqref{general_Boltzmann} becomes transcendental in $c_i$, precluding a closed
 expression that would determine ion concentrations. Concentration functions must therefore be
 explicitly solved  numerically alongside potential $\psi$. In this
 paper we address strategies for managing the strong nonlinearity in
@@ -277,14 +277,14 @@ continuity equation rather than a Boltzmann equation.
 
 One last point on the weak formulation of the Boltzmann equation. The variational
 derivation of these weak formulations from the energy functionals,
-\eqnref{weak_Boltzmann} and \eqnref{weak_CS}, presents them in terms of the
-chemical potential of the ions, \eqnref{chem_pot}, not the concentration directly. That
+Eq.~\eqref{weak_Boltzmann} and Eq.~\eqref{weak_CS}, presents them in terms of the
+chemical potential of the ions, Eq.~\eqref{chem_pot}, not the concentration directly. That
 is, fundamentally the strong form of the Boltzmann equation is simply $\mu_i(x) =
 \mu_{i\infty}$, the condition of equal chemical potential at all
 points in the domain in equilibrium with an external bulk bath.
 The Boltzmann
 equation in terms of 
-concentration, \eqnref{general_Boltzmann}, is then simply a rearrangement of
+concentration, Eq.~\eqref{general_Boltzmann}, is then simply a rearrangement of
 the strong equation for chemical potential. Chemists are in the
 habit of using the Boltzmann equation in concentration form rather
 than chemical potential, in practice our implementation in code applies the weak
@@ -297,8 +297,8 @@ dx
 \label{weak_Boltzmann_conc}
 \end{equation}
 for all test functions $b_i$, rather than applying it via the chemical
-potential components in \eqnref{weak_Boltzmann}
-+\eqnref{weak_CS}. Because the concentration functions $c_i(x)$ being
+potential components in Eq.~\eqref{weak_Boltzmann}
++Eq.~\eqref{weak_CS}. Because the concentration functions $c_i(x)$ being
 solved are the same, this change in weak form should not affect
 residuals.  These alternative weak forms for the Boltzmann
 equation may affect efficiency, perhaps by changing the condition number
@@ -353,7 +353,7 @@ layer before the decay region is reached \cite{DagmawiParsons2022}.
 
 \subsection{Solver description}
 We constructed a finite element implementation of the weak
-formulation (\eqnref{weak_Poisson} and \eqref{weak_Boltzmann_conc}) in
+formulation (Eq.~\eqref{weak_Poisson} and \eqref{weak_Boltzmann_conc}) in
 FEniCSx \citep{baratta2023dolfinx}, using continuous
 Lagrange elements with polynomial order 2 (linear elements with order
 1 may also be used).  The electrolyte solution
@@ -406,7 +406,7 @@ over a potential window as wide as $-5$ to 5 V.
 
 The challenge arises due to the extreme magnitudes of the counterion
 concentration at the electrode surface. The weak formulation for the
-Boltzmann equation in \eqnref{weak_Boltzmann} suggests a solution:
+Boltzmann equation in Eq.~\eqref{weak_Boltzmann} suggests a solution:
 solve for the concentration function in log-form
 \begin{equation}
 C_{i}(x) = \ln[ c_{i}(x) / c_{i\infty}]
@@ -416,9 +416,9 @@ rather than the physical concentration function $c_{i}(x)$ directly. Log
 scaling extends the solvability of the conventional point-charge Poisson-Boltzmann
 model up to electrode potentials as high as 1.5 V. Solutions for the
 electrostatic potential and counterion concentration profile are shown
-in \figref{fig_classical_PB}. Shown on a log scale, strong
+in Fig.~\ref{fig_classical_PB}. Shown on a log scale, strong
 nonlinearity in the PB system becomes apparent in the bend in the
-electrostatic potential (\figref{fig_classical_PB}a) close to the
+electrostatic potential (Fig.~\ref{fig_classical_PB}a) close to the
 surface ($x<2$\AA) for electrode potentials $> 0.2$ V.
 
 \begin{figure}
@@ -453,15 +453,15 @@ near-zero concentration of the coion, we call it ``log-zero'' scaling.
 
 Log-zero scaling of concentration functions facilitates a successful numerical solution to
 the conventional Poisson-Boltzmann at electrode potentials
-exceeding 1V. Nevertheless \figref{fig_classical_PB}b demonstrates the
+exceeding 1V. Nevertheless Fig.~\ref{fig_classical_PB}b demonstrates the
 point charge catastrophe of the conventional model, with counterion
 concentrations exceeding $10^{5}$ mol/L at the electrode
 surface. Moreover, for general electrochemical applications it would
 be desirable to be capable of obtaining solutions for electrode
 potentials higher than 1.5V. To deal with the physical problem, we
 introduce finite ion sizes with a steric force provided by the
-Carnahan-Starling model, \eqnref{chem_pot_CS} (weak form
-\eqnref{weak_CS}).  We apply ion volumes
+Carnahan-Starling model, Eq.~\eqref{chem_pot_CS} (weak form
+Eq.~\eqref{weak_CS}).  We apply ion volumes
 $v_{{Na}}=1.24 \textrm{\AA}^{3}$ per {Na}$^{+}$ ion,
 $v_{{Cl}}=35.9 \textrm{\AA}^{3}$ per {Cl}$^{-}$ ion (these are
 quantum mechanical volumes of the electron clouds \citep{ParsonsNinham2009}).
@@ -485,7 +485,7 @@ method \citep{homotopy_analysis_Liao2012}
 or numerical continuation method \citep{allgower1990numerical},
 with our throttle serving as a homotopy parameter applied to boundary
 conditions.  A flowchart for the algorithm is shown in
-\figref{fig:throttling_algorithm}.
+Fig.~\ref{fig:throttling_algorithm}.
 
 \begin{figure}
 \centering
@@ -531,7 +531,7 @@ sigmoidal) rise rate.
 \subsubsection{Optimal throttling}
 An example of
 the  throttle rate against number of iterations is shown in
-\figref{fig:throttle_rate} for 1V and 10V boundaries with different
+Fig.~\ref{fig:throttle_rate} for 1V and 10V boundaries with different
 choices of fixed values of the rise rate multiplier $r$. A best value of $r$ can be identified
 for each voltage, minimising the number of iterations required,
 e.g. $r=2$ for 1V, and $r=3$ for 10V. A
@@ -555,7 +555,7 @@ more iterations are required to fall back to a converging throttle rate.
 \end{figure}
 
 The best-performing fixed values of $r$  for potentials up to 100V are shown
-in  \figref{fig:best_throttle_rate}.  We observe a similar trend in 1D calculations with
+in  Fig.~\ref{fig:best_throttle_rate}.  We observe a similar trend in 1D calculations with
 trivial and log-zero function scaling  (the
 differences may not be significant since only integer values of $r$ up
 to 10 were tested). \textit{A priori} we have no reason to expect the
@@ -591,7 +591,7 @@ iterations remains the same. The optimal $r(V)$ may be considered universal.
 
 
 \subsubsection{Adaptive throttle rate}
-The trend in best-performing $r$ shown in \figref{fig:best_throttle_rate} suggests that an
+The trend in best-performing $r$ shown in Fig.~\ref{fig:best_throttle_rate} suggests that an
 optimal multiplier follows
 $r \propto \ln V$, indicating that $r$ 
 may be tuned adaptively to provide the maximum possible rise rate (smallest
@@ -616,12 +616,12 @@ generating by the fitting procedure implemented in the
  Best $r$ for log-zero scaling is similar. One could separately fit
  parameters for log-zero scaling (to get
  $A=1.3\pm 0.2$, $B=0.7 \pm 0.5 \textrm{ V}^{-1}$).
- Nevertheless,  \figref{fig:best_throttle_rate} shows that the
+ Nevertheless,  Fig.~\ref{fig:best_throttle_rate} shows that the
  log-zero data points lie only one standard deviation below the trivial
 scaling fit. Statistically there is no significant difference in the
 best-$r$ values for trivial and log-zero scaling.
 
-We emphasise that the value of $V$ used in the adaptive $r$ formula, \eqnref{adaptive_r},
+We emphasise that the value of $V$ used in the adaptive $r$ formula, Eq.~\eqref{adaptive_r},
 must be the target boundary condition (the final electrode voltage),
 not the throttled boundary condition at the given iteration.  If a throttled $V$ were
 applied, $r$ would be small when the boundary condition is strongly
@@ -690,7 +690,7 @@ Log-zero scaling enables calculation to 2000V
 and greater, beyond the limit of trivial scaling.
 The corresponding
 performance plot of iterations vs voltage for the steric model
-(with both trivial and log-zero scaling) is shown in \figref{fig:convergence}.
+(with both trivial and log-zero scaling) is shown in Fig.~\ref{fig:convergence}.
  The steric model
 naturally keeps concentrations within 
 physically reasonable bounds, such that  log-zero scaling is not
@@ -725,8 +725,9 @@ such a large number of iterations that this algorithm would become impractical.
 
 Sample results of the adaptive throttling algorithm for an electrode charged to
 10V, with Carnahan-Starling steric forces, are shown in
-\figref{fig_results_throttling}, calculated with trivial scaling of the
-concentration functions with adaptive $r$ coefficients $A=3.78$, $B=0.102 \textrm{ V}^{-1}$). \figref{fig_results_throttling}b shows the onset
+Fig.~\ref{fig_results_throttling}, calculated with trivial scaling of the
+concentration functions with adaptive $r$ coefficients $A=3.78$, $B=0.102 \textrm{ V}^{-1}$).
+Fig.~\ref{fig_results_throttling}b shows the onset
 of a steric adsorption layer \citep{DagmawiParsons2022} with counterion
 concentrations constrained below a concentration cap determined by the
 ion size, a cap of 46 mol/L in the case of our {Cl}$^{-}$ ion.
