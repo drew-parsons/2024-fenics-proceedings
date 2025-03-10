@@ -51,7 +51,7 @@ The next step is to build a FEM model of the brake disc. FEM is a method to solv
     \rho c \frac{\partial T}{\partial t} + \nabla \cdot (- k \nabla T) = f,
     \label{heat equation}
 \end{equation}
-where \( \rho \) is density, \( c \) is thermal capacity, \( T \) is temperature, \( t \) is time, \( k \) is the overall heat transfer coefficient, and \( f \) is the inner heat source. The time derivative on the right-hand side can be approximated by a difference quotient. Here we use the Euler backward method for consideration of numerical stability. After that, all items are multiplied by a test function \( v \) and integrated by part. Then according to the divergence theorem, the bilinear form \( a(T,v) \) and linear form \( L(v) \) are
+where \( \rho \) is density, \( c \) is thermal capacity, \( T \) is temperature, \( t \) is time, \( k \) is the overall heat transfer coefficient, and \( f \) is the inner heat source. The time derivative on the right-hand side can be approximated by a difference quotient. Here we use the Euler backward method for consideration of numerical stability. After that, all items are multiplied by a test function \( v \) and integrated by parts. Then according to the divergence theorem, the bilinear form \( a(T,v) \) and linear form \( L(v) \) are
 
 \begin{equation}
     a(T,v) = \frac{\rho c}{\Delta t} \int_\Omega T v dx + \int_\Omega k \nabla T \cdot \nabla v dx + \int_{\partial \Omega} h T v ds + \int_{\partial \Omega} \epsilon \sigma T^4 v ds,
