@@ -13,10 +13,10 @@
 \maketitle
 
 \abstract{}
-Railway brake discs convert the kinetic energy of rail vehicles to thermal energy to achieve braking. This thermal energy deteriorates braking performance, therefore, it is necessary to conduct thermal analyses of brake discs. In this work, we build a FEM (Finite element method) model in FEniCSx to investigate the influence of contact areas between brake pads and discs on the temperature of brake discs. The weak form of the nonlinear heat transfer equation has been derived, which accounts for conduction, convection and radiation. Multiple Neumann boundary conditions are applied. Simulation results are validated with experimental results. With this efficient FEM model, more advanced research related to railway brake discs can be conducted, such as investigating the effect of wear and thermal expansion, or designing a new geometry of the brake pads and discs.
+Railway brake discs convert the kinetic energy of rail vehicles to thermal energy to achieve braking. This thermal energy deteriorates braking performance, therefore, it is necessary to conduct thermal analyses of brake discs. In this work, we build a FEM (finite element method) model in FEniCSx to investigate the influence of contact areas between brake pads and discs on the temperature of brake discs. The weak form of the nonlinear heat transfer equation has been derived, which accounts for conduction, convection and radiation. Multiple Neumann boundary conditions are applied. Simulation results are validated with experimental results. With this efficient FEM model, more advanced research related to railway brake discs can be conducted, such as investigating the effect of wear and thermal expansion, or designing a new geometry of the brake pads and discs.
 
 \section*{Introduction}
-Rail vehicles are developed towards higher speed and higher axle load, requiring robust mechanical brake systems for running safety. As shown in figure \ref{fig:disc_block}, one of the most important mechanical brake systems is the disc brake, which converts the kinetic energy of rail vehicles into heat. A high brake disc temperature reduces the coefficient of friction between the brake discs and the brake pads\cite{Saffar2010}, and causes high thermal stress, which, in turn, induces thermal cracks on the brake discs. To avoid these negative impacts, it is necessary to get the temperature distribution of brake discs. Experimental investigation is relatively complex and can not obtain some parameters, while numerical study is an effective way to address this issue.
+Rail vehicles are developed towards higher speed and higher axle load, requiring robust mechanical brake systems for running safety. As shown in figure \ref{fig:disc_block}, one of the most important mechanical brake systems is the disc brake, which converts the kinetic energy of the rail vehicle into heat. A high brake disc temperature reduces the coefficient of friction between the brake discs and the brake pads \cite{Saffar2010}, and causes high thermal stress, which, in turn, induces thermal cracks on the brake discs. To avoid these negative impacts, it is necessary to study the temperature distribution of brake discs. Experimental investigation is relatively complex and can not obtain some parameters, while numerical study is an effective way to address this issue.
 
 \begin{figure}[h]
     \centering
@@ -51,7 +51,7 @@ The next step is to build a FEM model of the brake disc. FEM is a method to solv
     \rho c \frac{\partial T}{\partial t} + \nabla \cdot (- k \nabla T) = f,
     \label{heat equation}
 \end{equation}
-where \( \rho \) is density, \( c \) is thermal capacity, \( T \) is temperature, \( t \) is time, \( k \) is the overall heat transfer coefficient, and \( f \) is the inner heat source. The time derivative on the right-hand side can be approximated by a difference quotient. Here we use the Euler backward method for consideration of numerical stability. After that, all items are multiplied by a test function \( v \) and integrated by part. Then according to the divergence theorem, the bilinear form \( a(T,v) \) and linear form \( L(v) \) are
+where \( \rho \) is density, \( c \) is thermal capacity, \( T \) is temperature, \( t \) is time, \( k \) is the overall heat transfer coefficient, and \( f \) is the inner heat source. The time derivative on the right-hand side can be approximated by a difference quotient. Here we use the Euler backward method for consideration of numerical stability. After that, all items are multiplied by a test function \( v \) and integrated by parts. Then according to the divergence theorem, the bilinear form \( a(T,v) \) and linear form \( L(v) \) are
 
 \begin{equation}
     a(T,v) = \frac{\rho c}{\Delta t} \int_\Omega T v dx + \int_\Omega k \nabla T \cdot \nabla v dx + \int_{\partial \Omega} h T v ds + \int_{\partial \Omega} \epsilon \sigma T^4 v ds,
@@ -66,22 +66,22 @@ where \( \rho \) is density, \( c \) is thermal capacity, \( T \) is temperature
 \end{equation}
 where \( \Omega \) is the computation domain, \( \partial \Omega \) is the boundary, \( dx \) is the differential element for integration over the domain, and \( ds \) is the differential element for integration over the boundary, \( h \) is the heat convection coefficient,  \(\Delta t\)\ is the time step, \(n\) is an integer counting time levels. The thermal radiation equation is based on Stefan-Boltzmann Law, where \( \epsilon \) is the emissivity, \( \sigma \) is Stefan-Boltzmann constant, \(T\) is the temperature and \(T^4\) is the temperature to the power of four, \( T_a \) is ambient temperature. For more detailed derivation, please see  \href{https://github.com/Yanjun96/fenicsx/blob/main/derivation_of_heat_transfer.pdf}{derivation of weak form for heat transfer equation}.
 
-The above equation is only for heat transfer, as for brake pad deformation, it needs to solve the elastic equation and here we haven't included it. The main contribution of the elastic deformation calculation is a more accurate contact area between the brake pads and the discs. In this study, we assume that the contact area is known as a priori since this research focuses on comparing the influence of different contact areas. The above equations are solved in the FEniCSx platform \cite{baratta_dolfinx_2023} and \cite{scroggs_construction_2022}, \cite{alnaes_unified_2014}. All the codes for this paper are in \cite{zhang_thermal_2025}.
+The above equation is only for heat transfer, as for brake pad deformation, one needs to solve the elastic equation and here we haven't included here. The main contribution of the elastic deformation calculation is a more accurate contact area between the brake pads and the discs. In this study, we assume that the contact area is known a priori since this research focuses on comparing the influence of different contact areas. The above equations are solved in the FEniCSx platform \cite{baratta_dolfinx_2023,scroggs_construction_2022,alnaes_unified_2014}. All the codes for this paper are in \cite{zhang_thermal_2025}.
 
-As for the computation domain or mesh, as shown in Figure \ref{fig:coarse mesh}. This is a much coarse mesh than 1 million, around 43,000 elements. The element type is tetrahedron since we compared it with hexahedral elements, we found with more tetrahedron elements, the simulation can get the same accuracy with hexahedral elements while tetrahedron has less computation time. Only the brake disc and pad are computation domains. The friction heat, or the Neumann boundary condition is applied on the contact surface, more specifically, only the rubbing elements of the brake pad areas. The rubbing elements are the column structure of the brake pad. Other boundaries include radiation and convection heat transfer, which are also the Neumann boundary conditions without the heat flux input. In each time step, the boundary conditions are redefined since the rotation will change the contact area. In reality, the brake pad should keep still while the brake disc rotates. Here we assumed only the heat flux input areas are rotating, this is the friction heat input areas.
+The computation domain or mesh is shown in Figure \ref{fig:coarse mesh}. This is a much coarser mesh than the one with 1 million elements used later, with around 43,000 elements. The element type is tetrahedron since when we compared it with hexahedral elements, we found with more tetrahedron elements, the simulation can get the same accuracy with hexahedral elements while tetrahedron has less computation time. Only the brake disc and pad are computation domains. The friction heat, or the Neumann boundary condition is applied on the contact surface, more specifically, only the rubbing elements of the brake pad areas. The rubbing elements are the column structure of the brake pad. Other boundaries include radiation and convection heat transfer, which are also the Neumann boundary conditions without the heat flux input. In each time step, the boundary conditions are redefined since the rotation will change the contact area. In reality, the brake pad should keep still while the brake disc rotates. Here we assumed only the heat flux input areas are rotating: these are the friction heat input areas.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.9\textwidth]{book/chapters/zhang/graphics/3d surface.png}
-    \caption{Computation domain of brake pad and disc, the mesh is much coarse than 1 million case, friction heat or the Neumann boundary condition only applied to friction contact areas}
+    \caption{Computation domain of brake pad and disc, the mesh is much coarser than 1 million case. Friction heat or the Neumann boundary condition is only applied to friction contact areas.}
     \label{fig:coarse mesh}
 \end{figure}
 
 
 \subsection*{Experiment}
 
-The test rig mainly consists of a DC motor, flywheels, brake pad and brake disc, as shown in Figure \ref{fig:test rig}. The maximum motor power is 450 kW, and the maximum motor torque is 4000 N·m. The brake pressure at the reservoir ranges from 0-10 Bar. 
-There are in total 6 thermocouples to measure the temperature of the brake disc, which are located under the contact surface. A symmetric model is used in the simulation to save computational effort. The brake lag is the time it takes for the brake pressure to increase from 0\% to 95\% of the target pressure. In the test, the brake lag is 4±0.2 s, which follows the UIC 541-3 standard. Table\ref{tab: operational parameters} shows the operational parameters.
+The test rig mainly consists of a DC motor, flywheels, brake pad and brake disc, as shown in Figure \ref{fig:test rig}. The maximum motor power is 450 kW, and the maximum motor torque is 4000 Nm. The brake pressure at the reservoir ranges from 0-10 Bar. 
+There are in total 6 thermocouples to measure the temperature of the brake disc, which are located under the contact surface. A symmetric model is used in the simulation to save computational effort. The brake lag is the time it takes for the brake pressure to increase from 0\% to 95\% of the target pressure. In the test, the brake lag is 4±0.2 s, which follows the UIC 541-3 standard. Table \ref{tab: operational parameters} shows the operational parameters.
 
 \begin{figure}[h]
     \centering
@@ -94,7 +94,7 @@ There are in total 6 thermocouples to measure the temperature of the brake disc,
     \centering
     \begin{tabular}{llll} % 'l' for left-aligned, 'c' for centered
         \toprule
-        \textbf{property} & \textbf{quanity} & \textbf{property} & \textbf{quanity}\\ % Header row
+        \textbf{property} & \textbf{quantity} & \textbf{property} & \textbf{quantity}\\ % Header row
         \midrule
         initial velocity (km/h)             & 160       &braking time(s)          & 49 \\
         contact pressure (MPa)              & 0.274      &coefficient of friction  & 0.376 \\
@@ -118,7 +118,7 @@ There are in total 6 thermocouples to measure the temperature of the brake disc,
 \section*{Results and discussion}
 
 \subsection*{Validation}
-The first step is mesh sensitivity and time step analysis, which means that the simulation result convergence with finer mesh sizes and small time steps. Since no exact solution exist, the average temperature of point T1, as shown in Figure \ref{fig:thermocouples} is used as the convergence parameter.
+The first step is mesh sensitivity and time step analysis, where we aim to show that the simulation results converge with finer mesh sizes and smaller time steps. Since no exact solution exist, the average temperature of point T1, as shown in Figure \ref{fig:thermocouples} is used as the convergence parameter.
 \begin{figure}
     \centering
     \includegraphics[width=0.8\linewidth]{book/chapters/zhang/graphics/ave_T_vs_dof.pdf}
@@ -126,7 +126,7 @@ The first step is mesh sensitivity and time step analysis, which means that the 
     \label{fig:error_mesh}
 \end{figure}
 
- As shown in Figure \ref{fig:error_mesh}, the average temperature of point 1 increase with more degrees of freedom before 1 million degrees of freedom (DOFs). Above 1 million, the temperature remains constant.  The above results show that DOFs above 1 million are enough to capture the characteristics of the system. 
+ As shown in Figure \ref{fig:error_mesh}, the average temperature of point T1 increases with more degrees of freedom until 1 million degrees of freedom (DOFs). Above 1 million, the temperature remains constant.  The above results show that DOFs above 1 million are enough to capture the characteristics of the system. 
 \begin{figure}[h]
     \centering
   
@@ -136,12 +136,12 @@ The first step is mesh sensitivity and time step analysis, which means that the 
 \end{figure}
 
 
-Figure \ref{fig:error_time} is a comparison of the average temperature of point 1 and times steps. When the dt is above 1 s, the temperature has a large variance.  dt equals 0.16 s(point of 148 $^{\circ}\text{C}$ ) is the best, which is a balance time step between accuracy and computational time.
+Figure \ref{fig:error_time} is a comparison of the average temperature of point 1 and times steps. When \(dt\) is above 1 s, the temperature has a large variance. The best value of \(dt\) is 0.16 s (point of 148$^{\circ}\text{C}$ ), which is a balance time step between accuracy and computational time.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{book/chapters/zhang/graphics/T_sim_exe.pdf}
-    \caption{Comparison between simulation and experimental results}
+    \caption{Comparison between simulation time and experimental results}
     \label{fig:experiment}
 \end{figure}
 
@@ -152,7 +152,7 @@ Except for mesh and time sensitivities analysis, the simulation results should v
 \subsection*{Average and maximum temperatures}
 
 This section presents the temperatures of brake discs with different contact areas. The average and the maximum temperatures are presented.
-The total contact surface is 200 cm$^2$. The brake pressures from the back of the brake pads are the same, 0.274 MPa, while the different contact areas will affect the contact pressure between the brake pads and discs. 20\%, 50\% and 100\% contact areas are compared. 20 \% represent the research from Eriksson\cite{eriksson_nature_2002}, and the 100\% contact areas represent most FEM or analytical solutions.
+The total contact surface is 200 cm$^2$. The brake pressures from the back of the brake pads are the same, 0.274 MPa, while the different contact areas will affect the contact pressure between the brake pads and discs. 20\%, 50\% and 100\% contact areas are compared. The 20\% contact areas represent the research from Eriksson \cite{eriksson_nature_2002}, and the 100\% contact areas represent most FEM or analytical solutions.
 
 \begin{figure}[h]
     \centering
@@ -170,15 +170,22 @@ As shown in Figure \ref{fig:T_ave} is the average temperature for these three ca
     \label{fig:T_max}
 \end{figure}
 
-As shown in Figure \ref{fig:T_max} is the maximum temperature of brake discs. The maximum temperature difference is more than 300 $^{\circ}\text{C}$, and the relative difference can reach 160\%. Small contact areas induce higher local temperatures since contact pressure is significantly increased and all friction heat is loaded on limited surfaces.
+Figure \ref{fig:T_max} shows the maximum temperature of the brake discs. The maximum temperature difference is more than 300 $^{\circ}\text{C}$, and the relative difference can reach 160\%. Small contact areas induce higher local temperatures since contact pressure is significantly increased and all friction heat is loaded on limited surfaces.
 
-More advanced research can be conducted based on this FEM model, including sensitivity analysis of railway brake disc temperature development. In the future, the following needs to be developed to build a more realistic model to investigate different brake designs: 1, Coupling elastic equation to get deformation details of the brake pads. 2, Considering more nonlinear parameters, like a variable coefficient of friction, and temperature-dependent material properties.
+More advanced research can be conducted based on this FEM model, including sensitivity analysis of railway brake disc temperature development. In the future, the following need to be considered to build a more realistic model to investigate different brake designs:
+
+\begin{enumerate}
+\item Coupling elastic equations to get deformation details of the brake pads.
+\item Considering more nonlinear parameters, like a variable coefficient of friction, and temperature-dependent material properties.
+\end{enumerate}
 
 
 \section*{Conclusion}
 This study investigates the influence of contact area on the temperature of railway brake discs. A FEM model in FEniCSx is built and validated. The following conclusions can be drawn:
-1: The contact area does not influence average temperature significantly while a small contact area induces a higher maximum temperature.
-2: FEM based research on thermal analysis of brake systems should model real contact areas between brake pads and discs to get an accurate temperature distribution.
+\begin{enumerate}
+\item The contact area does not influence average temperature significantly while a small contact area induces a higher maximum temperature.
+\item FEM based research on thermal analysis of brake systems should model real contact areas between brake pads and discs to get an accurate temperature distribution.
+\end{enumerate}
 
 
 \begin{acknowledgement}
