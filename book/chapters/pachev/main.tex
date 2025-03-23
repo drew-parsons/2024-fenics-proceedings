@@ -1,0 +1,247 @@
+\graphicspath{{chapters/chp1/graphics/}}
+\title{cuDOLFINx: A CUDA extension for FEniCSx}
+\titlerunning{cuDOLFINx: A CUDA extension for FEniCSx}
+
+\author{Benjamin~A.~Pachev, James~D.~Trotter, and Igor~A.~Baratta}
+\authorrunning{Pachev et al.}
+\institute{Benjamin.~A.~Pachev \email{benjmainpachev@utexas.edu} \at The University of Texas at Austin \\James.~D.~Trotter \email{james@simula.no} \at Simula Research Laboratory
+\\Igor~A.~Baratta \email{ia397@cam.ac.uk} \at Department of Engineering, University of Cambridge
+}
+
+
+\maketitle
+
+\abstract{Here we introduce cuDOLFINx---a Python package which extends FEniCSx with GPU-accelerated assembly capabilities. The extension enables FEniCSx codes to be accelerated on the GPU with minimal changes, and provides an easy path for researchers to experiment with GPU-accelerated PDE solvers. By constrast with previous efforts to enhance FEniCSx with GPU capabilities, cuDOLFINx is designed as a standalone package and does not require major changes to the core components of FEniCSx. Consequently, it has the potential to become a usable part of the FEniCSx ecosystem and a long-term solution to the problem of providing GPU acceleration capabilities in FEniCSx.
+We further present performance benchmarks for representative GPU-accelerated FEniCSx applications on an NVIDIA GH200 GPU. Our results indicate that GPU-accelerated assembly routines within cuDOLFINx can be up to 40 times faster than traditional FEniCSx assembly with MPI parallelization on a multi-core CPU node.}
+
+\section*{Introduction}
+Graphics processing units (GPUs) provide an alternative means of parallelizing computations compared to a traditional clusters of multi-core CPUs. For many applications, GPUs are more energy efficient, thus having revolutionized fields such as machine learning~\citep{navarro2014survey}. Several well-known software packages used for solving PDEs have taken steps to provide GPU acceleration capabilities, including PETSc~\citep{MILLS2021102831}, MFEM~\citep{anderson2021mfem}, libCEED~\citep{abdelfattah2021gpu} and deal.II~\citep{arndt2021deal}.
+However, GPU acceleration of PDE solvers has yet to become the norm, as other PDE libraries~\citep{baratta2023dolfinx,schoberl2014c++,hecht2012new,moxey2020nektar++,FiredrakeUserManual} lack support for GPU acceleration. Furthermore, even when GPU acceleration is available, it often has limited support and can be difficult to use. Modifying existing codes to use GPU parallelism remains a significant challenge~\citep{MILLS2021102831}. GPU programming requires a specialized compiler, memory space, and syntax, meaning that code must often be largely rewritten to take advantage of GPU acceleration.
+
+
+A major attraction of FEniCSx~\citep{baratta2023dolfinx} as a tool for solving partial differential equations with the finite element method is its simple Python interface and automated generation of efficient C code. These features enable rapid prototyping and development of performant solvers for complicated PDEs. Our goal in developing cuDOLFINx \citep{cudolfinxzenodo} is to enable users of FEniCSx to add GPU acceleration to their existing PDE solvers with minimal effort.
+GPUs are attractive for PDEs due to their increased throughput, floating point operations per second (FLOPS), and memory bandwidth. Although many PDEs are generally memory-bound, even memory-bound problems can benefit significantly from GPU acceleration. During the remainder of this chapter, we will give a brief overview of cuDOLFINx, present some example applications to the Poisson, Navier--Stokes, and shallow water problems, and finally discuss future development of cuDOLFINx.
+
+\section*{Overview of cuDOLFINx}
+The two most expensive steps in the finite element method are linear solves and the assembly of matrices or vectors. We would like to accelerate both of these steps with GPUs, in part to minimize expensive copies to and from GPU memory. Libraries such as PETSc~\citep{MILLS2021102831}, Ginkgo~\citep{ginkgo-toms-2022}, AMGx~\citep{naumov2015amgx}, hypre~\citep{li2020efficient,falgout2021porting}, SuperLU~\citep{li2023newly}, and others~\citep{lu2023tilesptrsv} provide efficient GPU-accelerated linear solvers. The goal of cuDOLFINx is to enable GPU-accelerated assembly, so that the entirety of FEniCSx finite element workflows can be GPU accelerated.
+
+FEniCSx relies on auto-generated kernels to perform elementwise numerical integration, and the resulting element matrices or vectors can be assembled to form global matrices or vectors. In cuDOLFINx, these kernels are modified to execute on a GPU using CUDA. The generated kernels from FFCx are used as-is, with no GPU-targeted changes. Each element is processed by a single GPU thread, and atomic operations are used to prevent data races. This approach works well for low-order elements, but can be problematic for higher orders, as the computation of element stiffness matrices at high orders can require more local memory than is available to a single GPU thread. This can increase the usage of slower memory and reduce the number of GPU threads able to concurrently execute. Consequently, GPU assembly routines for high-order methods typically assign multiple threads to each element~\citep{MACIOL20101093,dziekonski2013generation,abdelfattah2021gpu, swirydowicz2019acceleration}. This is a goal of future work, and will require extending FFCx to support GPU parallelism within element kernels.
+
+In addition to the elementwise kernels, cuDOLFINx provides GPU-based assembly loops to assemble the local contributions from each element into global matrices or vectors. This requires information about the mesh, boundary conditions, and function spaces to be copied to GPU memory. Internally, cuDOLFINx provides GPU counterparts for many of the data structures used in FEniCSx and automatically performs the data transfer to the GPU. Once data is transferred, it is expected to remain on the GPU, though mechanisms exist for moving data between the CPU and GPU when necessary.
+
+The cuDOLFINx package extends the work of \cite{trotter2023targeting}. In addition to major modifications needed to support DOLFINx 0.9 (the most recent version at the time of writing), the following new features were developed:
+\begin{enumerate}
+    \item Support for boundary integrals was developed from scratch and considerably improved compared to the original version of the code, which only supported boundary integrals in very limited scenarios.
+    \item To support DG methods, integrals on interior mesh edges are required. This functionality was added to the original GPU-accelerated code.
+    \item Most of the users of FEniCSx utilize the Python version of the library. Consequently, a Python API was developed for the GPU-acceleration capabilities. It was designed to be much simpler to use than the original C++ interface, without loss of functionality.
+    \item The GPU acceleration scheme has been applied to a wider range of problems, including the Navier-Stokes and shallow water equations.
+\end{enumerate}
+
+There are three main software components of cuDOLFINX. The first is a set of C++ classes containing CUDA data structures needed for assembly. These mirror corresponding DOLFINx classes (e.g. CUDAForm for Form, CUDAMesh for Mesh, etc.) and are responsible for copying the needed data to the GPU. The second consists of C++ classes which manage the generation, runtime compilation, and launching of CUDA assembly kernels. The final component contains the Python bindings for the C++ core. Most users will only need to utilize the Python wrapper. It provides Python versions of the C++ CUDA data structure classes, as well as convenience routines for performing assembly operations. We demonstrate its usage in the following section.
+
+\section*{Sample Usage}
+
+Using cuDOLFINx within existing FEniCSx code requires only minor modifications. Consider the following example for solving Poisson's equation on the unit square:
+\begin{python}
+from mpi4py import MPI
+from dolfinx import fem, mesh
+import cudolfinx as cufem
+from ufl import dx, inner, grad
+import ufl
+
+N = 1000
+domain = mesh.create_unit_square(MPI.COMM_WORLD, N, N)
+V = fem.functionspace(domain, ("Lagrange", 1))
+f = fem.Function(V)
+f.interpolate(lambda x: x[0]**2 + x[1])
+u, v = ufl.TestFunction(V), ufl.TrialFunction(V)
+A = -inner(grad(u), grad(v)) * dx
+L = f * v * ufl.dx
+\end{python}
+Having defined a bilinear form \pythoninline{A} and linear form \pythoninline{L}, the following code creates CUDA counterparts of each form and a \pythoninline{CUDAAssembler} to offload the assembly of the matrix and right-hand side vector to a CUDA-enabled GPU:
+\begin{python}
+cuda_A = cufem.form(A)
+cuda_L = cufem.form(L)
+asm = cufem.CUDAAssembler()
+mat = asm.assemble_matrix(cuda_A)
+vec = asm.assemble_vector(cuda_L)
+\end{python}
+The assembled matrix and vector are provided in the form of \pythoninline{CUDAMatrix} and \pythoninline{CUDAVector} types, which can be readily converted to corresponding PETSc types for GPU-resident matrices and vectors. This transparently enables the use of PETSc's GPU-accelerated solver routines.
+
+
+Offloading matrix or vector assembly to a GPU typically results in faster assembly, but it also incurs overheads due to copying necessary data structures to the device, as well as runtime compilation of CUDA assembly kernels. For large enough problems, the overhead is small compared to the assembly itself. Moreover, the overhead is incurred only once per form, and is therefore negligible for applications that require repeated assembly operations. Such use cases are very common and include time-dependent or nonlinear problems.
+
+Below, we show how a simplified FEniCSx code for Newton iteration might be modified to support GPU acceleration. Boundary conditions are excluded for brevity---however, complete working examples with boundary conditions are available in the cuDOLFINX source code \citep{cudolfinxzenodo}. We take for our equation a nonlinear version of Poisson's equation with an extra cubic term in $u$. We begin by initializing PETSc data structures needed for assembly and linear algebra.
+\begin{python}
+from petsc4py import PETSc
+use_cuda = True
+u = fem.Function(V)
+u_update = fem.Function(V)
+residual = (f * v - inner(grad(u), grad(v)) + u**3 * v) * dx
+jacobian = ufl.derivative(residual, u)
+
+if use_cuda:
+  # Force DOLFINx to use a CUDA PETSc vector
+  u.vector.setType(PETSc.Vec.Type.CUDA)
+  u_update.vector.setType(PETSc.Vec.Type.CUDA)
+  asm = cufem.CUDAAssembler()
+  residual, jacobian = cufem.form(residual), cufem.form(jacobian)
+  L = asm.create_vector(residual)
+  A = asm.create_matrix(jacobian)
+else:
+  residual, jacobian = fem.form(residual), fem.form(jacobian)
+  L = petsc_fem.create_vector(residual)
+  A = petsc_fem.create_matrix(jacobian)
+\end{python}
+The next step is to create the linear solver object. This requires a slight syntactical change when using cuDOLFINx to extract the underlying PETSc matrix from the assembled \pythoninline{CUDAMatrix}.
+\begin{python}
+ksp = PETSc.KSP().create(domain.comm)
+ksp.setType("gmres")
+ksp.getPC().setType("jacobi")
+if use_cuda:
+  # Get underlying PETSc Mat, as A is a CUDAMatrix
+  ksp.setOperators(A.mat)
+else:
+  ksp.setOperators(A)
+\end{python}
+Finally, we reach the Newton iteration loop. Note the use of PETSc operations to add the computed Newton update to the solution, instead of vectorized numpy operations as is common in FEniCSx codes. This allows the computation to happen on the GPU, and is the reason for requiring that \pythoninline{u_update.vector} and \pythoninline{u.vector} be PETSc CUDA vectors.
+\begin{python}
+for i in range(5):
+  if use_cuda:
+    # by default entries are zeroed prior to assembly
+    asm.assemble_matrix(jacobian, mat=A)
+    A.assemble()
+    asm.assemble_vector(residual, L)
+    rhs = L.vector
+  else:
+    A.zeroEntries()
+    petsc_fem.assemble_matrix(A, jacobian)
+    A.assemble()
+    L.array[:] = 0
+    petsc_fem.assemble_vector(L, residual)
+    rhs = L
+
+  rhs.scale(-1)
+  ksp.solve(rhs, u_update.vector)
+  u.vector.axpy(1.0, u_update.vector)
+\end{python}
+A final step remains within the loop. The updated solution needs to be copied back to the underlying DOLFINx function, which resides on the host. This is not required for regular PETSc vectors, which share the same memory with the function object, but is a requirement for correctness in the case of CUDA type vectors, which use a separate GPU memory space.
+\begin{python}
+  if use_cuda:
+    # Ensure host-side values of u match device-side values
+    u.x.array[:] = u.vector.array
+\end{python}
+
+We will proceed to demonstrate the performance of cuDOLFINx for several representative use cases in which GPU acceleration can significantly enhance FEniCSx performance.
+
+\section*{Performance Evaluation}
+We begin with two examples of the performance of the GPU assembly kernels in cuDOLFINx, and then present a use case of complete GPU offloading for both assembly and linear solves. All computations in the following experiments are performed in double precision. The primary hardware used in the following experiments is an NVIDIA GH200 Superchip, which consists of a Hopper GPU with 132 streaming multiprocessors (SMs) connected to a 72-core Grace CPU. The Hopper GPU has a memory bandwidth of 4 TB/s, while the CPU has a memory bandwidth of 384 GB/s~\citep{gh200specs}. Experiments were conducted using the Vista system at the Texas Advanced Computing Center (TACC).
+
+\subsection*{Poisson}
+Here we consider the problem of assembling a stiffness matrix for the solution of the Poisson equation on the unit cube. We use linear Lagrange finite elements on four different uniform, tetrahedral meshes ranging in size from about 1.3 to 16.5 million elements.  For each mesh, Table~\ref{tab:poisson_results} reports the throughput in millions of degrees of freedom per second (MDOF/s) for assembling the stiffness matrix with cuDOLFINx on a Hopper GPU and with DOLFINx on a Grace CPU.
+
+Examining the results, the GPU doesn't appear fully saturated for the first two meshes, both of which have significantly fewer than one million degrees of freedom. This suggests that problems with approximately one million degrees of freedom or greater are needed to maximize the benefits of GPU acceleration. \cite{trotter2023targeting} reported a throughput of 189\,MDOF/s for the same problem using the ``Uniform 3'' mesh on an NVIDIA V100 GPU. In this study, we achieved a throughput of 376 MDOF/s on the GH200 GPU, roughly twice that of the V100. This result is expected, as the GH200 offers higher memory bandwidth and FLOPS. Further investigation will be conducted to explore the underlying factors behind these performance gains.
+\begin{table}[t]
+    \centering
+\begin{tabular}{lrrrr}
+\toprule
+          &          &             & \multicolumn{2}{l}{Matrix Assembly} \\
+                                     \cmidrule(lr){4-5}
+Mesh      & Elements & DOFs        & Hopper (GPU) & Grace (CPU) \\
+\midrule
+Uniform 1 &  1,296,000 &   226,981 & 182.8 & 19.9 \\
+Uniform 2 &  3,072,000 &   531,441 & 297.5 & 25.6 \\
+Uniform 3 &  6,000,000 & 1,030,301 & 376.5 & 13.0 \\
+Uniform 4 & 16,464,000 & 2,803,221 & 373.3 & 29.8 \\
+\bottomrule
+\end{tabular}
+\caption{Performance of Poisson matrix assembly, in millions of DOFs per second.}
+    \label{tab:poisson_results}
+\end{table}
+
+\subsection*{Shallow Water}
+For a more realistic example that also displays the complexity enabled by FEniCSx, we present assembly benchmarks using the variational forms in SWEMniCS~\citep{dawson2024swemnics}, a FEniCSx-based solver for the shallow water equations. SWEMniCS implements a suite of stabilized 2D shallow water solvers with implicit time stepping. Due to the nonlinearity of the shallow water equations, a Newton solver is required at each time step.
+
+We investigated the efficiency of automatically generated CUDA assembly kernels for two stabilized schemes within SWEMniCS: the Discontinuous Galerkin (DG), and the Streamline Upwind Petrov-Galerkin (SUPG) schemes. The DG method uses broken test and trial spaces with a Lax-Freidrichs numerical flux. The DG scheme is more numerically stable, but requires more degrees of freedom than SUPG due to the use of discontinuous function spaces. For each scheme, we averaged the performance of both GPU and CPU assembly kernels over twenty Newton iterations for tidal flow simulations on square domains with uniform triangular meshes. Table~\ref{tab:swe_a100_vs_epyc} shows the speedup when using NVIDIA A100 GPU compared to a 64-core AMD Epyc 7763 CPU for assembling the Jacobian matrix and the residual vector for each scheme. The A100 GPU and Epyc CPU were both on the Lonestar6 system at TACC.
+\begin{table}[t]
+    \centering
+    \begin{tabular}{lrrrrrrr}
+\toprule
+        &           &           \multicolumn{3}{c}{DG} & \multicolumn{3}{c}{SUPG} \\
+                                  \cmidrule(lr){3-5}       \cmidrule(lr){6-8}
+Mesh    &  Elements &  DOFs & Jacobian & Residual  & DOFs  & Jacobian & Residual \\
+\midrule
+Tidal 1 &   980,000 &  8,820,000 &     0.98 &      9.21 &  1,474,203 &   5.36 &     6.78 \\
+Tidal 2 & 2,000,000 & 18,000,000 &     0.99 &     12.18 &  3,006,003 &   5.51 &     6.84 \\
+Tidal 3 & 3,380,000 & 30,420,000 &     0.95 &      9.66 &  5,077,803 &   5.36 &     5.60 \\
+\bottomrule
+\end{tabular}
+    \caption{Speedup of assembly kernels on an NVIDIA A100 GPU relative to a 64-core AMD Epyc CPU. Larger numbers indicate faster GPU runtime.}
+    \label{tab:swe_a100_vs_epyc}
+\end{table}
+
+
+Interestingly, the speedups differ for each variational form. In the case of the DG scheme, assembly of the residual vector obtains a speedup of 9--12${\times}$, whereas assembly of the Jacobian on the A100 GPU is comparable in performance to that of the 64-core AMD Epyc CPU. The SUPG scheme, on the other hand, obtains a consistent speedup of 5--7${\times}$ for both residual and Jacobian matrix assembly.
+
+Using NVIDIA's Nsight Compute profiler, we can better understand the difference in performance between DG and SUPG.
+Profiler results for the ``Tidal 3'' testcase are presented in Table \ref{tab:tidal_prof}. The profiler reports \textit{occupancy}, which indicates the percentage of active threads on the GPU relative to the total GPU thread capacity. Occupancy can be limited by the resources needed per thread, such as shared memory or registers. It can also be impacted by excessive branching or other kernel design flaws. In our case, the generated assembly kernels required a high number of registers, which limited the occupancy to under 20\,\%. However, both the DG and SUPG kernels are able to utilize a large fraction of the device throughput---memory in the case of DG and compute in the case of SUPG.
+
+To further understand the difference in performance between SUPG and DG, we used the Nsight Compute profiler to obtain the \textit{arithmetic intensity} for both Jacobian assembly kernels, which is the ratio of FLOPS performed to bytes of memory accessed. The arithmetic intensity is 0.22 FLOPS/byte for SUPG and 0.1 FLOPS/byte for DG, which partly explains why SUPG achieves higher compute throughput than DG.
+
+Ultimately, the deciding factor in which method is more suitable for GPU offloading is the speedup factor relative to the CPU. By this criteria, SUPG is better in an implicit time stepping context where matrix assembly is required. However, for an explicit time stepping method, only vector assembly is required, and so DG will perform better on the GPU.
+\begin{table}[t]
+    \centering
+\begin{tabular}{llrrrr}
+\toprule
+Method & Kernel & \begin{tabular}{@{}l}Theoretical\\ Occupancy\end{tabular} & \begin{tabular}{@{}l}Achieved\\ Occupancy\end{tabular} & \begin{tabular}{@{}l}Memory\\ Throughput\end{tabular} & \begin{tabular}{@{}l}Compute\\ Throughput\end{tabular} \\
+\midrule
+DG   & Jacobian & 12.50\,\% & 12.33\,\% & 41.44\,\% & 10.43\,\% \\
+DG   & residual & 18.75\,\% & 18.74\,\% & 64.97\,\% & 18.20\,\% \\
+SUPG & Jacobian & 12.50\,\% & 12.33\,\% & 48.66\,\% & 59.31\,\% \\
+SUPG & residual & 12.50\,\% & 12.39\,\% &  5.64\,\% & 77.85\,\% \\
+\bottomrule
+\end{tabular}
+\caption{Profiling statistics for the GPU assembly kernels on a square mesh.}
+    \label{tab:tidal_prof}
+\end{table}
+
+\subsection*{Navier--Stokes}
+
+While matrix assembly is a crucial part of the finite element method, most solvers also require the solution of linear systems. To assess the practicality of offloading a typical FEniCSx code to the GPU, we modified an existing FEniCSx Navier--Stokes solver~\citep{dokkenipcs} to use cuDOLFINx. The modified solver is hosted in a forked Github repository \citep{pachevipcs}. The solver uses an incremental pressure correction scheme~\citep{dokken2019shape}, which requires three stages per time step. While each stage requires a linear solve and assembly of a vector, only the first requires reassembly of a stiffness matrix. Second-order Lagrange tetrahedral elements are used for the velocity field, and first-order Lagrange elements for the pressure field. The mesh is a refined version of the 3D channel with an obstacle used in the original code, and contained 1,995,628 tetrahedra with 355,319 vertices.
+
+The same hardware is used for comparison as in the Poisson experiment---namely the Hopper GPU and Grace CPU within a GH200 Superchip. Average timing results over 100 time steps for each component of the solver are provided in Table \ref{tab:navier_stokes_results}.
+\begin{table}[t]
+    \centering
+\begin{tabular}{clrrrr}
+\toprule
+      &                 & \multicolumn{2}{c}{Hopper (GPU)} & \multicolumn{2}{c}{Grace (CPU)} \\
+                          \cmidrule(lr){3-4}               \cmidrule(lr){5-6}
+Stage & Solver/preconditioner       & Assembly & Solve               & Assembly & Solve \\
+\midrule
+    1 & BCGS/Jacobi     &    0.348 &               1.601 &    0.906 & 6.339 \\
+    2 & GMRES/BoomerAMG &    0.009 &               0.013 &    0.007 & 0.108 \\
+    3 & CG/Jacobi       &    0.004 &               0.079 &    0.013 & 0.564 \\
+\bottomrule
+\end{tabular}
+\caption{Runtime for each stage of the Navier--Stokes solver in seconds.}
+    \label{tab:navier_stokes_results}
+\end{table}
+Overall, the CUDA-accelerated solver averaged 2.07\,s per time step, while the original solver took 7.89\,s per time step. The overall speedup is therefore a factor of 3.8${\times}$. While the solution time is dominated by the linear solve for the first stage, assembly comprised over 10\,\% of the total runtime for both the GPU and CPU codes.
+
+We note that compared to the Poisson example, the speedup of assembly for the Navier--Stokes code is smaller. We hypothesize this is due to the use of second-order elements for the velocity field. Higher order elements are known to pose difficulties for the GPU offloading approach used within cuDOLFINx because the auto-generated GPU kernels can require a large number of registers. This results in a phenomenon known as \textit{register spilling}, in which the GPU kernels are forced to utilize global memory to store some local variables, which degrades performance. Solutions include reworking the generated code to better hide memory transfer latency, potentially by reducing register spillage or minimizing the use of local memory. Another approach is to assemble each element using multiple GPU threads so that can share resource. Both of these solutions would require substantial enhancements to FFCx, the form compiler within the FEniCS project. Nevertheless, the attained speedup for assembly with quadratic elements in this case is still significant.
+
+\section*{Conclusion}
+We have introduced cuDOLFINx, an add-on enhancement to FEniCSx which provides GPU-accelerated assembly routines. We've demonstrated that offloading assembly to a GPU can provide significant speedups compared to multi-core CPUs, particularly for first-order elements. The package has a simple Python interface, and can be utilized in FEniCSx codebases with little effort.
+
+In the near future, we intend to add support for multiple GPUs. Subsequent efforts will focus on providing support for non-NVIDIA GPUs, as well as developing efficient kernels for assembly with high-order elements. Work is currently underway to expand the documentation and examples, as well as to create easily installable binary distributions.
+
+\section*{Supplementary material}
+The source code of cuDOLFINx is archived at \citep{cudolfinxzenodo}.
+
+\begin{acknowledgement}
+  We gratefully acknowledge the use of the Lonestar6 and Vista systems at the Texas Advanced Computing Center under the "ADCIRC" allocation.
+  The research presented in this paper has benefited from the Experimental Infrastructure for Exploration of Exascale Computing (eX3), which is financially supported by the Research Council of Norway under contract 270053.
+\end{acknowledgement}
+
+\bibliographystyle{spbasic}
+\bibliography{chapters/pachev/bibliography.bib}
