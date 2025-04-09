@@ -432,21 +432,16 @@ For $m=k$ they are slightly worse.
     \label{fig:poisson-riviere}
 \end{figure}
 
-\begin{minipage}[t]{0.65\textwidth}
+\begin{wrapfigure}{r}{0.4\textwidth}
+\centering
+\includegraphics[scale=1.0]{fig_cooks-membrane.pdf}
+\caption{Cooks membrane.}
+\label{fig:cook_definition}
+\end{wrapfigure}
 \textbf{Example 2:} Based on the Poisson equation, the influence of the equilibration order $m$ on the efficiency of the resulting estimate is shown.
 Using the Cooks membrane in Fig. \ref{fig:cook_definition}, this analysis is extended to linear elasticity, where the symmetry of the stress tensor is considered in a weak sense.
 Within this analysis $\Pi_1=2.333$, $t=0.03$ and adaptive meshes based on a Dörfler marking strategy with $\theta=0.6$ are considered.
-Characteristics of the first mesh fulfilling $\vert\vert\vert \Displacement - \Displacement_\h \vert\vert\vert \leq 10^{-3}$ are summarised in Fig. \ref{fig:cook_results-summary}. As $\LinPKEqlbH$ exactly fulfils the di-
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.32\textwidth}
-\centering\raisebox{\dimexpr-\height+\ht\strutbox}{
-\includegraphics[scale=1.0]{fig_cooks-membrane.pdf}
-}
-\captionof{figure}{Cooks membrane.}
-\label{fig:cook_definition}
-\end{minipage}
-vergence condition from Definition \ref{def:equilibrated_stress}, $\eta$ reduced to the sum of the $\mathcal{A}$-norm of the stress difference $\LinPKEqlbH - \stressPKLin_\h$ and the norm of asymmetric part of $\LinPKEqlbH$. 
+Characteristics of the first mesh fulfilling $\vert\vert\vert \Displacement - \Displacement_\h \vert\vert\vert \leq 10^{-3}$ are summarised in Fig. \ref{fig:cook_results-summary}. As $\LinPKEqlbH$ exactly fulfils the divergence condition from Definition \ref{def:equilibrated_stress}, $\eta$ reduced to the sum of the $\mathcal{A}$-norm of the stress difference $\LinPKEqlbH - \stressPKLin_\h$ and the norm of asymmetric part of $\LinPKEqlbH$. 
 Following \ref{fig:cook_results-summary}, the estimate is clearly dominated by the second part.
 Using equilibrated stresses of order $m=k+1$ increases the efficiency, with a relative reduction (compared to the case with $m=k$) comparable to those from the Poisson example.
 An increased accuracy of the error estimate affects the effectivity of the adaptive solution procedure -- measured by the number of degrees of
