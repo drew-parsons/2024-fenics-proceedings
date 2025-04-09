@@ -28,13 +28,13 @@ This study aims to implementing a method to compute \textit{in vivo} blood fluid
 \section*{Methods}
 \label{sec:methods}
 
-\subsection*{Data Assimilation Method}
+\subsection*{Data assimilation method}
 The VarDA approach was formulated as an optimization problem constrained by the NS equations, using the \emph{dolfin-adjoint} library for the adjoint problem. The process follows three steps: running a first numerical simulation with tentative inlet BCs (which we refer to as the \emph{forward model} or \emph{Tape}), solving the optimization problem to identify inlet BCs, and running a final numerical simulation yielding the refined velocity and pressure fields (Fig. \ref{fig:scheme}).
 
 \subsection*{Forward problem definition}
 The weak and discretized form of NS equations for an incompressible fluid [\cite{Stokes2009}] was solved using the FE platform \emph{FEniCS} [\cite{Alnaes2015}] to compute velocity field $\textbf{u}$ over a domain $\Omega$ given an initial condition \(\mathbf{u}=\mathbf{u_0}\) on $\Omega$ at time $t_0$, a zero pressure condition at the outlet section $\Omega_N$ and a Dirichlet BC at the inlet section $\Omega_D$ in the form of a space- and time-dependent velocity profile $\textbf{g}$. Through an in house Python script, 2D and 3D fluid domains $\Omega$ were discretized into triangular and tetrahedral elements, respectively, with 1-1.5 mm characteristic size and with linear and quadratic shape functions for nodal pressure and velocity, respectively. The semi-implicit Crank-Nicolson (CN) time-integration scheme was applied with a time increment of $\Delta t = 0.001$ s. The incremental pressure correction scheme (IPCS) proposed in [\cite{Goda1979}] was implemented. A generalized minimal residual method (GMRES) was chosen as linear solver, with tolerances of $1 \times 10^{-4}$ for momentum and continuity equations.
 
-\subsection*{Optimization Problem definition}
+\subsection*{Optimization problem definition}
 
 The optimization problem (\cref{eq:10}, constrained by the NS equations, aimed to minimize a functional $J(\mathbf{u})$ (\cref{eq:11}, defined as the difference between the computed and observed velocities. 
 
@@ -76,7 +76,7 @@ called by dolfin-adjoint library and which provides many user-friendly numerical
 Convergence was ensured through Wolfe conditions [\cite{Nocedal2006}], with maximum number of 10 iterations and ftol = $1 \times 10^{-9}$ and gtol = $1 \times 10^{-12}$ as tolerances.
 The performances of the method were assessed by $J(\textbf{u})$ value before and after optimization, Root Mean Squared Error (RMSE) between \( \mathbf{u}\) and \( \mathbf{u}_{\text{obs}} \), and qualitative analysis of the effect on the velocity field through the software \emph{Paraview}.
 
-\subsection*{Benchmark Tests}
+\subsection*{Benchmark tests}
 
 \label{sec:bench}
 \textbf{\textit{Preliminary tests}} - 
@@ -122,7 +122,7 @@ Numerical experiments were conducted on various setups: a workstation with 24 CP
 \subsection*{Preliminary tests}
 In high Reynolds number tests, IPCS optimization reduced RMSE from 142.60 mm/s to 6.70 mm/s, while the coupled scheme faced convergence issues. In low Reynolds conditions, IPCS proved to be five times faster than the coupled scheme and achieved a final RMSE of 1.76 mm/s compared to 4.22 mm/s for the coupled scheme.
 
-\subsection*{Progressively Demanding Tests}
+\subsection*{Progressively demanding tests}
 \textbf{\textit{2DVar + t benchmark}} - When a zero-velocity field was imposed as IC, the post-optimization velocity field showed inconsistencies with respect to the observations.
 In particular, a high-velocity region just downstream of the inlet section was obtained, while low velocity values were computed in the rest of the domain.
 Moreover, these tests did not yield improvements by changing \(\alpha\), and increasing \(\beta\) further worsened the performance (Fig. \ref{fig:3.3}).
