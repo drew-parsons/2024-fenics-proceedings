@@ -32,7 +32,7 @@ This study aims to implementing a method to compute \textit{in vivo} blood fluid
 The VarDA approach was formulated as an optimization problem constrained by the NS equations, using the dolfin-adjoint library for the adjoint problem. The process follows three steps: running a first numerical simulation with tentative inlet BCs (which we refer to as the \emph{forward model} or \emph{tape}), solving the optimization problem to identify inlet BCs, and running a final numerical simulation yielding the refined velocity and pressure fields (Fig. \ref{fig:scheme}).
 
 \subsection*{Forward problem definition}
-The weak and discretized form of NS equations for an incompressible fluid \citep{Stokes2009} was solved using the FE platform FEniCS \citep{Alnaes2015} to compute velocity field $\textbf{u}$ over a domain $\Omega$ given an initial condition \(\mathbf{u}=\mathbf{u_0}\) on $\Omega$ at time $t_0$, a zero pressure condition at the outlet section $\Omega_N$ and a Dirichlet BC at the inlet section $\Omega_D$ in the form of a space- and time-dependent velocity profile $\textbf{g}$. Through an in house Python script, 2D and 3D fluid domains $\Omega$ were discretized into triangular and tetrahedral elements, respectively, with 1-1.5 mm characteristic size and with linear and quadratic shape functions for nodal pressure and velocity, respectively. The semi-implicit Crank--Nicolson (CN) time-integration scheme was applied with a time increment of $\Delta t = 0.001$ s. The incremental pressure correction scheme (IPCS) proposed in \citep{Goda1979} was implemented. A generalized minimal residual method (GMRES) was chosen as linear solver, with tolerances of $1 \times 10^{-4}$ for momentum and continuity equations.
+The weak and discretized form of NS equations for an incompressible fluid \citep{Stokes2009} was solved using the FE platform FEniCS \citep{Alnaes2015} to compute velocity field $\mathbf{u}$ over a domain $\Omega$ given an initial condition \(\mathbf{u}=\mathbf{u_0}\) on $\Omega$ at time $t_0$, a zero pressure condition at the outlet section $\Omega_N$ and a Dirichlet BC at the inlet section $\Omega_D$ in the form of a space- and time-dependent velocity profile $\mathbf{g}$. Through an in house Python script, 2D and 3D fluid domains $\Omega$ were discretized into triangular and tetrahedral elements, respectively, with 1-1.5 mm characteristic size and with linear and quadratic shape functions for nodal pressure and velocity, respectively. The semi-implicit Crank--Nicolson (CN) time-integration scheme was applied with a time increment of $\Delta t = 0.001$ s. The incremental pressure correction scheme (IPCS) proposed in \citep{Goda1979} was implemented. A generalized minimal residual method (GMRES) was chosen as linear solver, with tolerances of $1 \times 10^{-4}$ for momentum and continuity equations.
 
 \subsection*{Optimization problem definition}
 
@@ -45,11 +45,11 @@ The optimization problem (\cref{eq:10}, constrained by the NS equations, aimed t
 \end{equation}
 \begin{equation}
 \small
-    J(\textbf{u}) = \| \mathbf{u} - \mathbf{u}_{\text{obs}} \|_{L^2(\Omega)}
+    J(\mathbf{u}) = \| \mathbf{u} - \mathbf{u}_{\text{obs}} \|_{L^2(\Omega)}
     \label{eq:11}
 \end{equation}
 
-To address the ill-posedness of the problem, a Tikhonov regularization term $\textbf{R}(\textbf{c})$ was introduced, with respect to the controlled variable defined as $c$. It accounts for two terms that are scaled by parameters \(\alpha\) and \(\beta\), where \(\beta\) is set to $0$ for steady-state conditions. This reformulation transforms the problem into an unconstrained optimization scenario, more suitable for gradient descent methods. 
+To address the ill-posedness of the problem, a Tikhonov regularization term $\mathbf{R}(\mathbf{c})$ was introduced, with respect to the controlled variable defined as $c$. It accounts for two terms that are scaled by parameters \(\alpha\) and \(\beta\), where \(\beta\) is set to $0$ for steady-state conditions. This reformulation transforms the problem into an unconstrained optimization scenario, more suitable for gradient descent methods. 
 
 \begin{equation}
 \small
@@ -57,7 +57,7 @@ To address the ill-posedness of the problem, a Tikhonov regularization term $\te
         R(\mathbf{c}) &= \| \mathbf{c} \|_{L^2(\Omega)} \\
         &\text{where} \\
         \small
-        \|c\|_{\Gamma \times (0, T]} &= \left( \int_0^T \int_{\Omega} \frac{\alpha}{2} \left( \left(|\textbf{g}_D|^2 + |\nabla \textbf{g}_D|^2 \right) + \frac{\beta}{2} \left( |\dot{\textbf{g}}_D|^2 +  |(\nabla \textbf{g})_D|^2 \right) \right) \, dx \, dt \right)^{\frac{1}{2}}
+        \|c\|_{\Gamma \times (0, T]} &= \left( \int_0^T \int_{\Omega} \frac{\alpha}{2} \left( \left(|\mathbf{g}_D|^2 + |\nabla \mathbf{g}_D|^2 \right) + \frac{\beta}{2} \left( |\dot{\mathbf{g}}_D|^2 +  |(\nabla \mathbf{g})_D|^2 \right) \right) \, dx \, dt \right)^{\frac{1}{2}}
     \end{aligned}
     \label{eq:12} 
 \end{equation}
@@ -74,7 +74,7 @@ called by dolfin-adjoint library and which provides many user-friendly numerical
 \end{figure}
 
 Convergence was ensured through Wolfe conditions \citep{Nocedal2006}, with maximum number of 10 iterations and ftol = $1 \times 10^{-9}$ and gtol = $1 \times 10^{-12}$ as tolerances.
-The performances of the method were assessed by $J(\textbf{u})$ value before and after optimization, Root Mean Squared Error (RMSE) between \( \mathbf{u}\) and \( \mathbf{u}_{\text{obs}} \), and qualitative analysis of the effect on the velocity field through the software Paraview.
+The performances of the method were assessed by $J(\mathbf{u})$ value before and after optimization, Root Mean Squared Error (RMSE) between \( \mathbf{u}\) and \( \mathbf{u}_{\text{obs}} \), and qualitative analysis of the effect on the velocity field through the software Paraview.
 
 \subsection*{Benchmark tests}
 
