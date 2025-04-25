@@ -1,7 +1,7 @@
 \graphicspath{{chapters/munthe/graphics/}}
 
 
-\title{Growth and Remodelling Package in FEniCSx}
+\title{Growth and remodelling package in FEniCSx}
 
 \author{Karl Munthe, Henrik Finsberg, Samuel Wall, Joakim Sundnes}
 
@@ -20,7 +20,7 @@ J. Sundnes \at Simula Research Laboratory, Oslo, Norway and \\ Department of Inf
 In classical continuum mechanics one normally studies the mechanics of bodies where mass, linear momentum, angular momentum, and energy are conserved properties. This approach has been extremely successful and is the bedrock for traditional engineering disciplines, but it does not accurately capture aspects of how living organisms change with respect to their environment. One of the unique features of biological material is its ability to grow and evolve by adding or removing mass. Understanding how biological matter grows and what drives the growth is important, not only to understand normal growth and development, but also when and how growth may become non-compensatory and drive disease.\par It has been known for a long time that the growth of organs, such as the heart, is regulated at least in part by the forces applied to it \citep{Hsu1968}. This understanding has led to the formulation of growth laws that link growth and remodeling to local stress or strain. \par
 In this chapter we will introduce a package written in FEniCSx that allows one to easily model growth and remodelling of biological tissue, with the aim of quickly testing combinations of growth models and material models. Allowing researchers to systematically test combinations of material models and growth tensors will aid in the discovery of more accurate models of growth and remodelling phenomena of biological tissue.
 \section{Methods}
-\subsection{Growth and Remodeling in Continuum Mechanics}
+\subsection{Growth and remodeling in continuum mechanics}
 Consider a solid body that is continuously and smoothly deforming from one configuration to another, and denote the initial configuration (also called the reference configuration) as $\mathcal{M}$ and the current configuration $\mathcal{N}$. We denote a point in $\mathcal{M}$ with uppercase letters $\mathbf{X} = (X, Y, Z)$ and a point in $\mathcal{N}$ with lowercase letters $\mathbf{x} = (x, y, z)$\footnote{Apart from the letters $X$, $Y$, and $Z$, all upper case letters represent tensors.}. A point in $\mathcal{M}$ can be mapped to a point in $\mathcal{N}$ by a motion, $\phi(\mathbf{X}): \mathbf{X} \rightarrow \mathbf{x}$, which is a diffeomorphism. We can map a vector from the reference configuration to the current configuration via the pushforward of $\phi$, which is commonly denoted by $\mathbf{F}$ and is referred to as the deformation gradient, computed as $\mathbf{F} = \partial\mathbf{x}/\partial\mathbf{X}$. The displacement field $\mathbf{u} = \mathbf{x} - \mathbf{X}$ is a vector field describing the displacement of each point $\mathbf{X}$ in the reference configuration to its location $\mathbf{x}$ in the deformed configuration. 
 Most mechanical models of the heart assume that the tissue is hyperelastic, meaning that deformations of the material conserve its energy, and when any load on the tissue is removed it returns to its original reference shape. Growth, on the other hand, represents a permanent change of the unloaded reference configuration, and cannot be modeled as an elastic deformation. Instead, it is commonly modeled using the framework of plastic or elasto-plastic deformations. The most common approach, introduced by \citep{Rodriguez1994}, is to multiplicatively split the deformation tensor into an elastic part and an inelastic growth part, 
 \begin{equation}
@@ -70,7 +70,7 @@ experiments we use a nearly incompressible neo-Hookean model, so (\ref{eq: stres
 where $\mu$ and $\kappa$ material parameters. $\Psi_\text{iso}$ and $\Psi_\text{vol}$ are the isochoric (distortional) and volumetric (dilational) parts of the strain energy function. To decouple the energy stored in the body as a result of volume preserving deformation and non-volume preserving deformation, we introduce $\mathbf{\bar{F}}_e = \mathbf{F}_eJ^{-1/3}$, whose determinant is equal to one. The isochoric right Cauchy-Green deformation tensor, $\mathbf{\bar{C}}$, is calculated as $\mathbf{\bar{C}} = \mathbf{\bar{F}}_e^\top \mathbf{\bar{F}}_e$. Now, $\partial\Psi_\text{iso}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the shape, and $\partial\Psi_\text{vol}/\partial \mathbf{F}_e = 0$ only if the deformation preserves the volume (see Chapter 6 of \citep{Holzapfel2002} for more details). \par 
 For further information about continuum mechanics we recommend \citep{Marsden1983} and \citep{Holzapfel2002}, and for further information about growth and remodelling we recommend \citep{Goriely2017} and \citep{Yavari2010}.
 
-\subsection{Numerical Implementation}
+\subsection{Numerical implementation}
  
 Algorithm \ref{alg:growth_deform} shows an overview of the steps involved in the solution
 of the growth model equations. For stress based growth, you would update the stress tensor rather than the strain tensor, and for additive growth laws, you would add the cumulative and incremental growth tensors instead of multiplying them together. \par
@@ -93,7 +93,7 @@ Since we are using test functions, $\eta$, that vanish on $\partial_D\mathcal{M}
 \par
 \emph{Iteratively solving the conservation of momentum}: We now solve (\ref{eq: weak conservation of momentum}) for the displacement $\mathbf{u}$, which we can use to compute all the necessary variables. We use tetrahedral, second order, continuous, Lagrange elements to approximate $\mathbf{u}$; and a first order, discontinuous, Lagrange elements to approximate $\mathbf{F}_e$ and $\mathbf{F}_g$. This is a common numerical scheme in cardiac mechanics which has been demonstrated to avoid locking \citep{oliveira2016comparison}. 
 
-\subsection{Solving Growth Laws on the Unit Cube}
+\subsection{Solving growth laws on the unit cube}
 \label{subsec: simulations}
 In the simulations we have run we have aligned the $x$-axis with the fiber direction and the $y$-, and $z$-axis are the crossfiber and normal direction. To be consistent with the literature we will use $\mathbf{e}_f$, $\mathbf{e}_c$, and $\mathbf{e}_n$ to denote the unit vectors in the $(x, y, z)$ directions respectively.  \par
 \emph{Boundary conditions:} We set the following boundary conditions

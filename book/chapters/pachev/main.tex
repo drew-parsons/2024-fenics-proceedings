@@ -39,7 +39,7 @@ The cuDOLFINx package extends the work of \cite{trotter2023targeting}. In additi
 
 There are three main software components of cuDOLFINX. The first is a set of C++ classes containing CUDA data structures needed for assembly. These mirror corresponding DOLFINx classes (e.g. CUDAForm for Form, CUDAMesh for Mesh, etc.) and are responsible for copying the needed data to the GPU. The second consists of C++ classes which manage the generation, runtime compilation, and launching of CUDA assembly kernels. The final component contains the Python bindings for the C++ core. Most users will only need to utilize the Python wrapper. It provides Python versions of the C++ CUDA data structure classes, as well as convenience routines for performing assembly operations. We demonstrate its usage in the following section.
 
-\section*{Sample Usage}
+\section*{Sample usage}
 
 Using cuDOLFINx within existing FEniCSx code requires only minor modifications. Consider the following example for solving Poisson's equation on the unit square:
 \begin{python}
@@ -134,7 +134,7 @@ A final step remains within the loop. The updated solution needs to be copied ba
 
 We will proceed to demonstrate the performance of cuDOLFINx for several representative use cases in which GPU acceleration can significantly enhance FEniCSx performance.
 
-\section*{Performance Evaluation}
+\section*{Performance evaluation}
 We begin with two examples of the performance of the GPU assembly kernels in cuDOLFINx, and then present a use case of complete GPU offloading for both assembly and linear solves. All computations in the following experiments are performed in double precision. The primary hardware used in the following experiments is an NVIDIA GH200 Superchip, which consists of a Hopper GPU with 132 streaming multiprocessors (SMs) connected to a 72-core Grace CPU. The Hopper GPU has a memory bandwidth of 4 TB/s, while the CPU has a memory bandwidth of 384 GB/s~\citep{gh200specs}. Experiments were conducted using the Vista system at the Texas Advanced Computing Center (TACC).
 
 \subsection*{Poisson}
@@ -159,7 +159,7 @@ Uniform 4 & 16,464,000 & 2,803,221 & 373.3 & 29.8 \\
     \label{tab:poisson_results}
 \end{table}
 
-\subsection*{Shallow Water}
+\subsection*{Shallow water}
 For a more realistic example that also displays the complexity enabled by FEniCSx, we present assembly benchmarks using the variational forms in SWEMniCS~\citep{dawson2024swemnics}, a FEniCSx-based solver for the shallow water equations. SWEMniCS implements a suite of stabilized 2D shallow water solvers with implicit time stepping. Due to the nonlinearity of the shallow water equations, a Newton solver is required at each time step.
 
 We investigated the efficiency of automatically generated CUDA assembly kernels for two stabilized schemes within SWEMniCS: the Discontinuous Galerkin (DG), and the Streamline Upwind Petrov-Galerkin (SUPG) schemes. The DG method uses broken test and trial spaces with a Lax-Freidrichs numerical flux. The DG scheme is more numerically stable, but requires more degrees of freedom than SUPG due to the use of discontinuous function spaces. For each scheme, we averaged the performance of both GPU and CPU assembly kernels over twenty Newton iterations for tidal flow simulations on square domains with uniform triangular meshes. Table~\ref{tab:swe_a100_vs_epyc} shows the speedup when using NVIDIA A100 GPU compared to a 64-core AMD Epyc 7763 CPU for assembling the Jacobian matrix and the residual vector for each scheme. The A100 GPU and Epyc CPU were both on the Lonestar6 system at TACC.

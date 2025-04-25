@@ -1,7 +1,7 @@
 % Write the full path to the location of the graphics relative to book.tex
 \graphicspath{{chapters/marcibal/graphics/}} 
 
-\title{Implementation of the Lam-Bremhorst \texorpdfstring{\(k\)-\(\varepsilon\)}{k-e} turbulence model in FEniCS}
+\title{Implementation of the Lam--Bremhorst \texorpdfstring{\(k\)-\(\varepsilon\)}{k-e} turbulence model in FEniCS}
 \titlerunning{Implementation of the \texorpdfstring{\(k\)-\(\varepsilon\)}{k-e} turbulence model}
 
 \author{Juraj Marcibál, Hans Joachim Schroll}
@@ -19,7 +19,7 @@ H.~J.~Schroll \email{achim@imada.dk}
 
 % Abstract
 \abstract{
-In this paper, we give an overview of turbulence modeling and turbulence in general, followed by an implementation of the Lam-Bremhorst \(k\)-\(\varepsilon\) turbulence model in FEniCS \citep{alnaes2015fenics,baratta2023dolfinx}. We demonstrate how the model can be easily implemented in the latest version of FEniCS, even when working with the simplest methods and schemes. We hope this paper serves as a valuable resource for researchers and enthusiasts seeking a straightforward introduction to turbulence modeling and a practical guide for implementing models in FEniCS.
+In this paper, we give an overview of turbulence modeling and turbulence in general, followed by an implementation of the Lam--Bremhorst \(k\)-\(\varepsilon\) turbulence model in FEniCS \citep{alnaes2015fenics,baratta2023dolfinx}. We demonstrate how the model can be easily implemented in the latest version of FEniCS, even when working with the simplest methods and schemes. We hope this paper serves as a valuable resource for researchers and enthusiasts seeking a straightforward introduction to turbulence modeling and a practical guide for implementing models in FEniCS.
 }
 
 % Section 1 - Introduction
@@ -37,8 +37,8 @@ This article aims to address the need for a clear up-to-date turbulence model im
 
 \subsection{Modeling turbulence}
 
-Consider the incompressible Navier-Stokes (N-S) equations
-\begin{equation}\label{eq: N-S}
+Consider the incompressible Navier--Stokes (NS) equations
+\begin{equation}\label{eq: NS}
     \begin{split}
         \frac{\partial \mathbf{u}}{\partial t} + \mathbf{u} \cdot \nabla{\mathbf{u}}
         = 
@@ -48,9 +48,9 @@ Consider the incompressible Navier-Stokes (N-S) equations
         = 0,
     \end{split}
 \end{equation}
-where \(\mathbf{u}\), \(p\) are the instantaneous velocity and pressure, \(\mathbf{f}\) represents the external forces, \(\rho\) is the density and \(\nu\) is the molecular viscosity of the fluid. It is well known that solving Equation \eqref{eq: N-S} numerically becomes difficult as Reynolds Number gets large. To accurately predict turbulent flow, we either need to work with a very fine mesh and small step-size, or resort to modeling. The former is often not feasible without a large computational power.
+where \(\mathbf{u}\), \(p\) are the instantaneous velocity and pressure, \(\mathbf{f}\) represents the external forces, \(\rho\) is the density and \(\nu\) is the molecular viscosity of the fluid. It is well known that solving Equation \eqref{eq: NS} numerically becomes difficult as Reynolds Number gets large. To accurately predict turbulent flow, we either need to work with a very fine mesh and small step-size, or resort to modeling. The former is often not feasible without a large computational power.
 
-One approach to modeling turbulence is to consider not the instantaneous \(\mathbf{u}\) and \(p\), but rather the mean values \(\langle \mathbf{u} \rangle\) and \( \langle p \rangle\). By decomposing \(\mathbf{u}\) and \(p\) into their mean and fluctuating parts \(\mathbf{u} = \langle \mathbf{u} \rangle + \mathbf{u}'\) and \(p = \langle p \rangle + p'\), one can derive governing equations for the mean quantities. Such equations are called the Reynolds-Averaged Navier-Stokes (RANS) equations, and they take the form
+One approach to modeling turbulence is to consider not the instantaneous \(\mathbf{u}\) and \(p\), but rather the mean values \(\langle \mathbf{u} \rangle\) and \( \langle p \rangle\). By decomposing \(\mathbf{u}\) and \(p\) into their mean and fluctuating parts \(\mathbf{u} = \langle \mathbf{u} \rangle + \mathbf{u}'\) and \(p = \langle p \rangle + p'\), one can derive governing equations for the mean quantities. Such equations are called the Reynolds-Averaged Navier--Stokes (RANS) equations, and they take the form
 \begin{equation}\label{eq: RANS}
     \begin{split}
         \frac{\partial \langle \mathbf{u} \rangle}{\partial t} + \langle \mathbf{u} \rangle \cdot \nabla{\langle \mathbf{u} \rangle}
@@ -76,9 +76,9 @@ where \(\mathbf{R} := - \langle \mathbf{u}' \otimes \mathbf{u}' \rangle\) is the
 \end{equation}
 where \(\nu_t\) is the turbulent viscosity and \(k\) is the turbulent kinetic energy. Modeling turbulence now reduces to modeling \(\nu_t\) and \(k\), usually by solving additional transport equation or equations, one of them typically being a transport equation for \(k\).
 
-\subsection{The Lam-Bremhorst \(k\)-\(\varepsilon\) model and boundary conditions}
+\subsection{The Lam--Bremhorst \(k\)-\(\varepsilon\) model and boundary conditions}
 
-The Lam-Bremhorst (L-B) \(k\)-\(\varepsilon\) model \citep{lam_modified_1981} is one of the models proposed to close the RANS equations. It was chosen for its relative simplicity compared to the more popular models such as the model by \cite{launder_application_1974}. Formulated in Equation \eqref{eq: k-eps}, it supplements Equations \eqref{eq: RANS}, \eqref{eq: Boussinesq hypothesis} with two additional transport equations governing \(k\) and \(\varepsilon\) (dissipation of \(k\)). Together, these equations form a closed system that describes the mean behavior of turbulent flow.
+The Lam--Bremhorst (LB) \(k\)-\(\varepsilon\) model \citep{lam_modified_1981} is one of the models proposed to close the RANS equations. It was chosen for its relative simplicity compared to the more popular models such as the model by \cite{launder_application_1974}. Formulated in Equation \eqref{eq: k-eps}, it supplements Equations \eqref{eq: RANS}, \eqref{eq: Boussinesq hypothesis} with two additional transport equations governing \(k\) and \(\varepsilon\) (dissipation of \(k\)). Together, these equations form a closed system that describes the mean behavior of turbulent flow.
 \begin{equation}\label{eq: k-eps}
     \begin{split}
         &\frac{\partial \mathbf{u}}{\partial t} 
@@ -134,13 +134,13 @@ The Lam-Bremhorst (L-B) \(k\)-\(\varepsilon\) model \citep{lam_modified_1981} is
         \sigma_\varepsilon = 1.3.
     \end{split}
 \end{equation}
-In Equation \eqref{eq: k-eps}, \(\mathbf{u}\) and \(p\) are the mean velocity and pressure (for better readability we no longer denote averages with \(\langle \cdot \rangle\)), \(k\) and \(\varepsilon\) are the turbulent kinetic energy and its dissipation, \(\rho\), \(\nu\) and \(\mathbf{f}\) are as in Equation \eqref{eq: N-S}. Additionally, \(\nu_t\) is the turbulent viscosity, \(P_k\) and \(\gamma\) are the production and reaction terms of \(k\). 
+In Equation \eqref{eq: k-eps}, \(\mathbf{u}\) and \(p\) are the mean velocity and pressure (for better readability we no longer denote averages with \(\langle \cdot \rangle\)), \(k\) and \(\varepsilon\) are the turbulent kinetic energy and its dissipation, \(\rho\), \(\nu\) and \(\mathbf{f}\) are as in Equation \eqref{eq: NS}. Additionally, \(\nu_t\) is the turbulent viscosity, \(P_k\) and \(\gamma\) are the production and reaction terms of \(k\). 
 
 On top of that \(f_\nu\), \(f_1\) and \(f_2\) are the damping functions, which solve the models' inability to predict flow near the wall \citep{greenshields_notes_2022}. Terms \(\text{Re}_k\) and \(\text{Re}_\ell\) are both referred to as the turbulent Reynolds numbers and \(y\) denotes the distance to the nearest solid wall. Lastly, \(C_\nu\), \(C_1\), \(C_2\) and \(\sigma_1\), \(\sigma_2\) are the experimentally determined model constants.
 
-Since RANS and the N-S are the same equations with different total pressure and total viscosity terms, they also have similar boundary conditions, hence we will only focus on boundary conditions for the equations governing \(k\) and \(\varepsilon\).
+Since RANS and the NS are the same equations with different total pressure and total viscosity terms, they also have similar boundary conditions, hence we will only focus on boundary conditions for the equations governing \(k\) and \(\varepsilon\).
 
-For \(k\) and \(\varepsilon\) consider the domain boundary \(\partial \Omega\) divided into disjoint subboundaries corresponding to solid walls, inflow and outflow. Natural boundary conditions for the outflow for both \(k\) and \(\varepsilon\) are the zero Neumann boundary conditions, i.e. \(\nabla k \cdot \mathbf{n} = 0\) and \(\nabla \varepsilon \cdot \mathbf{n} = 0\). For the solid wall \(k\) is set to zero, the boundary conditions for \(\varepsilon\) differs with different turbulence model, for the L-B \(k\)-\(\varepsilon\) model we have \(\nabla \varepsilon \cdot \mathbf{n} = 0\). The inflow boundary conditions are most often estimated from the physical definitions of \(k\) and \(\varepsilon\):
+For \(k\) and \(\varepsilon\) consider the domain boundary \(\partial \Omega\) divided into disjoint subboundaries corresponding to solid walls, inflow and outflow. Natural boundary conditions for the outflow for both \(k\) and \(\varepsilon\) are the zero Neumann boundary conditions, i.e. \(\nabla k \cdot \mathbf{n} = 0\) and \(\nabla \varepsilon \cdot \mathbf{n} = 0\). For the solid wall \(k\) is set to zero, the boundary conditions for \(\varepsilon\) differs with different turbulence model, for the LB \(k\)-\(\varepsilon\) model we have \(\nabla \varepsilon \cdot \mathbf{n} = 0\). The inflow boundary conditions are most often estimated from the physical definitions of \(k\) and \(\varepsilon\):
 \begin{equation*}\label{eq: definitions of k-e}
     k = \frac{3}{2} (U I)^2, 
     \quad
@@ -148,7 +148,7 @@ For \(k\) and \(\varepsilon\) consider the domain boundary \(\partial \Omega\) d
 \end{equation*}
 where \(U\) is the average velocity magnitude, \(I\) is the turbulent intensity and \(\ell\) is the turbulent length scale. Both \(I\) and \(\ell\) are generally not known beforehand and need to be estimated. For estimation of \(I\) and \(\ell\) see \cite{greenshields_notes_2022}. These can then be implemented as Dirichlet boundary conditions in Legacy FEniCS.
 
-\subsection{Non-dimensionalized quantities and the Law of the wall}
+\subsection{Non-dimensionalized quantities and the law of the wall}
 
 In turbulence modeling, many results are formulated using the non-dimensionalized velocity magnitude (\(U^+\)), distance to the wall (\(y^+\)) and turbulent kinetic energy (\(k^+\)) given by:
 \begin{equation}\label{eq: non-dimensionalized variables}
@@ -163,7 +163,7 @@ where \(U_\tau := \sqrt{\tau_\text{w}}\) is the so-called friction velocity and 
 % Section 2 - Implementation
 \section{Implementation}
 
-In this section, we focus on the implementation of the L-B \(k\)-\(\varepsilon\) model. We only outline the implementation of the transport equations for \(k\) and \(\varepsilon\), since the RANS equations can be solved using the same techniques as N-S. In our case we used Chorin's splitting method together with Taylor-Hood elements to solve the transient version of RANS equations. For the steady state version, Picard iteration was used. 
+In this section, we focus on the implementation of the LB \(k\)-\(\varepsilon\) model. We only outline the implementation of the transport equations for \(k\) and \(\varepsilon\), since the RANS equations can be solved using the same techniques as NS. In our case we used Chorin's splitting method together with Taylor-Hood elements to solve the transient version of RANS equations. For the steady state version, Picard iteration was used. 
 
 \subsection{Weak formulation of the \texorpdfstring{\(k\)-\(\varepsilon\)}{k-e} transport equations}
 
@@ -390,7 +390,7 @@ Figure \ref{fig: backstep profiles} presents normalized velocity magnitude \(U/U
 % Section 4 - Conclusion
 \section{Conclusion}
 
-The Lam-Bremhorst \(k\)-\(\varepsilon\) turbulence model was implemented successfully in FEniCS computing platform, both in the transient and steady-state formulation. We verified the implementation of the transient solver by simulating a fully developed channel flow, where a very good agreement was found between the computed solutions and the DNS. While the results of the backward-facing step simulation did not match the experiment, we still consider the implementation of the steady-state solver a success, as the results matched the expected behavior of the \(k\)-\(\varepsilon\) model. It is clear from those results that implementing the working \(k\)-\(\varepsilon\) model in FEniCS can be done with relative ease, and we do not see any reason why that would not be true for different turbulence models such as the \(k\)-\(\omega\) or the Spalart-Allmaras. These results can be replicated via scripts archived at \href{https://github.com/joove123/k-epsilon}{https://github.com/joove123/k-epsilon}.
+The Lam--Bremhorst \(k\)-\(\varepsilon\) turbulence model was implemented successfully in FEniCS computing platform, both in the transient and steady-state formulation. We verified the implementation of the transient solver by simulating a fully developed channel flow, where a very good agreement was found between the computed solutions and the DNS. While the results of the backward-facing step simulation did not match the experiment, we still consider the implementation of the steady-state solver a success, as the results matched the expected behavior of the \(k\)-\(\varepsilon\) model. It is clear from those results that implementing the working \(k\)-\(\varepsilon\) model in FEniCS can be done with relative ease, and we do not see any reason why that would not be true for different turbulence models such as the \(k\)-\(\omega\) or the Spalart-Allmaras. These results can be replicated via scripts archived at \href{https://github.com/joove123/k-epsilon}{https://github.com/joove123/k-epsilon}.
 
 \begin{acknowledgement}
     I would like to thank my master's thesis supervisor, Prof. Achim Schroll, for his professional guidance and support during the writing of my master's thesis and this article. I also thank NumFOCUS for the travel award that enabled me to attend the FEniCS 2024 conference. 
