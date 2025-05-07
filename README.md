@@ -1,5 +1,9 @@
 # The FEniCS 2024 Proceedings
 
+## Updates
+
+7th May 2025: The accepted articles have now been submitted to the Simula SpringerBrief Editorial team for review.
+
 ## About the proceedings 
 
 The proceedings of the FEniCS 2024 Conference (FEniCS 2024) will be published as a peer-reviewed edited volume by Springer Verlag in the open access book series Simula SpringerBriefs on Computing. This series aims to provide a concise introduction to select research topics for students or researchers entering new fields.  
